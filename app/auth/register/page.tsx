@@ -33,12 +33,6 @@ const RegisterPage = () => {
     setError("")
   }
 
-  const handleRoleChange = (role: "freelancer" | "client") => {
-    setFormData((prev) => ({
-      ...prev,
-      role,
-    }))
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -71,7 +65,9 @@ const RegisterPage = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      const result = await signIn("google", { callbackUrl: "/", redirect: true })
+      localStorage.setItem("userEmail", formData.email)
+      const result = await signIn("google", { callbackUrl: `/` , redirect: true })
+      
       if (result?.error) setError("Failed to sign in with Google")
     } catch {
       setError("An unexpected error occurred")
@@ -80,7 +76,7 @@ const RegisterPage = () => {
 
   const handleGitHubSignIn = async () => {
     try {
-      const result = await signIn("github", { callbackUrl: "/", redirect: true })
+      const result = await signIn("github", { callbackUrl: `/`, redirect: true })
       if (result?.error) setError("Failed to sign in with GitHub")
     } catch {
       setError("An unexpected error occurred")
@@ -182,38 +178,6 @@ const RegisterPage = () => {
                     onChange={handleChange}
                     className="h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">I want to</Label>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant={formData.role === "freelancer" ? "default" : "outline"}
-                      className={`w-1/2 h-11 ${
-                        formData.role === "freelancer"
-                          ? "bg-blue-600 hover:bg-blue-700 text-white"
-                          : "border-gray-300 hover:bg-gray-50 text-gray-700"
-                      }`}
-                      onClick={() => handleRoleChange("freelancer")}
-                      disabled={isLoading}
-                    >
-                      Find Work
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={formData.role === "client" ? "default" : "outline"}
-                      className={`w-1/2 h-11 ${
-                        formData.role === "client"
-                          ? "bg-blue-600 hover:bg-blue-700 text-white"
-                          : "border-gray-300 hover:bg-gray-50 text-gray-700"
-                      }`}
-                      onClick={() => handleRoleChange("client")}
-                      disabled={isLoading}
-                    >
-                      Hire Talent
-                    </Button>
-                  </div>
                 </div>
 
                 <Button

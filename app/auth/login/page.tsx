@@ -14,7 +14,7 @@ import { AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({ email: "", password: "", role: "" })
+  const [formData, setFormData] = useState({ email: "", password: "", role: "freelancer" })
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()

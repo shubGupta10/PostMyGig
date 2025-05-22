@@ -3,11 +3,6 @@ import bcrypt from "bcryptjs";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 
-enum roleWeTake {
-  freelancer = "freelancer",
-  client = "client"
-}
-
 
 export async function POST(req: NextRequest) {
     try {
@@ -38,13 +33,6 @@ export async function POST(req: NextRequest) {
             })
         }
 
-        //validate role
-        if (!Object.values(roleWeTake).includes(role)) {
-            return NextResponse.json({
-                message: "Invalid role provided",
-                status: 400
-            })
-        }
 
         //hash the password
         const saltRound = await bcrypt.genSalt(10);

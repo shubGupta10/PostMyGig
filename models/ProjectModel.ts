@@ -9,15 +9,13 @@ export interface ContactInfo {
 export interface Project extends Document {
   title: string;
   description: string;
-  createdBy: mongoose.Types.ObjectId;
+  createdBy: string;
   skillsRequired?: string[];
   contact?: ContactInfo;
   status: 'active' | 'archived' | 'expired' | 'completed';
   expiresAt?: Date;
   reportCount: number;
   isFlagged: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 const projectSchema = new Schema<Project>(
@@ -32,8 +30,7 @@ const projectSchema = new Schema<Project>(
       required: true,
     },
     createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
       required: true,
     },
     skillsRequired: {

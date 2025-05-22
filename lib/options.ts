@@ -36,17 +36,13 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Invalid password")
                  }
 
-                //  if(user.role !== credentials.role){
-                //     throw new Error(`This account is not registered as a ${credentials.role}`);
-                //  }
-
                  return {
                     id: user._id as string,
                     email: user.email,
                     name: user.name,
                     profilePhoto: user.profilePhoto as string,
-                    role: user.role,
-                    provider: user.provider
+                    provider: user.provider,
+                    role: "freelancer"
                  }
             } catch (error) {
                 throw error;
@@ -82,7 +78,7 @@ export const authOptions: NextAuthOptions = {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.provider = token.provider as string;
-                session.user.role = token.role as 'freelancer' | 'client';
+                session.user.role ='freelancer';
             }
             return session;
         },
