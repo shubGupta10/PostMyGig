@@ -9,7 +9,7 @@ interface User extends Document {
   name: string;
   email: string;
   role: string;
-  password: string;
+  password?: string;
   profilePhoto?: string;
   provider: string;
   bio?: string;
@@ -39,7 +39,7 @@ const userSchema = new Schema<User>({
   },
   password: {
     type: String,
-    required: true,
+    required: false,
   },
   profilePhoto: {
     type: String,

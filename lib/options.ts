@@ -13,7 +13,6 @@ export const authOptions: NextAuthOptions = {
         credentials: {
             email: {label: "Email", type: "email"},
             password: {label: "Password", type: "password"},
-            role: {label: "Role", type: "text"}
         },
         async authorize(credentials){
             if(!credentials?.email || !credentials.password){
@@ -32,14 +31,14 @@ export const authOptions: NextAuthOptions = {
                     throw new Error(`Please use ${user.provider.charAt(0).toUpperCase() + user.provider.slice(1)} Sign-In for this account`);
                  }
 
-                 const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+                 const isPasswordValid = await bcrypt.compare(credentials.password, user.password as string);
                  if(!isPasswordValid){
                     throw new Error("Invalid password")
                  }
 
-                 if(user.role !== credentials.role){
-                    throw new Error(`This account is not registered as a ${credentials.role}`);
-                 }
+                //  if(user.role !== credentials.role){
+                //     throw new Error(`This account is not registered as a ${credentials.role}`);
+                //  }
 
                  return {
                     id: user._id as string,
@@ -107,9 +106,9 @@ export const authOptions: NextAuthOptions = {
                         })
                     }else{
                         const newUser = new userModel({
-                            name: user.image,
+                            name: user.name,
                             email: user.email,
-                            role: user?.role || "",
+                            role: "freelancer",
                             profilePhoto: user.image || "",
                             provider: account.provider,
                         })
@@ -138,8 +137,8 @@ export const authOptions: NextAuthOptions = {
         }
     },
     pages: {
-        signIn: "/login",
-        error: "/login"
+        signIn: "/auth/login",
+        error: "/auth/login"
     },
     session: {
         strategy: "jwt",

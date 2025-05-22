@@ -1,14 +1,17 @@
 import { NextResponse, NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import userModel from "@/models/UserModel";
+import { ConnectoDatabase } from "@/lib/db";
 
 enum roleWeTake {
-    freelancer,
-    client
+  freelancer = "freelancer",
+  client = "client"
 }
+
 
 export async function POST(req: NextRequest) {
     try {
+        await ConnectoDatabase();
         const { name, email, role, password } = await req.json();
         if (!name || !email || !role || !password) {
             return NextResponse.json({
