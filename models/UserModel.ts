@@ -8,7 +8,10 @@ interface ContactLinks {
 interface User extends Document {
   name: string;
   email: string;
-  role: 'freelancer' | 'client';
+  role: string;
+  password: string;
+  profilePhoto?: string;
+  provider: string;
   bio?: string;
   skills?: string[];
   location?: string;
@@ -33,6 +36,18 @@ const userSchema = new Schema<User>({
     type: String,
     enum: ['freelancer', 'client'],
     required: true
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  profilePhoto: {
+    type: String,
+    default: '',
+  },
+  provider: {
+    type: String,
+    enum: ['credentials', 'google', "github"],
   },
   bio: {
     type: String,
