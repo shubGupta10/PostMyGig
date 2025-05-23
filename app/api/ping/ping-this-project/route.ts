@@ -20,10 +20,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { projectId, userId, posterId, message, bestWorkLink, bestWorkDescription } = await req.json()
+    const { projectId, userEmail, posterId, message, bestWorkLink, bestWorkDescription } = await req.json()
 
     // Validate required fields
-    if (!projectId || !userId || !posterId) {
+    if (!projectId || !userEmail || !posterId || !message) {
       return NextResponse.json(
         {
           message: "Missing required project information",
@@ -33,10 +33,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate user ID matches session
-    if (userId !== session.user.id) {
+    if (userEmail !== session.user.email) {
       return NextResponse.json(
         {
-          message: "User ID mismatch",
+          message: "User email mismatch",
         },
         { status: 403 },
       )
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     // Create the ping with optional fields
     const ping = await PingModel.create({
       projectId,
-      userId,
+      userEmail,
       posterId,
       posterEmail,
       message,

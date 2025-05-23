@@ -2,8 +2,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface Ping extends Document {
   projectId: string;
-  userId: string;
-  posterId: string;
+  userEmail: string;
   posterEmail: string;
   message?: string;
   bestWorkLink?: string;
@@ -17,11 +16,7 @@ const pingSchema = new Schema<Ping>(
       type: String,
       required: true,
     },
-    userId: {
-      type: String,
-      required: true,
-    },
-    posterId: {
+    userEmail: {
       type: String,
       required: true,
     },

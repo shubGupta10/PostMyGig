@@ -15,14 +15,13 @@ function PingProject() {
   const { data } = useSession()
   const searchParams = useSearchParams();
   const router = useRouter()
-  const userId = data?.user?.id as string
   const gigId = searchParams.get("gigId") as string
   const posterId = searchParams.get("posterId") as string
   
 
   const [formData, setFormData] = useState({
     projectId: gigId,
-    userId: "",
+    userEmail: data?.user.email,
     posterId: posterId,
     message: "",
     bestWorkLink: "",
@@ -37,7 +36,7 @@ function PingProject() {
     if (data?.user?.id) {
       setFormData((prev) => ({
         ...prev,
-        userId: data.user.id,
+        userEmail: data.user.email,
       }))
     }
   }, [data])
@@ -68,7 +67,6 @@ function PingProject() {
 
       setSuccess(result.message || "Application submitted successfully!")
 
-      // Reset form after successful submission
       setFormData((prev) => ({
         ...prev,
         message: "",
@@ -76,10 +74,9 @@ function PingProject() {
         bestWorkDescription: "",
       }))
 
-      // Redirect after 2 seconds
       setTimeout(() => {
         router.push("/view-gigs")
-      }, 2000)
+      }, 1000)
     } catch (error: any) {
       console.error(error)
       setError(error.message || "An error occurred while submitting your application")
@@ -90,7 +87,7 @@ function PingProject() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white py-12">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Back button */}
         <button
           onClick={() => router.back()}
@@ -100,8 +97,8 @@ function PingProject() {
           Back to Gig
         </button>
 
-        <Card className="border border-slate-200 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-emerald-50 to-emerald-100 border-b border-slate-200">
+        <Card className="border border-slate-300 shadow-xl rounded-lg">
+          <CardHeader>
             <CardTitle className="text-2xl font-bold text-slate-800">Apply for this Project</CardTitle>
             <CardDescription className="text-slate-600">
               Tell the project owner why you're the perfect fit for this gig

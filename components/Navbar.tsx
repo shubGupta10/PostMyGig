@@ -84,7 +84,7 @@ function Navbar() {
               {status === 'authenticated' ? <>
               <li>
                 <a
-                  href="/"
+                  href="/dashboard"
                   className='text-slate-600 hover:text-slate-900 transition-colors duration-200 font-medium px-3 py-2 rounded-md hover:bg-slate-50'
                 >
                   Dashboard

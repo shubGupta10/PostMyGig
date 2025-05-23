@@ -331,15 +331,22 @@ function OpenGig() {
 
             {/* Quick Actions */}
             <div className="flex flex-col sm:flex-row gap-4 lg:w-auto w-full">
-              <button onClick={() => router.push(
-                        `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
-                      )} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                <CheckCircle className="w-6 h-6" />
-                Apply Now
-              </button>
-              {/* <button className="px-6 py-4 border-2 border-slate-300 text-slate-700 rounded-xl font-semibold hover:bg-white hover:border-slate-400 transition-all duration-200">
-                Save for Later
-              </button> */}
+              {user?.email === gig.createdBy ? <>
+                <button className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1" onClick={() => router.push(
+                  `/applications/view-applications?gigId=${gig._id}`
+                )}>
+                  View Applications
+                </button>
+              </> : <>
+                <button onClick={() => router.push(
+                  `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
+                )} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                  <CheckCircle className="w-6 h-6" />
+                  Apply Now
+                </button>
+              </>}
+
+
             </div>
           </div>
         </div>
@@ -475,17 +482,20 @@ function OpenGig() {
 
                 {/* Call to Action */}
                 <div className="mt-8 space-y-4">
-                  <button
-                    onClick={() =>
-                      router.push(
-                        `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
-                      )
-                    }
-                    className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                  >
-                    <CheckCircle className="w-5 h-5" />
-                    Apply for this Gig
-                  </button>
+                  {user?.email !== gig.createdBy ? <>
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
+                        )
+                      }
+                      className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      Apply for this Gig
+                    </button>
+                  </> : null}
+
 
 
                   {user?.email === gig.createdBy ? (
