@@ -23,7 +23,7 @@ interface Application {
   bestWorkDescription: string
   createdAt: string
   updatedAt: string
-  applyer: Applyer
+  applicant: Applyer
 }
 
 function ViewApplication() {
@@ -105,17 +105,17 @@ function ViewApplication() {
   }
 
   const getApplicantInitials = (applicant: Application) => {
-    if (applicant.applyer?.name) {
-      return getNameInitials(applicant.applyer.name)
+    if (applicant.applicant.name) {
+      return getNameInitials(applicant.applicant.name)
     }
-    if (applicant.applyer?.email) {
-      return getEmailInitials(applicant.applyer.email)
+    if (applicant.applicant?.email) {
+      return getEmailInitials(applicant.applicant.email)
     }
     return "??"
   }
 
   const getApplicantDisplayName = (applicant: Application) => {
-    return applicant.applyer?.name || applicant.applyer?.email || "Unknown User"
+    return applicant.applicant.name || applicant.applicant.email || "Unknown User"
   }
 
 
@@ -198,9 +198,9 @@ function ViewApplication() {
                     <div className="col-span-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-blue-100 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-                          {applicant.applyer?.profilePhoto ? (
-                            <img 
-                              src={applicant.applyer.profilePhoto} 
+                          {applicant.applicant?.profilePhoto ? (
+                            <img
+                              src={applicant.applicant.profilePhoto}
                               alt={getApplicantDisplayName(applicant)}
                               className="w-full h-full object-cover"
                             />
@@ -216,9 +216,9 @@ function ViewApplication() {
                               <p className="text-base font-medium text-slate-900 truncate">
                                 {getApplicantDisplayName(applicant)}
                               </p>
-                              {applicant.applyer?.name && applicant.applyer?.email && (
+                              {applicant.applicant?.name && applicant.applicant?.email && (
                                 <p className="text-sm text-slate-500 truncate">
-                                  {applicant.applyer.email}
+                                  {applicant.applicant.email}
                                 </p>
                               )}
                             </div>
@@ -281,9 +281,9 @@ function ViewApplication() {
               <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-blue-100 rounded-full flex items-center justify-center overflow-hidden">
-                    {selectedApplicant.applyer?.profilePhoto ? (
-                      <img 
-                        src={selectedApplicant.applyer.profilePhoto} 
+                    {selectedApplicant.applicant?.profilePhoto ? (
+                      <img
+                        src={selectedApplicant.applicant.profilePhoto}
                         alt={getApplicantDisplayName(selectedApplicant)}
                         className="w-full h-full object-cover"
                       />
@@ -298,8 +298,8 @@ function ViewApplication() {
                       {getApplicantDisplayName(selectedApplicant)}
                     </h2>
                     <div className="space-y-1">
-                      {selectedApplicant.applyer?.email && (
-                        <p className="text-sm text-slate-600">{selectedApplicant.applyer.email}</p>
+                      {selectedApplicant.applicant?.email && (
+                        <p className="text-sm text-slate-600">{selectedApplicant.applicant.email}</p>
                       )}
                       <p className="text-sm text-slate-500">Applied on {formatDate(selectedApplicant.createdAt)}</p>
                     </div>
