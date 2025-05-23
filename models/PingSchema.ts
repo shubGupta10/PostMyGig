@@ -1,30 +1,43 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface Ping extends Document {
-  projectId: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
+  projectId: string;
+  userId: string;
+  posterId: string;
+  posterEmail: string;
   message?: string;
-  portfolioLink?: string;
+  bestWorkLink?: string;
+  bestWorkDescription?: string;
   createdAt?: Date;
 }
 
 const pingSchema = new Schema<Ping>(
   {
     projectId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Project',
+      type: String,
       required: true,
     },
     userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
+      required: true,
+    },
+    posterId: {
+      type: String,
+      required: true,
+    },
+    posterEmail: {
+      type: String,
       required: true,
     },
     message: {
       type: String,
       default: '',
     },
-    portfolioLink: {
+    bestWorkLink: {
+      type: String,
+      default: '',
+    },
+    bestWorkDescription: {
       type: String,
       default: '',
     },

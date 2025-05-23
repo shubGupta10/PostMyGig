@@ -13,6 +13,7 @@ export interface Project extends Document {
   skillsRequired?: string[];
   contact?: ContactInfo;
   budget: string;
+  displayContactLinks: boolean;
   status: 'active' | 'archived' | 'expired' | 'completed';
   expiresAt?: Date;
   reportCount: number;
@@ -47,6 +48,11 @@ const projectSchema = new Schema<Project>(
       email: { type: String, default: '' },
       whatsapp: { type: String, default: '' },
       x: { type: String, default: '' }
+    },
+    displayContactLinks: {
+      type: Boolean,
+      default: true,
+      required: true,
     },
     status: {
       type: String,
