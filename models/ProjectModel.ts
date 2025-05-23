@@ -12,6 +12,7 @@ export interface Project extends Document {
   createdBy: string;
   skillsRequired?: string[];
   contact?: ContactInfo;
+  budget: string;
   status: 'active' | 'archived' | 'expired' | 'completed';
   expiresAt?: Date;
   reportCount: number;
@@ -32,6 +33,11 @@ const projectSchema = new Schema<Project>(
     createdBy: {
       type: String,
       required: true,
+    },
+    budget: {
+      type: String,
+      required: true,
+      min: 0,
     },
     skillsRequired: {
       type: [String],
