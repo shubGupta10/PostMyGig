@@ -39,6 +39,18 @@ function Navbar() {
     setIsMobileMenuOpen(false);
   };
 
+  // Handle navigation with mobile menu close
+  const handleNavigation = (path: string) => {
+    closeMobileMenu();
+    router.push(path);
+  };
+
+  // Handle logout with mobile menu close
+  const handleMobileLogout = () => {
+    closeMobileMenu();
+    handleLogout();
+  };
+
   if(status === 'loading'){
     return (
       <div className='w-full h-16 flex items-center justify-center'>
@@ -53,7 +65,7 @@ function Navbar() {
         <div className='flex items-center justify-between h-16'>
           {/* Logo Section */}
           <div className='flex items-center flex-shrink-0'>
-            <div className='flex items-center space-x-2'>
+            <div className='flex items-center space-x-2 cursor-pointer' onClick={() => router.push('/')}>
               <div className='w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center'>
                 <span className='text-slate-800 font-bold text-lg'>P</span>
               </div>
@@ -140,7 +152,7 @@ function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push("/user/profile")} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
@@ -196,16 +208,16 @@ function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer" onClick={closeMobileMenu}>
+                  <DropdownMenuItem onClick={() => handleNavigation("/user/profile")} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" onClick={closeMobileMenu}>
+                  <DropdownMenuItem className="cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600" onClick={closeMobileMenu}>
+                  <DropdownMenuItem  className="cursor-pointer text-red-600 focus:text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </DropdownMenuItem>
@@ -238,31 +250,38 @@ function Navbar() {
           <div className='py-4 border-t border-gray-100'>
             <ul className='flex flex-col space-y-1'>
               <li>
-                <a
-                  href="#"
-                  className='text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 font-medium block px-4 py-3 rounded-lg'
-                  onClick={closeMobileMenu}
+                <button
+                  className='text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg'
+                  onClick={() => handleNavigation("/")}
                 >
                   Home
-                </a>
+                </button>
               </li>
               <li>
-                <a
-                  href="#"
-                  className='text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 font-medium block px-4 py-3 rounded-lg'
-                  onClick={closeMobileMenu}
+                <button
+                  className='text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg'
+                  onClick={() => handleNavigation("/view-gigs")}
                 >
                   Gigs
-                </a>
+                </button>
               </li>
+              {status === 'authenticated' && (
+                <li>
+                  <button
+                    className='text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg'
+                    onClick={() => handleNavigation("/dashboard")}
+                  >
+                    Dashboard
+                  </button>
+                </li>
+              )}
               <li>
-                <a
-                  href="#"
-                  className='text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 font-medium block px-4 py-3 rounded-lg'
-                  onClick={closeMobileMenu}
+                <button
+                  className='text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg'
+                  onClick={() => handleNavigation("/feedback")}
                 >
-                  Dashboard
-                </a>
+                  Feedback
+                </button>
               </li>
             </ul>
 
@@ -271,7 +290,7 @@ function Navbar() {
               <div className='mt-4 px-4'>
                 <Button
                   className='w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-medium transition-colors duration-200 shadow-sm'
-                  onClick={closeMobileMenu}
+                  onClick={() => handleNavigation("/view-gigs")}
                 >
                   Get Started
                 </Button>

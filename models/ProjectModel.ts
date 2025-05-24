@@ -14,7 +14,8 @@ export interface Project extends Document {
   contact?: ContactInfo;
   budget: string;
   displayContactLinks: boolean;
-  status: 'active' | 'archived' | 'expired' | 'completed';
+  AcceptedFreelancerEmail?: string;
+  status: 'active' | 'accepted' | 'expired' | 'completed';
   expiresAt?: Date;
   reportCount: number;
   isFlagged: boolean;
@@ -39,6 +40,10 @@ const projectSchema = new Schema<Project>(
       type: String,
       required: true,
       min: 0,
+    },
+    AcceptedFreelancerEmail: {
+      type: String,
+      default: '',
     },
     skillsRequired: {
       type: [String],

@@ -6,6 +6,7 @@ export interface Ping extends Document {
   posterEmail: string;
   message?: string;
   bestWorkLink?: string;
+  status: string;
   bestWorkDescription?: string;
   createdAt?: Date;
 }
@@ -27,6 +28,11 @@ const pingSchema = new Schema<Ping>(
     message: {
       type: String,
       default: '',
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'rejected'],
+      default: 'pending',
     },
     bestWorkLink: {
       type: String,

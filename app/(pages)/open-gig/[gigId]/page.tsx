@@ -179,6 +179,12 @@ function OpenGig() {
           dot: "bg-red-500",
           bgGradient: "from-red-50 to-red-100",
         }
+      case "accepted":
+        return {
+          color: "bg-purple-50 text-purple-700 border-purple-200 ring-purple-100",
+          dot: "bg-purple-500",
+          bgGradient: "from-purple-50 to-purple-100",
+        }
       default:
         return {
           color: "bg-gray-50 text-gray-700 border-gray-200 ring-gray-100",
@@ -186,6 +192,37 @@ function OpenGig() {
           bgGradient: "from-gray-50 to-gray-100",
         }
     }
+  }
+
+  // Helper function to check if gig is available for applications
+  const isGigAvailableForApplication = () => {
+    if (!gig) return false
+    
+    const status = gig.status.toLowerCase()
+    const now = new Date()
+    const expiry = new Date(gig.expiresAt)
+    
+    // Check if gig is expired
+    const isExpired = now > expiry
+    
+    // Gig is available only if it's active and not expired
+    return status === 'active' && !isExpired
+  }
+
+  // Helper function to get disabled button message
+  const getDisabledButtonMessage = () => {
+    if (!gig) return ""
+    
+    const status = gig.status.toLowerCase()
+    const now = new Date()
+    const expiry = new Date(gig.expiresAt)
+    const isExpired = now > expiry
+    
+    if (isExpired) return "This gig has expired"
+    if (status === 'completed') return "This gig has been completed"
+    if (status === 'accepted') return "This gig has been accepted"
+    
+    return ""
   }
 
   useEffect(() => {
@@ -259,6 +296,8 @@ function OpenGig() {
   const statusConfig = getStatusConfig(gig.status)
   const daysUntilExpiry = getDaysUntilExpiry(gig.expiresAt)
   const isExpiringSoon = daysUntilExpiry <= 3 && daysUntilExpiry > 0
+  const canApply = isGigAvailableForApplication()
+  const disabledMessage = getDisabledButtonMessage()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
@@ -338,12 +377,28 @@ function OpenGig() {
                   View Applications
                 </button>
               </> : <>
-                <button onClick={() => router.push(
-                  `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
-                )} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                  <CheckCircle className="w-6 h-6" />
-                  Apply Now
-                </button>
+                {canApply ? (
+                  <button onClick={() => router.push(
+                    `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
+                  )} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <CheckCircle className="w-6 h-6" />
+                    Apply Now
+                  </button>
+                ) : (
+                  <div className="flex-1 sm:flex-none">
+                    <button 
+                      disabled
+                      className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-gray-400 text-gray-600 rounded-xl font-bold cursor-not-allowed opacity-60"
+                      title={disabledMessage}
+                    >
+                      <CheckCircle className="w-6 h-6" />
+                      Apply Now
+                    </button>
+                    {disabledMessage && (
+                      <p className="text-sm text-gray-600 mt-2 text-center">{disabledMessage}</p>
+                    )}
+                  </div>
+                )}
               </>}
 
 
@@ -483,17 +538,33 @@ function OpenGig() {
                 {/* Call to Action */}
                 <div className="mt-8 space-y-4">
                   {user?.email !== gig.createdBy ? <>
-                    <button
-                      onClick={() =>
-                        router.push(
-                          `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
-                        )
-                      }
-                      className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                    >
-                      <CheckCircle className="w-5 h-5" />
-                      Apply for this Gig
-                    </button>
+                    {canApply ? (
+                      <button
+                        onClick={() =>
+                          router.push(
+                            `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
+                          )
+                        }
+                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                      >
+                        <CheckCircle className="w-5 h-5" />
+                        Apply for this Gig
+                      </button>
+                    ) : (
+                      <div>
+                        <button
+                          disabled
+                          className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gray-400 text-gray-600 rounded-xl font-bold cursor-not-allowed opacity-60"
+                          title={disabledMessage}
+                        >
+                          <CheckCircle className="w-5 h-5" />
+                          Apply for this Gig
+                        </button>
+                        {disabledMessage && (
+                          <p className="text-sm text-gray-600 mt-2 text-center">{disabledMessage}</p>
+                        )}
+                      </div>
+                    )}
                   </> : null}
 
 
