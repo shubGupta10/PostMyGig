@@ -1,3 +1,4 @@
+import FinalCTA from '@/components/landingpage/cta-section'
 import EarlyUserFeedback from '@/components/landingpage/early-user-feedback'
 import FreelancerClient from '@/components/landingpage/freelancer-client'
 import Hero from '@/components/landingpage/Hero'
@@ -13,6 +14,7 @@ function Home() {
     <HowItWorks/>
     <FreelancerClient/>
     <EarlyUserFeedback/>
+    <FinalCTA/>
     </>
   )
 }

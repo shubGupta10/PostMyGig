@@ -121,7 +121,7 @@ function Hero() {
                   <div className="flex items-start justify-between">
                     <div className="space-y-2 flex-1">
                       <h3 className="text-xl font-bold text-gray-900">Full Stack Ecommerce App</h3>
-                      <p className="text-gray-600">Need an developer to build me an Blog application.</p>
+                      <p className="text-gray-600">Need an developer to build me an Ecommerce application.</p>
                     </div>
                     <div className="flex items-center space-x-2 bg-white rounded-full px-3 py-1 border border-gray-200">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -194,18 +194,18 @@ function Hero() {
                 </div>
 
                 {/* Mock Stats */}
-                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200 text-sm">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">150+</div>
-                    <div className="text-xs text-gray-500">Active Projects</div>
+                    <div className="font-medium text-blue-500">Post Projects</div>
+                    <div className="text-gray-500">List work quickly</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-green-600">500+</div>
-                    <div className="text-xs text-gray-500">Freelancers</div>
+                    <div className="font-medium text-blue-500">Get Pings</div>
+                    <div className="text-gray-500">Replies via Notifications</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">95%</div>
-                    <div className="text-xs text-gray-500">Success Rate</div>
+                    <div className="font-medium text-blue-500">Connect Freely</div>
+                    <div className="text-gray-500">Talk directly, no limits</div>
                   </div>
                 </div>
               </div>
