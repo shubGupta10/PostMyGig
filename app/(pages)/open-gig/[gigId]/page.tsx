@@ -500,17 +500,17 @@ function OpenGig() {
             {/* Contact Information */}
             {gig.contact && (gig.contact.email || gig.contact.whatsapp || gig.contact.x) && (
               <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                <div className="p-8">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                        <Shield className="w-5 h-5 text-green-600" />
+                <div className="p-6 sm:p-8">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                        <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                       </div>
                       Contact Information
                     </h2>
                     {user?.email === gig.createdBy && (
-                      <div className="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-2">
-                        <span className="text-sm text-gray-600 font-medium">
+                      <div className="flex items-center gap-3 bg-gray-50 rounded-lg px-3 sm:px-4 py-2">
+                        <span className="text-sm font-medium text-gray-600">
                           {gig.displayContactLinks ? "Public" : "Private"}
                         </span>
                         <Switch checked={gig.displayContactLinks} onCheckedChange={toggleContactVisibility} />
@@ -519,53 +519,65 @@ function OpenGig() {
                   </div>
 
                   {gig.displayContactLinks === true || user?.email === gig.createdBy ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {gig.contact.email && (
-                        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                          <div className="flex items-center gap-3 mb-3">
-                            <Mail className="w-5 h-5 text-blue-600" />
-                            <h4 className="font-semibold text-gray-900">Email</h4>
+                    <div className="space-y-4">
+                      {/* Email and WhatsApp in a responsive grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {gig.contact.email && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
+                            <div className="flex items-center gap-3 mb-3">
+                              <Mail className="w-5 h-5 text-blue-600" />
+                              <h4 className="font-semibold text-gray-900">Email</h4>
+                            </div>
+                            <p className="text-gray-700 font-medium text-sm sm:text-base break-all mb-3">
+                              {gig.contact.email}
+                            </p>
+                            <a
+                              href={`mailto:${gig.contact.email}`}
+                              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm sm:text-base"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                              Send Email
+                            </a>
                           </div>
-                          <p className="text-gray-700 font-medium">{gig.contact.email}</p>
-                          <a
-                            href={`mailto:${gig.contact.email}`}
-                            className="inline-flex items-center gap-2 mt-3 text-blue-600 hover:text-blue-700 font-medium"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            Send Email
-                          </a>
-                        </div>
-                      )}
-                      {gig.contact.whatsapp && (
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                          <div className="flex items-center gap-3 mb-3">
-                            <MessageCircle className="w-5 h-5 text-green-600" />
-                            <h4 className="font-semibold text-gray-900">WhatsApp</h4>
+                        )}
+
+                        {gig.contact.whatsapp && (
+                          <div className="bg-green-50 border border-green-200 rounded-xl p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
+                            <div className="flex items-center gap-3 mb-3">
+                              <MessageCircle className="w-5 h-5 text-green-600" />
+                              <h4 className="font-semibold text-gray-900">WhatsApp</h4>
+                            </div>
+                            <p className="text-gray-700 font-medium text-sm sm:text-base mb-3">
+                              {gig.contact.whatsapp}
+                            </p>
+                            <a
+                              href={`https://wa.me/${gig.contact.whatsapp}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium text-sm sm:text-base"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                              Open WhatsApp
+                            </a>
                           </div>
-                          <p className="text-gray-700 font-medium">{gig.contact.whatsapp}</p>
-                          <a
-                            href={`https://wa.me/${gig.contact.whatsapp}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 mt-3 text-green-600 hover:text-green-700 font-medium"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            Open WhatsApp
-                          </a>
-                        </div>
-                      )}
+                        )}
+                      </div>
+
+                      {/* X (Twitter) in full width if exists */}
                       {gig.contact.x && (
-                        <div className="bg-gradient-to-br from-gray-50 to-slate-50 border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
                           <div className="flex items-center gap-3 mb-3">
                             <Twitter className="w-5 h-5 text-gray-600" />
                             <h4 className="font-semibold text-gray-900">X (Twitter)</h4>
                           </div>
-                          <p className="text-gray-700 font-medium">{gig.contact.x}</p>
+                          <p className="text-gray-700 font-medium text-sm sm:text-base break-all mb-3">
+                            {gig.contact.x}
+                          </p>
                           <a
                             href={`https://x.com/${gig.contact.x}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 mt-3 text-gray-600 hover:text-gray-700 font-medium"
+                            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-700 font-medium text-sm sm:text-base"
                           >
                             <ExternalLink className="w-4 h-4" />
                             View Profile
@@ -574,10 +586,12 @@ function OpenGig() {
                       )}
                     </div>
                   ) : (
-                    <div className="bg-gradient-to-br from-gray-50 to-slate-50 border border-gray-200 rounded-xl p-8 text-center">
-                      <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-700 font-medium text-lg">Contact information is private</p>
-                      <p className="text-gray-500 text-sm mt-2">Apply to this gig to get contact details</p>
+                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 sm:p-8 text-center">
+                      <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-700 font-medium text-base sm:text-lg">Contact information is private</p>
+                      <p className="text-gray-500 text-sm sm:text-base mt-2">
+                        Apply to this gig to get contact details
+                      </p>
                     </div>
                   )}
                 </div>
@@ -698,26 +712,6 @@ function OpenGig() {
               </div>
             </div>
 
-            {/* Owner Info Card */}
-            {owner && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3">
-                    <User className="w-5 h-5 text-purple-600" />
-                    Posted By
-                  </h3>
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">{owner.name.charAt(0).toUpperCase()}</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{owner.name}</h4>
-                      <p className="text-gray-600 text-sm">{owner.email}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
