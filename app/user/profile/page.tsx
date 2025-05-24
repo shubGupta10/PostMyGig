@@ -114,7 +114,7 @@ function Profile() {
       <div className="max-w-7xl mx-auto">
         {/* Header Card */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
-          <div className="h-32 bg-gradient-to-r from-green-500 to-green-400"></div>
+          <div className="h-32 bg-gradient-to-r from-green-300 to-green-300"></div>
           <div className="relative px-6 pb-6">
             <div className="flex flex-col sm:flex-row items-center sm:items-end space-y-4 sm:space-y-0 sm:space-x-6 -mt-16">
               <div className="relative">
@@ -253,7 +253,7 @@ function Profile() {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <button onClick={() => router.push(`/user/edit/?userId=${userData?._id}`)} className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+              <button onClick={() => router.push(`/user/edit/?userId=${userData?._id}`)} className="w-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
                 <Edit className="h-5 w-5" />
                 <span>Edit Profile</span>
               </button>

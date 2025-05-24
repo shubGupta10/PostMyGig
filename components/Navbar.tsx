@@ -106,7 +106,7 @@ function Navbar() {
 
               <li>
                 <a
-                  href="/feedback"
+                  href="/user/feedback"
                   className='text-slate-600 hover:text-slate-900 transition-colors duration-200 font-medium px-3 py-2 rounded-md hover:bg-slate-50'
                 >
                   Feedback
@@ -217,7 +217,7 @@ function Navbar() {
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem  className="cursor-pointer text-red-600 focus:text-red-600">
+                  <DropdownMenuItem onClick={handleLogout}  className="cursor-pointer text-red-600 focus:text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </DropdownMenuItem>
@@ -278,7 +278,7 @@ function Navbar() {
               <li>
                 <button
                   className='text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg'
-                  onClick={() => handleNavigation("/feedback")}
+                  onClick={() => handleNavigation("/user/feedback")}
                 >
                   Feedback
                 </button>

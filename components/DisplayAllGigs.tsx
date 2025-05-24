@@ -91,26 +91,26 @@ function DisplayAllGigs() {
     switch (status.toLowerCase()) {
       case "active":
         return {
-          color: "bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-800 border-emerald-200 shadow-emerald-100",
-          dot: "bg-gradient-to-r from-emerald-400 to-green-500",
+          color: "bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 border-emerald-300 shadow-emerald-100",
+          dot: "bg-gradient-to-r from-emerald-500 to-teal-500",
           icon: Zap,
         }
       case "completed":
         return {
-          color: "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-800 border-blue-200 shadow-blue-100",
-          dot: "bg-gradient-to-r from-blue-400 to-indigo-500",
+          color: "bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-700 border-blue-300 shadow-blue-100",
+          dot: "bg-gradient-to-r from-blue-500 to-cyan-500",
           icon: Award,
         }
       case "expired":
         return {
-          color: "bg-gradient-to-r from-red-50 to-rose-50 text-red-800 border-red-200 shadow-red-100",
-          dot: "bg-gradient-to-r from-red-400 to-rose-500",
+          color: "bg-gradient-to-r from-rose-50 to-pink-50 text-rose-700 border-rose-300 shadow-rose-100",
+          dot: "bg-gradient-to-r from-rose-500 to-pink-500",
           icon: Clock,
         }
       default:
         return {
-          color: "bg-gradient-to-r from-gray-50 to-slate-50 text-gray-800 border-gray-200 shadow-gray-100",
-          dot: "bg-gradient-to-r from-gray-400 to-slate-500",
+          color: "bg-gradient-to-r from-slate-50 to-gray-50 text-slate-700 border-slate-300 shadow-slate-100",
+          dot: "bg-gradient-to-r from-slate-500 to-gray-500",
           icon: Target,
         }
     }
@@ -190,7 +190,7 @@ function DisplayAllGigs() {
           <div className="space-y-8">
             {/* Stats Header */}
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-full border border-emerald-200 mb-4">
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-full border border-emerald-200 mb-4 shadow-md">
                 <Star className="w-5 h-5 text-emerald-600" />
                 <span className="font-semibold text-emerald-700">{gigs.length} Amazing Opportunities</span>
               </div>
@@ -207,14 +207,14 @@ function DisplayAllGigs() {
                 return (
                   <div
                     key={gig._id}
-                    className="group bg-white/80 backdrop-blur-sm rounded-3xl border border-white/50 hover:border-emerald-200 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 overflow-hidden relative"
+                    className="group bg-gradient-to-br from-blue-200/40 via-blue-100/30 to-indigo-200/40 backdrop-blur-sm rounded-3xl border border-blue-300/60 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/15 transition-all duration-500 overflow-hidden relative"
                     style={{
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+                      boxShadow: "0 8px 25px -5px rgb(59 130 246 / 0.1), 0 4px 6px -2px rgb(59 130 246 / 0.05)",
                       animationDelay: `${index * 100}ms`,
                     }}
                   >
                     {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-300/30 via-indigo-200/20 to-cyan-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                     <div className="relative p-8 lg:p-10">
                       {/* Header Row */}
@@ -223,7 +223,7 @@ function DisplayAllGigs() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start gap-4 mb-6">
                             <div className="flex-1">
-                              <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 group-hover:text-emerald-700 transition-colors duration-300 leading-tight mb-2">
+                              <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 group-hover:text-blue-700 transition-colors duration-300 leading-tight mb-2">
                                 {gig.title}
                               </h2>
                               <p className="text-slate-600 text-lg leading-relaxed">{gig.description}</p>
@@ -244,7 +244,7 @@ function DisplayAllGigs() {
                           {gig.isFlagged && (
                             <Badge
                               variant="outline"
-                              className="bg-gradient-to-r from-orange-50 to-amber-50 text-orange-800 border-orange-200 shadow-orange-100 shadow-lg font-semibold"
+                              className="bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border-amber-300 shadow-amber-100 shadow-lg font-semibold"
                             >
                               ⚠️ Flagged
                             </Badge>
@@ -252,7 +252,7 @@ function DisplayAllGigs() {
                           {isExpiringSoon && (
                             <Badge
                               variant="outline"
-                              className="bg-gradient-to-r from-red-50 to-rose-50 text-red-800 border-red-200 shadow-red-100 shadow-lg font-semibold animate-pulse"
+                              className="bg-gradient-to-r from-rose-50 to-pink-50 text-rose-700 border-rose-300 shadow-rose-100 shadow-lg font-semibold animate-pulse"
                             >
                               🔥 Expiring Soon
                             </Badge>
@@ -273,7 +273,7 @@ function DisplayAllGigs() {
                             <Badge
                               key={index}
                               variant="secondary"
-                              className="text-sm bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-800 hover:from-emerald-100 hover:to-green-100 transition-all duration-200 px-4 py-2 font-semibold border border-emerald-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                              className="text-sm bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 hover:from-emerald-100 hover:to-teal-100 transition-all duration-200 px-4 py-2 font-semibold border border-emerald-200 shadow-sm hover:shadow-md transform hover:scale-105"
                             >
                               {skill.trim()}
                             </Badge>
@@ -310,7 +310,7 @@ function DisplayAllGigs() {
                         {/* Action Button */}
                         <button
                           onClick={() => router.push(`/open-gig/${gig._id}`)}
-                          className="group/btn inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-blue-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-blue-700 text-white rounded-2xl font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/25 transform hover:-translate-y-1 hover:scale-105 lg:w-auto w-full relative overflow-hidden"
+                          className="group/btn inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-700 text-white rounded-2xl font-bold transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/25 transform hover:-translate-y-1 hover:scale-105 lg:w-auto w-full relative overflow-hidden"
                         >
                           <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
                           <span className="relative">Open Gig</span>

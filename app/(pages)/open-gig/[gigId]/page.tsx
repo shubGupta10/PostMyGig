@@ -380,7 +380,7 @@ function OpenGig() {
                 {canApply ? (
                   <button onClick={() => router.push(
                     `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
-                  )} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                  )} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                     <CheckCircle className="w-6 h-6" />
                     Apply Now
                   </button>
@@ -545,7 +545,7 @@ function OpenGig() {
                             `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
                           )
                         }
-                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                       >
                         <CheckCircle className="w-5 h-5" />
                         Apply for this Gig
