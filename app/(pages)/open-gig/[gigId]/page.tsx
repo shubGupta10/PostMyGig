@@ -4,7 +4,28 @@ import { useSession } from "next-auth/react"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, User, AlertCircle, RefreshCw, CheckCircle, ArrowLeft, Eye, Globe, Pen, Trash2Icon } from "lucide-react"
+import {
+  Calendar,
+  Clock,
+  User,
+  AlertCircle,
+  RefreshCw,
+  CheckCircle,
+  ArrowLeft,
+  Eye,
+  Globe,
+  Pen,
+  Trash2,
+  Star,
+  DollarSign,
+  Users,
+  Briefcase,
+  Shield,
+  Mail,
+  MessageCircle,
+  Twitter,
+  ExternalLink,
+} from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 
 interface Gig {
@@ -163,33 +184,38 @@ function OpenGig() {
     switch (status.toLowerCase()) {
       case "active":
         return {
-          color: "bg-emerald-50 text-emerald-700 border-emerald-200 ring-emerald-100",
-          dot: "bg-emerald-500",
-          bgGradient: "from-emerald-50 to-emerald-100",
+          color: "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-green-200",
+          dot: "bg-green-500",
+          bgGradient: "from-green-50 to-emerald-50",
+          icon: CheckCircle,
         }
       case "completed":
         return {
-          color: "bg-blue-50 text-blue-700 border-blue-200 ring-blue-100",
+          color: "bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-700 border-blue-200",
           dot: "bg-blue-500",
-          bgGradient: "from-blue-50 to-blue-100",
+          bgGradient: "from-blue-50 to-cyan-50",
+          icon: Star,
         }
       case "expired":
         return {
-          color: "bg-red-50 text-red-700 border-red-200 ring-red-100",
+          color: "bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200",
           dot: "bg-red-500",
-          bgGradient: "from-red-50 to-red-100",
+          bgGradient: "from-red-50 to-rose-50",
+          icon: Clock,
         }
       case "accepted":
         return {
-          color: "bg-purple-50 text-purple-700 border-purple-200 ring-purple-100",
+          color: "bg-gradient-to-r from-purple-50 to-violet-50 text-purple-700 border-purple-200",
           dot: "bg-purple-500",
-          bgGradient: "from-purple-50 to-purple-100",
+          bgGradient: "from-purple-50 to-violet-50",
+          icon: Users,
         }
       default:
         return {
-          color: "bg-gray-50 text-gray-700 border-gray-200 ring-gray-100",
+          color: "bg-gradient-to-r from-gray-50 to-slate-50 text-gray-700 border-gray-200",
           dot: "bg-gray-500",
-          bgGradient: "from-gray-50 to-gray-100",
+          bgGradient: "from-gray-50 to-slate-50",
+          icon: Briefcase,
         }
     }
   }
@@ -197,31 +223,31 @@ function OpenGig() {
   // Helper function to check if gig is available for applications
   const isGigAvailableForApplication = () => {
     if (!gig) return false
-    
+
     const status = gig.status.toLowerCase()
     const now = new Date()
     const expiry = new Date(gig.expiresAt)
-    
+
     // Check if gig is expired
     const isExpired = now > expiry
-    
+
     // Gig is available only if it's active and not expired
-    return status === 'active' && !isExpired
+    return status === "active" && !isExpired
   }
 
   // Helper function to get disabled button message
   const getDisabledButtonMessage = () => {
     if (!gig) return ""
-    
+
     const status = gig.status.toLowerCase()
     const now = new Date()
     const expiry = new Date(gig.expiresAt)
     const isExpired = now > expiry
-    
+
     if (isExpired) return "This gig has expired"
-    if (status === 'completed') return "This gig has been completed"
-    if (status === 'accepted') return "This gig has been accepted"
-    
+    if (status === "completed") return "This gig has been completed"
+    if (status === "accepted") return "This gig has been accepted"
+
     return ""
   }
 
@@ -236,18 +262,18 @@ function OpenGig() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="relative mb-8">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-200 border-t-emerald-500 mx-auto"></div>
+              <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
               <div
-                className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-emerald-300 animate-spin mx-auto"
+                className="absolute inset-0 rounded-full h-20 w-20 border-4 border-transparent border-t-green-500 animate-spin mx-auto"
                 style={{ animationDelay: "0.3s", animationDuration: "1.5s" }}
               ></div>
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">Loading Gig Details</h3>
-            <p className="text-slate-600">Please wait while we fetch the information...</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Loading Gig Details</h3>
+            <p className="text-gray-600 text-lg">Please wait while we fetch the information...</p>
           </div>
         </div>
       </div>
@@ -256,17 +282,17 @@ function OpenGig() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center max-w-md mx-auto px-6">
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <AlertCircle className="w-10 h-10 text-red-500" />
+            <div className="w-24 h-24 bg-gradient-to-br from-red-100 to-rose-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <AlertCircle className="w-12 h-12 text-red-500" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-4">Something went wrong</h3>
-            <p className="text-slate-600 mb-8 leading-relaxed">{error}</p>
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">Something went wrong</h3>
+            <p className="text-gray-600 mb-8 leading-relaxed text-lg">{error}</p>
             <button
               onClick={fetchGig}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold transform hover:-translate-y-1"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-xl hover:from-blue-700 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold transform hover:-translate-y-1"
             >
               <RefreshCw className="w-5 h-5" />
               Try Again
@@ -279,14 +305,14 @@ function OpenGig() {
 
   if (!gig) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Eye className="w-12 h-12 text-slate-400" />
+            <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <Eye className="w-16 h-16 text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">Gig Not Found</h3>
-            <p className="text-slate-500">The gig you're looking for doesn't exist or has been removed.</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Gig Not Found</h3>
+            <p className="text-gray-600 text-lg">The gig you're looking for doesn't exist or has been removed.</p>
           </div>
         </div>
       </div>
@@ -298,38 +324,44 @@ function OpenGig() {
   const isExpiringSoon = daysUntilExpiry <= 3 && daysUntilExpiry > 0
   const canApply = isGigAvailableForApplication()
   const disabledMessage = getDisabledButtonMessage()
+  const StatusIcon = statusConfig.icon
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Hero Section */}
-      <div className={`bg-gradient-to-r ${statusConfig.bgGradient} border-b border-slate-200`}>
+      <div className={`bg-gradient-to-r ${statusConfig.bgGradient} border-b border-gray-200`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Navigation */}
           <div className="flex items-center justify-between mb-8">
             <button
               onClick={() => router.back()}
-              className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors font-medium"
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors font-medium px-4 py-2 rounded-lg hover:bg-white/50"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Gigs
             </button>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Eye className="w-4 h-4" />
+              <span>Gig Details</span>
+            </div>
           </div>
 
           {/* Title and Status */}
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-8">
             <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-4 mb-4">
+              <div className="flex flex-wrap items-center gap-4 mb-6">
                 <Badge
                   variant="outline"
-                  className={`${statusConfig.color} ring-1 font-bold text-sm px-4 py-2 flex items-center gap-2`}
+                  className={`${statusConfig.color} border font-bold text-sm px-4 py-2 flex items-center gap-2 shadow-sm`}
                 >
                   <div className={`w-2.5 h-2.5 rounded-full ${statusConfig.dot}`}></div>
+                  <StatusIcon className="w-4 h-4" />
                   {gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
                 </Badge>
                 {gig.isFlagged && (
                   <Badge
                     variant="outline"
-                    className="bg-orange-50 text-orange-700 border-orange-200 ring-orange-100 ring-1 font-semibold"
+                    className="bg-gradient-to-r from-orange-50 to-amber-50 text-orange-700 border-orange-200 font-semibold shadow-sm"
                   >
                     🚩 Flagged
                   </Badge>
@@ -337,71 +369,85 @@ function OpenGig() {
                 {isExpiringSoon && (
                   <Badge
                     variant="outline"
-                    className="bg-amber-50 text-amber-700 border-amber-200 ring-amber-100 ring-1 font-semibold animate-pulse"
+                    className="bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 border-amber-200 font-semibold animate-pulse shadow-sm"
                   >
                     ⏰ Expiring Soon
                   </Badge>
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight mb-4">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
                 {gig.title}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-6 text-slate-600">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  <span className="font-medium">Posted {getTimeAgo(gig.createdAt)}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-gray-600">
+                <div className="flex items-center gap-3 bg-white/60 rounded-lg px-4 py-3">
+                  <Calendar className="w-5 h-5 text-blue-500" />
+                  <div>
+                    <span className="text-sm text-gray-500 block">Posted</span>
+                    <span className="font-semibold text-gray-900">{getTimeAgo(gig.createdAt)}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  <span className="font-medium">
-                    {daysUntilExpiry > 0
-                      ? `${daysUntilExpiry} day${daysUntilExpiry === 1 ? "" : "s"} remaining`
-                      : "Expires today"}
-                  </span>
+                <div className="flex items-center gap-3 bg-white/60 rounded-lg px-4 py-3">
+                  <Clock className="w-5 h-5 text-green-500" />
+                  <div>
+                    <span className="text-sm text-gray-500 block">Expires</span>
+                    <span className={`font-semibold ${isExpiringSoon ? "text-amber-600" : "text-gray-900"}`}>
+                      {daysUntilExpiry > 0 ? `${daysUntilExpiry} day${daysUntilExpiry === 1 ? "" : "s"} left` : "Today"}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  <span className="font-medium">Posted By : {owner?.name}</span>
+                <div className="flex items-center gap-3 bg-white/60 rounded-lg px-4 py-3">
+                  <User className="w-5 h-5 text-purple-500" />
+                  <div>
+                    <span className="text-sm text-gray-500 block">Posted by</span>
+                    <span className="font-semibold text-gray-900">{owner?.name}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Quick Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 lg:w-auto w-full">
-              {user?.email === gig.createdBy ? <>
-                <button className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1" onClick={() => router.push(
-                  `/applications/view-applications?gigId=${gig._id}`
-                )}>
+            <div className="flex flex-col gap-4 lg:w-auto w-full">
+              {user?.email === gig.createdBy ? (
+                <button
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  onClick={() => router.push(`/applications/view-applications?gigId=${gig._id}`)}
+                >
+                  <Users className="w-5 h-5" />
                   View Applications
                 </button>
-              </> : <>
-                {canApply ? (
-                  <button onClick={() => router.push(
-                    `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
-                  )} className="flex-1 sm:flex-none inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                    <CheckCircle className="w-6 h-6" />
-                    Apply Now
-                  </button>
-                ) : (
-                  <div className="flex-1 sm:flex-none">
-                    <button 
-                      disabled
-                      className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-gray-400 text-gray-600 rounded-xl font-bold cursor-not-allowed opacity-60"
-                      title={disabledMessage}
+              ) : (
+                <>
+                  {canApply ? (
+                    <button
+                      onClick={() =>
+                        router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
+                      }
+                      className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                     >
-                      <CheckCircle className="w-6 h-6" />
+                      <CheckCircle className="w-5 h-5" />
                       Apply Now
                     </button>
-                    {disabledMessage && (
-                      <p className="text-sm text-gray-600 mt-2 text-center">{disabledMessage}</p>
-                    )}
-                  </div>
-                )}
-              </>}
-
-
+                  ) : (
+                    <div>
+                      <button
+                        disabled
+                        className="w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-gray-400 text-gray-600 rounded-xl font-bold cursor-not-allowed opacity-60"
+                        title={disabledMessage}
+                      >
+                        <CheckCircle className="w-5 h-5" />
+                        Apply Now
+                      </button>
+                      {disabledMessage && (
+                        <p className="text-sm text-gray-600 mt-2 text-center bg-white/60 rounded-lg px-3 py-2">
+                          {disabledMessage}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -413,31 +459,36 @@ function OpenGig() {
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="p-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                  <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-emerald-600" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-100 to-green-100 rounded-xl flex items-center justify-center">
+                    <Globe className="w-5 h-5 text-blue-600" />
                   </div>
                   Project Description
                 </h2>
-                <div className="prose prose-slate max-w-none">
-                  <p className="text-slate-700 leading-relaxed text-lg whitespace-pre-wrap">{gig.description}</p>
+                <div className="prose prose-gray max-w-none">
+                  <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap">{gig.description}</p>
                 </div>
               </div>
             </div>
 
             {/* Skills Required */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
               <div className="p-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Skills & Technologies</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+                    <Star className="w-5 h-5 text-green-600" />
+                  </div>
+                  Skills & Technologies
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {gig.skillsRequired.map((skill, index) => (
                     <div
                       key={index}
-                      className="bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-4 text-center group hover:from-emerald-100 hover:to-emerald-200 transition-all duration-200 cursor-pointer"
+                      className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-xl p-4 text-center group hover:from-blue-100 hover:to-green-100 transition-all duration-200 cursor-pointer transform hover:-translate-y-1 hover:shadow-md"
                     >
-                      <span className="text-emerald-800 font-semibold text-sm group-hover:scale-105 transition-transform duration-200 inline-block">
+                      <span className="text-blue-700 font-semibold text-sm group-hover:scale-105 transition-transform duration-200 inline-block">
                         {skill.trim()}
                       </span>
                     </div>
@@ -448,14 +499,19 @@ function OpenGig() {
 
             {/* Contact Information */}
             {gig.contact && (gig.contact.email || gig.contact.whatsapp || gig.contact.x) && (
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <div className="p-8">
                   <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-slate-900">Contact Information</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-green-600" />
+                      </div>
+                      Contact Information
+                    </h2>
                     {user?.email === gig.createdBy && (
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-slate-600 font-medium">
-                          {gig.displayContactLinks ? "Visible to public" : "Hidden from public"}
+                      <div className="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-2">
+                        <span className="text-sm text-gray-600 font-medium">
+                          {gig.displayContactLinks ? "Public" : "Private"}
                         </span>
                         <Switch checked={gig.displayContactLinks} onCheckedChange={toggleContactVisibility} />
                       </div>
@@ -463,29 +519,65 @@ function OpenGig() {
                   </div>
 
                   {gig.displayContactLinks === true || user?.email === gig.createdBy ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {gig.contact.email && (
-                        <div className="bg-slate-50 rounded-xl p-4">
-                          <h4 className="font-semibold text-slate-900 mb-2">Email</h4>
-                          <p className="text-slate-700">{gig.contact.email}</p>
+                        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                          <div className="flex items-center gap-3 mb-3">
+                            <Mail className="w-5 h-5 text-blue-600" />
+                            <h4 className="font-semibold text-gray-900">Email</h4>
+                          </div>
+                          <p className="text-gray-700 font-medium">{gig.contact.email}</p>
+                          <a
+                            href={`mailto:${gig.contact.email}`}
+                            className="inline-flex items-center gap-2 mt-3 text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            Send Email
+                          </a>
                         </div>
                       )}
                       {gig.contact.whatsapp && (
-                        <div className="bg-slate-50 rounded-xl p-4">
-                          <h4 className="font-semibold text-slate-900 mb-2">WhatsApp</h4>
-                          <p className="text-slate-700">{gig.contact.whatsapp}</p>
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                          <div className="flex items-center gap-3 mb-3">
+                            <MessageCircle className="w-5 h-5 text-green-600" />
+                            <h4 className="font-semibold text-gray-900">WhatsApp</h4>
+                          </div>
+                          <p className="text-gray-700 font-medium">{gig.contact.whatsapp}</p>
+                          <a
+                            href={`https://wa.me/${gig.contact.whatsapp}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 mt-3 text-green-600 hover:text-green-700 font-medium"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            Open WhatsApp
+                          </a>
                         </div>
                       )}
                       {gig.contact.x && (
-                        <div className="bg-slate-50 rounded-xl p-4">
-                          <h4 className="font-semibold text-slate-900 mb-2">X (Twitter)</h4>
-                          <p className="text-slate-700">{gig.contact.x}</p>
+                        <div className="bg-gradient-to-br from-gray-50 to-slate-50 border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                          <div className="flex items-center gap-3 mb-3">
+                            <Twitter className="w-5 h-5 text-gray-600" />
+                            <h4 className="font-semibold text-gray-900">X (Twitter)</h4>
+                          </div>
+                          <p className="text-gray-700 font-medium">{gig.contact.x}</p>
+                          <a
+                            href={`https://x.com/${gig.contact.x}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 mt-3 text-gray-600 hover:text-gray-700 font-medium"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            View Profile
+                          </a>
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div className="bg-slate-50 rounded-xl p-6 text-center">
-                      <p className="text-slate-700 font-medium">Contact information is hidden by the gig owner</p>
+                    <div className="bg-gradient-to-br from-gray-50 to-slate-50 border border-gray-200 rounded-xl p-8 text-center">
+                      <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-700 font-medium text-lg">Contact information is private</p>
+                      <p className="text-gray-500 text-sm mt-2">Apply to this gig to get contact details</p>
                     </div>
                   )}
                 </div>
@@ -496,39 +588,54 @@ function OpenGig() {
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
             {/* Project Details Card */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden sticky top-8">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden sticky top-8 hover:shadow-xl transition-shadow duration-300">
               <div className="p-6">
-                <h3 className="text-xl font-bold text-slate-900 mb-6">Project Details</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <Briefcase className="w-6 h-6 text-blue-600" />
+                  Project Details
+                </h3>
 
                 <div className="space-y-4">
                   {/* Budget */}
                   {gig.budget && (
-                    <div className="flex items-center justify-between py-3 border-b border-slate-100">
-                      <span className="text-slate-600 font-medium">Budget</span>
+                    <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <DollarSign className="w-5 h-5 text-green-600" />
+                        <span className="text-gray-600 font-medium">Budget</span>
+                      </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xl font-bold text-slate-900">{gig.budget}</span>
+                        <span className="text-2xl font-bold text-green-600">${gig.budget}</span>
                       </div>
                     </div>
                   )}
 
                   {/* Posted Date */}
-                  <div className="flex items-center justify-between py-3 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">Posted</span>
-                    <span className="text-slate-900 font-semibold">{formatDate(gig.createdAt)}</span>
+                  <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <Calendar className="w-5 h-5 text-blue-600" />
+                      <span className="text-gray-600 font-medium">Posted</span>
+                    </div>
+                    <span className="text-gray-900 font-semibold">{formatDate(gig.createdAt)}</span>
                   </div>
 
                   {/* Expiry Date */}
-                  <div className="flex items-center justify-between py-3 border-b border-slate-100">
-                    <span className="text-slate-600 font-medium">Expires</span>
-                    <span className={`font-semibold ${isExpiringSoon ? "text-amber-600" : "text-slate-900"}`}>
+                  <div className="flex items-center justify-between py-4 border-b border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <Clock className="w-5 h-5 text-orange-600" />
+                      <span className="text-gray-600 font-medium">Expires</span>
+                    </div>
+                    <span className={`font-semibold ${isExpiringSoon ? "text-amber-600" : "text-gray-900"}`}>
                       {formatDate(gig.expiresAt)}
                     </span>
                   </div>
 
                   {/* Status */}
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-slate-600 font-medium">Status</span>
-                    <Badge variant="outline" className={`${statusConfig.color} ring-1 font-semibold`}>
+                  <div className="flex items-center justify-between py-4">
+                    <div className="flex items-center gap-3">
+                      <StatusIcon className="w-5 h-5 text-purple-600" />
+                      <span className="text-gray-600 font-medium">Status</span>
+                    </div>
+                    <Badge variant="outline" className={`${statusConfig.color} border font-semibold`}>
                       <div className={`w-2 h-2 rounded-full ${statusConfig.dot} mr-2`}></div>
                       {gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
                     </Badge>
@@ -537,64 +644,80 @@ function OpenGig() {
 
                 {/* Call to Action */}
                 <div className="mt-8 space-y-4">
-                  {user?.email !== gig.createdBy ? <>
-                    {canApply ? (
-                      <button
-                        onClick={() =>
-                          router.push(
-                            `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ''}`
-                          )
-                        }
-                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-emerald-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                      >
-                        <CheckCircle className="w-5 h-5" />
-                        Apply for this Gig
-                      </button>
-                    ) : (
-                      <div>
+                  {user?.email !== gig.createdBy ? (
+                    <>
+                      {canApply ? (
                         <button
-                          disabled
-                          className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gray-400 text-gray-600 rounded-xl font-bold cursor-not-allowed opacity-60"
-                          title={disabledMessage}
+                          onClick={() =>
+                            router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
+                          }
+                          className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                         >
                           <CheckCircle className="w-5 h-5" />
                           Apply for this Gig
                         </button>
-                        {disabledMessage && (
-                          <p className="text-sm text-gray-600 mt-2 text-center">{disabledMessage}</p>
-                        )}
-                      </div>
-                    )}
-                  </> : null}
-
-
+                      ) : (
+                        <div>
+                          <button
+                            disabled
+                            className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gray-400 text-gray-600 rounded-xl font-bold cursor-not-allowed opacity-60"
+                            title={disabledMessage}
+                          >
+                            <CheckCircle className="w-5 h-5" />
+                            Apply for this Gig
+                          </button>
+                          {disabledMessage && (
+                            <p className="text-sm text-gray-600 mt-3 text-center bg-gray-50 rounded-lg px-3 py-2">
+                              {disabledMessage}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  ) : null}
 
                   {user?.email === gig.createdBy ? (
-                    <>
+                    <div className="space-y-3">
                       <button
                         onClick={() => router.push(`/edit-gig/${gig._id}`)}
-                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4  text-emerald-600 border-2 border-emerald-600 rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-blue-600 border-2 border-blue-600 hover:bg-blue-50 rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                       >
                         <Pen className="w-5 h-5" />
                         Edit Gig
                       </button>
-                    </>
-                  ) : null}
-
-                  {user?.email === gig.createdBy ? (
-                    <>
                       <button
                         onClick={handleDelete}
-                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-red-600  text-white  border-2 border-red-600 rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-red-600 hover:bg-red-700 text-white border-2 border-red-600 rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                       >
-                        <Trash2Icon className="w-5 h-5" />
+                        <Trash2 className="w-5 h-5" />
                         Delete Gig
                       </button>
-                    </>
+                    </div>
                   ) : null}
                 </div>
               </div>
             </div>
+
+            {/* Owner Info Card */}
+            {owner && (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-3">
+                    <User className="w-5 h-5 text-purple-600" />
+                    Posted By
+                  </h3>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">{owner.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{owner.name}</h4>
+                      <p className="text-gray-600 text-sm">{owner.email}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

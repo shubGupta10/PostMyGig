@@ -8,6 +8,20 @@ import { Switch } from "@/components/ui/switch"
 import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import {
+  Briefcase,
+  Star,
+  Mail,
+  MessageCircle,
+  Twitter,
+  Eye,
+  EyeOff,
+  Plus,
+  CheckCircle,
+  AlertCircle,
+  Clock,
+  Shield,
+} from "lucide-react"
 
 interface FormData {
   title: string
@@ -208,22 +222,31 @@ function AddGigs() {
   }
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-50 to-white min-h-screen py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-3 py-2">
-            Add Your Gig
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Header */}
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+            Post Your <span className="text-blue-600">Gig</span>
           </h1>
-          <p className="text-lg text-slate-600 font-medium">
-            Fill in the information correctly to attract the right candidates
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl">
+            Share your project details and connect with talented freelancers
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-200">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title Field */}
+        <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10">
+          {/* Project Information */}
+          <div className="space-y-4 sm:space-y-6">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+              </div>
+              Project Information
+            </h3>
+
+            {/* Title */}
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-lg font-semibold text-slate-700">
+              <Label htmlFor="title" className="text-sm sm:text-base font-semibold text-gray-700">
                 Gig Title
               </Label>
               <Input
@@ -233,15 +256,22 @@ function AddGigs() {
                 placeholder="e.g., Full Stack Developer for E-commerce Website"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={`text-lg py-6 ${errors.title ? "border-red-500 focus:border-red-500" : ""}`}
+                className={`text-sm sm:text-base py-2 sm:py-3 ${
+                  errors.title ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-blue-500"
+                }`}
               />
-              {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
+              {errors.title && (
+                <div className="flex items-center gap-2 text-red-600">
+                  <AlertCircle className="w-4 h-4" />
+                  <p className="text-sm">{errors.title}</p>
+                </div>
+              )}
             </div>
 
-            {/* Description Field */}
+            {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-lg font-semibold text-slate-700">
-                Description
+              <Label htmlFor="description" className="text-sm sm:text-base font-semibold text-gray-700">
+                Project Description
               </Label>
               <Textarea
                 id="description"
@@ -249,15 +279,22 @@ function AddGigs() {
                 placeholder="Describe your project in detail, including requirements, goals, and expectations..."
                 value={formData.description}
                 onChange={handleInputChange}
-                rows={6}
-                className={`text-lg resize-none ${errors.description ? "border-red-500 focus:border-red-500" : ""}`}
+                rows={4}
+                className={`text-sm sm:text-base resize-none ${
+                  errors.description ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-blue-500"
+                }`}
               />
-              {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+              {errors.description && (
+                <div className="flex items-center gap-2 text-red-600">
+                  <AlertCircle className="w-4 h-4" />
+                  <p className="text-sm">{errors.description}</p>
+                </div>
+              )}
             </div>
 
-            {/* Skills Required Field */}
+            {/* Skills */}
             <div className="space-y-2">
-              <Label htmlFor="skillsRequired" className="text-lg font-semibold text-slate-700">
+              <Label htmlFor="skillsRequired" className="text-sm sm:text-base font-semibold text-gray-700">
                 Skills Required
               </Label>
               <Input
@@ -267,37 +304,65 @@ function AddGigs() {
                 placeholder="react, nextjs, nodejs, mongodb"
                 value={formData.skillsRequired}
                 onChange={handleInputChange}
-                className={`text-lg py-6 ${errors.skillsRequired ? "border-red-500 focus:border-red-500" : ""}`}
+                className={`text-sm sm:text-base py-2 sm:py-3 ${
+                  errors.skillsRequired
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-300 focus:border-blue-500"
+                }`}
               />
-              <p className="text-sm text-slate-500 flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                Write skills separated by commas like:{" "}
-                <span className="font-mono bg-slate-100 px-2 py-1 rounded">react, nextjs, nodejs, mongodb</span>
-              </p>
-              {errors.skillsRequired && <p className="text-red-500 text-sm">{errors.skillsRequired}</p>}
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                <p className="text-xs sm:text-sm text-blue-700">
+                  Separate skills with commas:{" "}
+                  <code className="bg-white px-2 py-1 rounded text-xs sm:text-sm">react, nextjs, nodejs</code>
+                </p>
+              </div>
+              {errors.skillsRequired && (
+                <div className="flex items-center gap-2 text-red-600">
+                  <AlertCircle className="w-4 h-4" />
+                  <p className="text-sm">{errors.skillsRequired}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Contact Information */}
+          <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                </div>
+                Contact Information
+              </h3>
+              <div className="flex items-center gap-3 bg-gray-50 rounded-lg px-3 sm:px-4 py-2">
+                <div className="flex items-center gap-2">
+                  {formData.displayContactLinks ? (
+                    <Eye className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <EyeOff className="w-4 h-4 text-gray-500" />
+                  )}
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">
+                    {formData.displayContactLinks ? "Public" : "Private"}
+                  </span>
+                </div>
+                <Switch checked={formData.displayContactLinks} onCheckedChange={handleDisplayContactToggle} />
+              </div>
             </div>
 
-            {/* Contact Information Fields */}
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <Label className="text-lg font-semibold text-slate-700">Contact Information</Label>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-slate-600 font-medium">
-                    {formData.displayContactLinks
-                      ? "Your details will be shown on gig page"
-                      : "Your details will be hidden on gig page"}
-                  </span>
-                  <Switch checked={formData.displayContactLinks} onCheckedChange={handleDisplayContactToggle} />
-                </div>
-              </div>
-              <p className="text-sm text-slate-500">
-                Toggle the switch to control visibility of your contact information.
+            <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
+              <p className="text-xs sm:text-sm text-amber-700">
+                {formData.displayContactLinks
+                  ? "Your contact details will be visible on the gig page"
+                  : "Your contact details will be hidden until someone applies"}
               </p>
+            </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-base font-medium text-slate-600">
-                  📧 Email
+                <Label htmlFor="email" className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-blue-500" />
+                  Email
                 </Label>
                 <Input
                   id="email"
@@ -305,14 +370,18 @@ function AddGigs() {
                   placeholder="your.email@example.com"
                   value={formData.contact.email}
                   onChange={(e) => handleContactChange("email", e.target.value)}
-                  className="text-lg py-4"
+                  className="text-xs sm:text-sm py-2 border-gray-300 focus:border-blue-500"
                 />
               </div>
 
               {/* WhatsApp */}
               <div className="space-y-2">
-                <Label htmlFor="whatsapp" className="text-base font-medium text-slate-600">
-                  💬 WhatsApp
+                <Label
+                  htmlFor="whatsapp"
+                  className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4 text-green-500" />
+                  WhatsApp
                 </Label>
                 <Input
                   id="whatsapp"
@@ -320,14 +389,14 @@ function AddGigs() {
                   placeholder="+1234567890"
                   value={formData.contact.whatsapp}
                   onChange={(e) => handleContactChange("whatsapp", e.target.value)}
-                  className="text-lg py-4"
+                  className="text-xs sm:text-sm py-2 border-gray-300 focus:border-green-500"
                 />
               </div>
 
               {/* X (Twitter) */}
-              <div className="space-y-2">
-                <Label htmlFor="x" className="text-base font-medium text-slate-600">
-                  🐦 X (Twitter)
+              <div className="space-y-2 sm:col-span-2 lg:col-span-1">
+                <Label htmlFor="x" className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Twitter className="w-4 h-4 text-gray-600" />X (Twitter)
                 </Label>
                 <Input
                   id="x"
@@ -335,100 +404,138 @@ function AddGigs() {
                   placeholder="@username"
                   value={formData.contact.x}
                   onChange={(e) => handleContactChange("x", e.target.value)}
-                  className="text-lg py-4"
+                  className="text-xs sm:text-sm py-2 border-gray-300 focus:border-gray-500"
                 />
               </div>
-
-              {errors.contact && <p className="text-red-500 text-sm">{errors.contact}</p>}
             </div>
+          </div>
 
-            {/* Expires At Field */}
-            <div className="space-y-2">
-              <Label htmlFor="expiresAt" className="text-lg font-semibold text-slate-700">
-                Gig Deadline
-              </Label>
-              <Input
-                id="expiresAt"
-                name="expiresAt"
-                type="date"
-                value={formData.expiresAt}
-                onChange={handleInputChange}
-                min={new Date().toISOString().split("T")[0]}
-                className={`text-lg py-6 ${errors.expiresAt ? "border-red-500 focus:border-red-500" : ""}`}
-              />
-              {errors.expiresAt && <p className="text-red-500 text-sm">{errors.expiresAt}</p>}
-            </div>
-
-            {/* Budget Field with Currency Selector */}
-            <div className="space-y-2">
-              <Label htmlFor="budget" className="text-lg font-semibold text-slate-700">
-                Budget
-              </Label>
-
-              {/* Currency Toggle */}
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-sm font-medium text-slate-600">Currency:</span>
-                <div className="flex bg-slate-100 rounded-lg p-1">
-                  <button
-                    type="button"
-                    onClick={() => handleCurrencyChange("USD")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      currency === "USD" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    USD ($)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleCurrencyChange("INR")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      currency === "INR" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    INR (₹)
-                  </button>
-                </div>
+          {/* Timeline & Budget */}
+          <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8 border-t border-gray-200">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
               </div>
+              Timeline & Budget
+            </h3>
 
-              {/* Budget Input with Currency Symbol */}
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-lg font-semibold text-slate-500 pointer-events-none">
-                  {currency === "USD" ? "$" : "₹"}
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              {/* Deadline */}
+              <div className="space-y-2">
+                <Label htmlFor="expiresAt" className="text-sm sm:text-base font-semibold text-gray-700">
+                  Project Deadline
+                </Label>
                 <Input
-                  id="budget"
-                  name="budgetAmount"
-                  type="number"
-                  placeholder={currency === "USD" ? "500" : "40000"}
-                  value={budgetAmount}
-                  onChange={handleBudgetChange}
-                  className={`text-lg py-6 pl-8 ${errors.budget ? "border-red-500 focus:border-red-500" : ""}`}
+                  id="expiresAt"
+                  name="expiresAt"
+                  type="date"
+                  value={formData.expiresAt}
+                  onChange={handleInputChange}
+                  min={new Date().toISOString().split("T")[0]}
+                  className={`text-sm sm:text-base py-2 sm:py-3 ${
+                    errors.expiresAt ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-blue-500"
+                  }`}
                 />
+                {errors.expiresAt && (
+                  <div className="flex items-center gap-2 text-red-600">
+                    <AlertCircle className="w-4 h-4" />
+                    <p className="text-sm">{errors.expiresAt}</p>
+                  </div>
+                )}
               </div>
 
-              {/* Show formatted budget */}
-              {formData.budget && (
-                <p className="text-sm text-slate-600 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Budget will be saved as: <span className="font-semibold text-slate-800">{formData.budget}</span>
-                </p>
+              {/* Budget */}
+              <div className="space-y-2">
+                <Label htmlFor="budget" className="text-sm sm:text-base font-semibold text-gray-700">
+                  Project Budget
+                </Label>
+
+                {/* Currency Toggle */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs sm:text-sm text-gray-600">Currency:</span>
+                  <div className="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      type="button"
+                      onClick={() => handleCurrencyChange("USD")}
+                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium ${
+                        currency === "USD" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+                      }`}
+                    >
+                      USD ($)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCurrencyChange("INR")}
+                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium ${
+                        currency === "INR" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+                      }`}
+                    >
+                      INR (₹)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Budget Input */}
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm sm:text-base font-semibold text-green-600">
+                    {currency === "USD" ? "$" : "₹"}
+                  </div>
+                  <Input
+                    id="budget"
+                    name="budgetAmount"
+                    type="number"
+                    placeholder={currency === "USD" ? "500" : "40000"}
+                    value={budgetAmount}
+                    onChange={handleBudgetChange}
+                    className={`text-sm sm:text-base py-2 sm:py-3 pl-7 sm:pl-8 ${
+                      errors.budget ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-green-500"
+                    }`}
+                  />
+                </div>
+
+                {/* Budget Preview */}
+                {formData.budget && (
+                  <div className="bg-green-50 rounded-lg p-2 border border-green-200">
+                    <div className="flex items-center gap-2 text-green-700">
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="text-xs sm:text-sm">
+                        Budget: <strong>{formData.budget}</strong>
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {errors.budget && (
+                  <div className="flex items-center gap-2 text-red-600">
+                    <AlertCircle className="w-4 h-4" />
+                    <p className="text-sm">{errors.budget}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-6 sm:pt-8 border-t border-gray-200">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full sm:w-auto sm:min-w-[200px] bg-green-600 hover:bg-green-700 text-white px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Creating Gig...
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Create Gig
+                </div>
               )}
-
-              {errors.budget && <p className="text-red-500 text-sm">{errors.budget}</p>}
-            </div>
-
-            {/* Submit Button */}
-            <div className="pt-6">
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              >
-                {isLoading ? "Creating Gig..." : "Create Gig"}
-              </Button>
-            </div>
-          </form>
-        </div>
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   )
