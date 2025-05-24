@@ -184,12 +184,6 @@ function Navbar() {
                 >
                   Sign In
                 </Button>
-                <Button
-                  onClick={() => router.push("/view-gigs")}
-                  className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm"
-                >
-                  Get Started
-                </Button>
               </div>
             )}
           </div>
