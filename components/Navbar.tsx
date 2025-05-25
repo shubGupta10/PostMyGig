@@ -23,12 +23,14 @@ import {
   Briefcase,
   LayoutDashboard,
   MessageSquare,
+  Shield,
 } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
 
 function Navbar() {
   const { data, status } = useSession()
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isClient, setIsClient] = useState(false)
   const { handleLogout } = useAuthStore()
@@ -112,11 +114,11 @@ function Navbar() {
           {/* Logo Section */}
           <div className="flex items-center flex-shrink-0">
             <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => router.push("/")}>
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-500 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
-                <span className="text-white font-bold text-lg">PG</span>
+              <div className="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                <Image src='/AppIcon.png' alt="App Icon" width={100} height={100} />
               </div>
-              <span className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-200 hidden sm:block">
-                PostMyGig
+              <span className="text-xl font-bold group-hover:text-blue-600 transition-colors duration-200 hidden sm:block text-blue-600">
+                PostMy<span className="text-emerald-600">Gig</span>
               </span>
             </div>
           </div>
@@ -151,7 +153,19 @@ function Navbar() {
                     <LayoutDashboard className="w-4 h-4" />
                     <span>Dashboard</span>
                   </a>
-                  </li>
+                </li>
+              )}
+              {/* Add Admin Dashboard to desktop navigation */}
+              {status === "authenticated" && data?.user?.role === 'admin' && (
+                <li>
+                  <a
+                    href="/user/admin/dashboard"
+                    className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 flex items-center space-x-2"
+                  >
+                    <Shield className="w-4 h-4" />
+                    <span>Admin</span>
+                  </a>
+                </li>
               )}
               <li>
                 <a
@@ -207,10 +221,16 @@ function Navbar() {
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
+
+                  {data?.user?.role === 'admin' ? (
+                    <>
+                      <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/user/admin/dashboard")}>
+                        <Shield className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </DropdownMenuItem>
+                    </>
+                  ) : null}
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -222,7 +242,7 @@ function Navbar() {
               <div className="flex items-center space-x-3">
                 <Button
                   variant="outline"
-                  onClick={() => router.push("/auth/signin")}
+                  onClick={() => router.push("/auth/login")}
                   className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 px-6 py-2 rounded-lg font-medium transition-all duration-200"
                 >
                   Sign In
@@ -267,6 +287,13 @@ function Navbar() {
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
+                  {/* Add Admin Dashboard to mobile dropdown */}
+                  {data?.user?.role === 'admin' && (
+                    <DropdownMenuItem className="cursor-pointer" onClick={() => handleNavigation("/user/admin/dashboard")}>
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin Dashboard
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem className="cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
@@ -296,9 +323,8 @@ function Navbar() {
 
         {/* Mobile Navigation Menu */}
         <div
-          className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-            isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="py-4 border-t border-gray-100">
             <ul className="flex flex-col space-y-1">
@@ -328,6 +354,18 @@ function Navbar() {
                   >
                     <LayoutDashboard className="w-5 h-5" />
                     <span>Dashboard</span>
+                  </button>
+                </li>
+              )}
+              {/* Add Admin Dashboard to mobile menu */}
+              {status === "authenticated" && data?.user?.role === 'admin' && (
+                <li>
+                  <button
+                    className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                    onClick={() => handleNavigation("/user/admin/dashboard")}
+                  >
+                    <Shield className="w-5 h-5" />
+                    <span>Admin Dashboard</span>
                   </button>
                 </li>
               )}

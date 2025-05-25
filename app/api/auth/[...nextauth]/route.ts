@@ -1,6 +1,21 @@
 import NextAuth from "next-auth";
 import { authOptions } from "@/lib/options";
+import ratelimiter from "@/lib/ratelimit";
+import { NextRequest, NextResponse } from "next/server";
 
-const handler = NextAuth(authOptions);
+async function rateLimitedHandler(req: NextRequest, ...args: any) {
+  const ip = req.headers.get("x-forwarded-for") || "anonymous";
+  const { success, reset } = await ratelimiter.limit(ip);
 
-export {handler as GET, handler as POST}
+  if (!success) {
+    return NextResponse.json({
+      message: `Rate limit exceeded. Try again in ${Math.ceil(
+        (reset - Date.now()) / 1000
+      )}s.`,
+    }, { status: 429 });
+  }
+
+  return await NextAuth(authOptions)(req, ...args);
+}
+
+export { rateLimitedHandler as GET, rateLimitedHandler as POST };

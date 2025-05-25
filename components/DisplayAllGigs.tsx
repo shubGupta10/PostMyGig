@@ -13,9 +13,7 @@ import {
   Zap,
   Target,
   Award,
-  Search,
-  Filter,
-  TrendingUp,
+  ShieldAlert,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -32,15 +30,31 @@ interface Gig {
   reportCount: number
 }
 
+interface RateLimitInfo {
+  isLimited: boolean
+  retryAfter: string | null
+  message: string
+  timestamp: number
+}
+
 function DisplayAllGigs() {
   const [gigs, setGigs] = useState<Gig[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo>({
+    isLimited: false,
+    retryAfter: null,
+    message: "",
+    timestamp: 0,
+  })
   const router = useRouter()
 
   const fetchAllGigs = async () => {
     try {
       setLoading(true)
+      setError(null)
+      setRateLimitInfo((prev) => ({ ...prev, isLimited: false, message: "" }))
+
       const response = await fetch("/api/gigs/fetch-gigs", {
         method: "GET",
         headers: {
@@ -48,16 +62,31 @@ function DisplayAllGigs() {
         },
       })
 
+      if (response.status === 429) {
+        const retryAfter = response.headers.get("Retry-After") || "60"
+        const rateLimitMessage = `Rate limit exceeded. Too many requests. Please wait ${retryAfter} seconds before trying again.`
+
+        setRateLimitInfo({
+          isLimited: true,
+          retryAfter,
+          message: rateLimitMessage,
+          timestamp: Date.now(),
+        })
+
+        setError(rateLimitMessage)
+        return
+      }
+
       if (!response.ok) {
         throw new Error("Failed to fetch gigs")
       }
 
       const data = await response.json()
       setGigs(data.gigs || [])
-      console.log(data.gigs)
     } catch (error) {
       console.error("Failed to fetch gigs", error)
-      setError("Failed to load gigs. Please try again later.")
+      const errorMessage = "Failed to load gigs. Please try again later."
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -119,14 +148,49 @@ function DisplayAllGigs() {
     }
   }
 
+  const handleRetryClick = () => {
+    if (rateLimitInfo.isLimited) {
+      // Update the rate limit message to show user tried too early
+      setRateLimitInfo((prev) => ({
+        ...prev,
+        message: `Please wait! You're still rate limited. Try again in ${prev.retryAfter || "a few"} seconds.`,
+      }))
+      return
+    }
+    fetchAllGigs()
+  }
+
   useEffect(() => {
     fetchAllGigs()
   }, [])
+
+  // Rate Limit Banner Component
+  const RateLimitBanner = () => {
+    if (!rateLimitInfo.isLimited) return null
+
+    return (
+      <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
+        <div className="flex items-start gap-3">
+          <ShieldAlert className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <h4 className="font-semibold text-amber-800 mb-1">Rate Limit Exceeded</h4>
+            <p className="text-amber-700 text-sm leading-relaxed">{rateLimitInfo.message}</p>
+            <div className="mt-2 text-xs text-amber-600">
+              <strong>Tip:</strong> To avoid rate limits, try refreshing less frequently.
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Rate Limit Banner */}
+          <RateLimitBanner />
+
           {/* Header Skeleton */}
           <div className="text-center mb-12">
             <div className="h-8 bg-gray-200 rounded-lg w-64 mx-auto mb-4 animate-pulse"></div>
@@ -171,20 +235,56 @@ function DisplayAllGigs() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Rate Limit Banner */}
+          <RateLimitBanner />
+
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-20 h-20 bg-gradient-to-br from-red-50 to-rose-100 rounded-2xl flex items-center justify-center mb-8 shadow-lg">
-              <AlertCircle className="w-10 h-10 text-red-500" />
+            <div
+              className={`w-20 h-20 ${rateLimitInfo.isLimited ? "bg-gradient-to-br from-amber-50 to-orange-100" : "bg-gradient-to-br from-red-50 to-rose-100"} rounded-2xl flex items-center justify-center mb-8 shadow-lg`}
+            >
+              {rateLimitInfo.isLimited ? (
+                <ShieldAlert className="w-10 h-10 text-amber-500" />
+              ) : (
+                <AlertCircle className="w-10 h-10 text-red-500" />
+              )}
             </div>
             <div className="text-center space-y-4 max-w-md">
-              <h3 className="text-2xl font-bold text-gray-900">Oops! Something went wrong</h3>
+              <h3 className="text-2xl font-bold text-gray-900">
+                {rateLimitInfo.isLimited ? "Rate Limit Exceeded" : "Oops! Something went wrong"}
+              </h3>
               <p className="text-gray-600 leading-relaxed">{error}</p>
+
+              {/* Rate Limit Details */}
+              {rateLimitInfo.isLimited && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-4 text-left">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-amber-700 font-medium">Status:</span>
+                      <span className="text-amber-800">Rate Limited</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700 font-medium">Retry After:</span>
+                      <span className="text-amber-800">{rateLimitInfo.retryAfter || "Unknown"} seconds</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700 font-medium">Time:</span>
+                      <span className="text-amber-800">{new Date(rateLimitInfo.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <button
-              onClick={fetchAllGigs}
-              className="mt-8 inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded-xl hover:from-blue-700 hover:to-green-700 transition-all duration-200 shadow-xl hover:shadow-2xl font-semibold transform hover:scale-105"
+              onClick={handleRetryClick}
+              disabled={rateLimitInfo.isLimited}
+              className={`mt-8 inline-flex items-center gap-3 px-8 py-4 ${
+                rateLimitInfo.isLimited
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 transform hover:scale-105"
+              } text-white rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl font-semibold`}
             >
-              <RefreshCw className="w-5 h-5" />
-              Try Again
+              <RefreshCw className={`w-5 h-5 ${rateLimitInfo.isLimited ? "" : ""}`} />
+              {rateLimitInfo.isLimited ? "Please Wait..." : "Try Again"}
             </button>
           </div>
         </div>
@@ -195,6 +295,9 @@ function DisplayAllGigs() {
   return (
     <div className="min-h-screen bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Rate Limit Banner */}
+        <RateLimitBanner />
+
         {gigs.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-green-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl">
@@ -216,8 +319,6 @@ function DisplayAllGigs() {
           </div>
         ) : (
           <div className="space-y-8">
-
-
             {/* Gigs Grid */}
             <div className="space-y-6">
               {gigs.map((gig, index) => {
@@ -260,7 +361,7 @@ function DisplayAllGigs() {
                               variant="outline"
                               className="bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border-amber-200 font-medium"
                             >
-                              ⚠️ Flagged
+                               Flagged
                             </Badge>
                           )}
                           {isExpiringSoon && (
@@ -268,7 +369,7 @@ function DisplayAllGigs() {
                               variant="outline"
                               className="bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200 font-medium animate-pulse"
                             >
-                              🔥 Expiring Soon
+                               Expiring Soon
                             </Badge>
                           )}
                         </div>
@@ -336,10 +437,23 @@ function DisplayAllGigs() {
 
             {/* Load More Button */}
             <div className="text-center pt-8">
-              <button className="inline-flex items-center gap-2 px-8 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium">
+              <button
+                onClick={handleRetryClick}
+                disabled={rateLimitInfo.isLimited}
+                className={`inline-flex items-center gap-2 px-8 py-3 border border-gray-200 rounded-lg transition-colors duration-200 font-medium ${
+                  rateLimitInfo.isLimited ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "hover:bg-gray-50"
+                }`}
+              >
                 <RefreshCw className="w-4 h-4" />
-                Load More Gigs
+                {rateLimitInfo.isLimited ? "Rate Limited" : "Load More Gigs"}
               </button>
+
+              {/* Rate limit text under button */}
+              {rateLimitInfo.isLimited && (
+                <p className="text-sm text-amber-600 mt-2">
+                  Please wait {rateLimitInfo.retryAfter || "a moment"} seconds before loading more
+                </p>
+              )}
             </div>
           </div>
         )}

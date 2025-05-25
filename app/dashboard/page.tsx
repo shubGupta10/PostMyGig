@@ -18,6 +18,8 @@ import {
   Eye,
   BarChart3,
   Activity,
+  ShieldAlert,
+  AlertCircle,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { useRouter } from "next/navigation"
@@ -41,37 +43,107 @@ interface DashboardProps {
   totalProjects: number
 }
 
+interface RateLimitInfo {
+  isLimited: boolean
+  retryAfter: string | null
+  message: string
+  timestamp: number
+}
+
 function Dashboard() {
   const [dashboardData, setDashboardData] = useState<DashboardProps | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo>({
+    isLimited: false,
+    retryAfter: null,
+    message: "",
+    timestamp: 0,
+  })
 
   const fetchData = async () => {
     setIsLoading(true)
+    setError(null)
+    setRateLimitInfo((prev) => ({ ...prev, isLimited: false, message: "" }))
+
     try {
       const res = await fetch("/api/dashboard/details", {
         method: "POST",
       })
+
+      if (res.status === 429) {
+        const retryAfter = res.headers.get("Retry-After") || "60"
+        const rateLimitMessage = `Rate limit exceeded. Too many requests. Please wait ${retryAfter} seconds before trying again.`
+
+        setRateLimitInfo({
+          isLimited: true,
+          retryAfter,
+          message: rateLimitMessage,
+          timestamp: Date.now(),
+        })
+
+        setError(rateLimitMessage)
+        return
+      }
+
       const data = await res.json()
       if (res.ok) {
         setDashboardData(data.dashboard)
       } else {
         console.error("Error fetching dashboard details", data)
+        setError("Failed to load dashboard. Please try again later.")
       }
     } catch (error) {
       console.error("Error fetching dashboard details", error)
+      setError("Failed to load dashboard. Please try again later.")
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleRetryClick = () => {
+    if (rateLimitInfo.isLimited) {
+      // Update the rate limit message to show user tried too early
+      setRateLimitInfo((prev) => ({
+        ...prev,
+        message: `Please wait! You're still rate limited. Try again in ${prev.retryAfter || "a few"} seconds.`,
+      }))
+      return
+    }
+    fetchData()
   }
 
   useEffect(() => {
     fetchData()
   }, [])
 
+  // Rate Limit Banner Component
+  const RateLimitBanner = () => {
+    if (!rateLimitInfo.isLimited) return null
+
+    return (
+      <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
+        <div className="flex items-start gap-3">
+          <ShieldAlert className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <h4 className="font-semibold text-amber-800 mb-1">Rate Limit Exceeded</h4>
+            <p className="text-amber-700 text-sm leading-relaxed">{rateLimitInfo.message}</p>
+            <div className="mt-2 text-xs text-amber-600">
+              <strong>Tip:</strong> To avoid rate limits, try refreshing less frequently.
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Rate Limit Banner */}
+          <RateLimitBanner />
+
           {/* Header Skeleton */}
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -116,12 +188,76 @@ function Dashboard() {
     )
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Rate Limit Banner */}
+          <RateLimitBanner />
+
+          <div className="flex flex-col items-center justify-center py-20">
+            <div
+              className={`w-20 h-20 ${rateLimitInfo.isLimited ? "bg-gradient-to-br from-amber-50 to-orange-100" : "bg-gradient-to-br from-red-50 to-rose-100"} rounded-2xl flex items-center justify-center mb-8 shadow-lg`}
+            >
+              {rateLimitInfo.isLimited ? (
+                <ShieldAlert className="w-10 h-10 text-amber-500" />
+              ) : (
+                <AlertCircle className="w-10 h-10 text-red-500" />
+              )}
+            </div>
+            <div className="text-center space-y-4 max-w-md">
+              <h3 className="text-2xl font-bold text-gray-900">
+                {rateLimitInfo.isLimited ? "Rate Limit Exceeded" : "Oops! Something went wrong"}
+              </h3>
+              <p className="text-gray-600 leading-relaxed">{error}</p>
+
+              {/* Rate Limit Details */}
+              {rateLimitInfo.isLimited && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mt-4 text-left">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-amber-700 font-medium">Status:</span>
+                      <span className="text-amber-800">Rate Limited</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700 font-medium">Retry After:</span>
+                      <span className="text-amber-800">{rateLimitInfo.retryAfter || "Unknown"} seconds</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700 font-medium">Time:</span>
+                      <span className="text-amber-800">{new Date(rateLimitInfo.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={handleRetryClick}
+              disabled={rateLimitInfo.isLimited}
+              className={`mt-8 inline-flex items-center gap-3 px-8 py-4 ${
+                rateLimitInfo.isLimited
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 transform hover:scale-105"
+              } text-white rounded-xl transition-all duration-200 shadow-xl hover:shadow-2xl font-semibold`}
+            >
+              <RefreshCw className={`w-5 h-5 ${rateLimitInfo.isLimited ? "" : ""}`} />
+              {rateLimitInfo.isLimited ? "Please Wait..." : "Try Again"}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const activeProjects = dashboardData?.projects?.filter((p) => p.status.toLowerCase() === "active").length || 0
   const expiredProjects = dashboardData?.projects?.filter((p) => p.status.toLowerCase() === "expired").length || 0
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Rate Limit Banner */}
+        <RateLimitBanner />
+
         {/* Dashboard Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6">
           <div className="space-y-4">
@@ -136,12 +272,17 @@ function Dashboard() {
           </div>
 
           <Button
-            onClick={fetchData}
+            onClick={handleRetryClick}
+            disabled={rateLimitInfo.isLimited}
             variant="outline"
-            className="flex items-center gap-2 border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 px-6 py-3 rounded-lg font-medium"
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
+              rateLimitInfo.isLimited
+                ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
+                : "border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300"
+            }`}
           >
             <RefreshCw className="h-4 w-4" />
-            Refresh Data
+            {rateLimitInfo.isLimited ? "Rate Limited" : "Refresh Data"}
           </Button>
         </div>
 
@@ -217,7 +358,6 @@ function Dashboard() {
             </CardContent>
           </Card>
         </div>
-
 
         {/* Projects Section */}
         <div className="mb-8">

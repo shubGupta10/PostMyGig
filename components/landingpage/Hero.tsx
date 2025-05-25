@@ -1,12 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 
 function Hero() {
-  const router = useRouter();
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <section id="#about" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Background SVG Pattern */}
       <div className="absolute inset-0 opacity-5">
         <svg className="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">

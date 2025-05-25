@@ -2,10 +2,23 @@ import { NextResponse, NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
-import { v4 as uuidv4 } from 'uuid';
+import ratelimiter from "@/lib/ratelimit";
 
 
 export async function POST(req: NextRequest) {
+
+    const ip = req.headers.get("x-forwarded-for") || "anonymous";
+      const { success, limit, reset, remaining } = await ratelimiter.limit(ip);
+    
+      if (!success) {
+        return NextResponse.json(
+          {
+            message: `Rate limit exceeded. Try again in ${Math.ceil((reset - Date.now()) / 1000)}s.`,
+          },
+          { status: 429 }
+        );
+      }
+      
     try {
         await ConnectoDatabase();
         const { name, email, role, password } = await req.json();
