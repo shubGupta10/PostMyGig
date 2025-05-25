@@ -3,7 +3,7 @@ import redis from './redis'
 
 const ratelimiter = new Ratelimit({
     redis,
-    limiter: Ratelimit.fixedWindow(20, '60s'),
+    limiter: Ratelimit.fixedWindow(30, '60s'),
     analytics: true,
 })
 

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProviderWrapper from "../components/SessionProviderWrapper";
@@ -70,34 +70,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SessionProviderWrapper>
-      <html lang="en">
-        <head>
-          {/* ✅ OneSignal Web Push SDK */}
-          <Script
-            src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
-            strategy="beforeInteractive"
-          />
-          <Script id="onesignal-init" strategy="beforeInteractive">
-            {`
-              window.OneSignalDeferred = window.OneSignalDeferred || [];
-              OneSignalDeferred.push(async function(OneSignal) {
-                await OneSignal.init({
-                  appId: "60f46986-617c-4477-a033-18794889a8e2",
-                });
-              });
-            `}
-          </Script>
-        </head>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <SessionProviderWrapper>
           <Navbar />
           <Suspense>{children}</Suspense>
           <Toaster />
           <Footer />
-        </body>
-      </html>
-    </SessionProviderWrapper>
+        </SessionProviderWrapper>
+      </body>
+    </html>
   );
 }
