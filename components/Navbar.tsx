@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "./ui/button"
 import {
   DropdownMenu,
@@ -19,7 +19,6 @@ import {
   User,
   Settings,
   LogOut,
-  Loader2,
   Home,
   Briefcase,
   LayoutDashboard,
@@ -31,8 +30,13 @@ import { useRouter } from "next/navigation"
 function Navbar() {
   const { data, status } = useSession()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
   const { handleLogout } = useAuthStore()
   const router = useRouter()
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -54,16 +58,55 @@ function Navbar() {
     handleLogout()
   }
 
-  if (status === "loading") {
+  if (!isClient || status === "loading") {
     return (
-      <div className="w-full h-16 flex items-center justify-center bg-white border-b border-gray-200">
-        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-      </div>
+      <nav className="w-full bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo Section Skeleton */}
+            <div className="flex items-center flex-shrink-0">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="hidden sm:block w-32 h-6 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Desktop Navigation Links Skeleton */}
+            <div className="hidden lg:flex items-center justify-center flex-1 px-8">
+              <div className="flex items-center space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="px-4 py-2 rounded-lg">
+                    <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Desktop Auth Section Skeleton */}
+            <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
+              <div className="flex items-center space-x-3 p-2 rounded-lg">
+                <div className="w-9 h-9 bg-gray-200 rounded-full animate-pulse"></div>
+                <div className="flex flex-col space-y-1">
+                  <div className="w-20 h-3 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="w-24 h-2 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+                <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Mobile Section Skeleton */}
+            <div className="flex items-center space-x-3 lg:hidden">
+              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+              <div className="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </nav>
     )
   }
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+    <nav className="w-full bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo Section */}
@@ -108,7 +151,7 @@ function Navbar() {
                     <LayoutDashboard className="w-4 h-4" />
                     <span>Dashboard</span>
                   </a>
-                </li>
+                  </li>
               )}
               <li>
                 <a
