@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
-import Script from "next/script"; // ✅ Import this
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
