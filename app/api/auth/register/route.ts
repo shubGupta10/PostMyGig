@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 import ratelimiter from "@/lib/ratelimit";
-import { resend } from "@/lib/Resend";
 
 export async function POST(req: NextRequest) {
     const ip = req.headers.get("x-forwarded-for") || "anonymous";
@@ -60,13 +59,6 @@ export async function POST(req: NextRequest) {
         };
 
         await userModel.create(newUser);
-
-        await resend.emails.send({
-            from: "PostMyGig <onboarding@resend.dev>",
-            to: email,
-            subject: "Welcome to the App!",
-            html: `<p>Hey ${name},</p><p>Thanks for signing up as a ${role}. We're excited to have you onboard!</p>`,
-        });
 
         return NextResponse.json({
             message: "User created successfully",
