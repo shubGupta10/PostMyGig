@@ -5,6 +5,7 @@ import SessionProviderWrapper from "../components/SessionProviderWrapper";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner"
+import { Suspense } from 'react'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +19,7 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://postmygig.vercel.app"), 
   title: "PostMyGig: Share & Find Freelance Projects Free",
   description: "List freelance projects, share extra work, or find gigs easily. Connect securely via WhatsApp or email. Built in India, open to all.",
   keywords: ["freelance projects", "share gigs", "find freelance work", "India freelancers", "secure connections"],
@@ -63,7 +65,9 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <Navbar />
+          <Suspense>
           {children}
+          </Suspense>
           <Toaster />
           <Footer />
         </body>
