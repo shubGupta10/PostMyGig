@@ -28,7 +28,11 @@ export async function GET(req: NextRequest) {
     }
 
     // If not cached, fetch from database
-    const gigs = await ProjectModel.find({}).sort({ createdAt: -1 }).lean();
+    const currentDate = new Date();
+    const gigs = await ProjectModel.find({
+      expiresAt: {$gt: currentDate}, //not expired
+      status: {$nin: ["accepted", "completed"]},
+    }).sort({ createdAt: -1 }).lean();
 
     // Cache the result for future requests (e.g., 1 hour = 3600 seconds)
     await redis.set(cacheKey, JSON.stringify(gigs), { ex: 3600 });

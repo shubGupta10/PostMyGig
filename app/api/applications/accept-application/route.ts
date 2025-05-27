@@ -29,7 +29,7 @@ export async function POST(req: NextRequest){
 
         //change the status of project in project model
         await ProjectModel.findByIdAndUpdate(gigId, {
-            status: "accepted"
+            status: "completed"
         }, { new: true });
 
         return NextResponse.json({
