@@ -34,7 +34,6 @@ export default function LoginPage() {
     const { id, value } = e.target
     setFormData((prev) => ({ ...prev, [id]: value }))
     setError("")
-    // Clear rate limit info when user starts typing
     if (rateLimitInfo.isLimited) {
       setRateLimitInfo((prev) => ({ ...prev, isLimited: false, message: "" }))
     }
@@ -73,9 +72,8 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        // Check if the error indicates rate limiting
         if (result.error.includes("rate") || result.error.includes("limit") || result.error.includes("429")) {
-          handleRateLimit("60") // Default to 60 seconds if no specific time is provided
+          handleRateLimit("60") 
         } else {
           setError(result.error)
         }
@@ -83,9 +81,6 @@ export default function LoginPage() {
         const response = await fetch("/api/auth/session")
         const sessionData = await response.json()
         router.push("/")
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
       }
     } catch (err) {
       console.error("Login error:", err)

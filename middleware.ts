@@ -10,10 +10,19 @@ export default withAuth(
             authorized: ({ token, req }) => {
                 const { pathname } = req.nextUrl;
 
-                const publicRoutes = ["/", "/auth/login", "/auth/register", "/view-gigs", "/api/gigs/fetch-gigs"];
-                if (publicRoutes.includes(pathname)) {
+                const publicRoutes = [
+                    "/",
+                    "/auth/login",
+                    "/auth/register",
+                    "/view-gigs",
+                    "/api/gigs/fetch-gigs",
+                    "/auth/verify-code/[userId]"
+                ];
+
+                if (publicRoutes.some(route => pathname.startsWith(route))) {
                     return true;
                 }
+
                 return !!token;
             }
         }

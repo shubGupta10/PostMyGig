@@ -1,5 +1,6 @@
+const LIVE_URL = process.env.NEXT_PUBLIC_LIVE_URL || "http://localhost:3000";
 
-export const postMyGigWelcomeTemplate = (name: string) => {
+export const postMyGigVerificationTemplate = (name: string, code: string) => {
   return `
     <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
       <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
@@ -7,24 +8,24 @@ export const postMyGigWelcomeTemplate = (name: string) => {
           👋 Welcome to <span style="color: #2563eb;">PostMyGig</span>, ${name}!
         </h1>
         <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
-          You’re one of the first to join PostMyGig, a new freelance platform built for India’s creators! 🌟<br/>
-          We’re in beta, and your feedback will shape our mission to connect freelancers and clients seamlessly. 
-          Post gigs, discover projects, or send secure pings—all for free.
+          Thanks for signing up! To verify your email and complete account creation, please use the code below:
         </p>
-        <div style="margin-top: 24px;">
-          <a href="https://postmygig.vercel.app/dashboard"
-             style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 500; font-size: 16px;">
-            Explore Your Dashboard
-          </a>
+        <div style="margin-top: 24px; padding: 16px; background-color: #f1f5f9; border-radius: 8px; text-align: center;">
+          <span style="font-size: 28px; font-weight: bold; color: #0f172a; letter-spacing: 4px;">
+            ${code}
+          </span>
         </div>
+        <p style="margin-top: 24px; font-size: 16px; color: #475569;">
+          Enter this code in the signup form to verify your email address. This code will expire in 10 minutes.
+        </p>
         <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
-          Questions? Reach out at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.<br/>
-          If you didn’t sign up, please ignore this email or contact us to opt out.
+          Didn’t request this code? You can safely ignore this email or contact us at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.
         </p>
       </div>
     </div>
   `;
 };
+
 
 
 export const postMyGigPingTemplate = ({
@@ -68,7 +69,7 @@ export const postMyGigPingTemplate = ({
           As an early beta tester, you’re shaping PostMyGig for India’s freelancers! Reply directly via email or view details in your dashboard to connect.
         </p>
         <div style="margin-top: 24px;">
-          <a href="https://postmygig.vercel.app/applications/view-applications?gigId=${gigId}"
+          <a href="${LIVE_URL}/applications/view-applications?gigId=${gigId}"
              style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 16px;">
             View Ping Details
           </a>
