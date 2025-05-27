@@ -1,6 +1,10 @@
+"use client"
+
+import { useSession } from "next-auth/react";
 import Link from "next/link"
 
 function FreelancerClient() {
+  const { data: session } = useSession();
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,7 +125,7 @@ function FreelancerClient() {
 
                 {/* CTA */}
                 <Link
-                  href="/post-project"
+                  href={ session ? `/add-gigs` : '/auth/login'}
                   className="w-full inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl group-hover:scale-105 transform"
                   aria-label="Post your skills and start sharing work"
                 >
@@ -258,7 +262,7 @@ function FreelancerClient() {
 
                 {/* CTA */}
                 <Link
-                  href="/post-project"
+                  href={ session ? `/view-gigs` : '/auth/login'}
                   className="w-full inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl group-hover:scale-105 transform"
                   aria-label="Post a project and find freelancers"
                 >

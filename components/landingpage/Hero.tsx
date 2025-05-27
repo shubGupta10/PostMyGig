@@ -1,8 +1,10 @@
 "use client"
 
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 
 function Hero() {
+  const { data: session } = useSession();
   return (
     <section id="#about" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-green-50">
       {/* Background SVG Pattern */}
@@ -43,7 +45,7 @@ function Hero() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
-                href="/auth/login"
+                href={ session ? `/view-gigs` : '/auth/login'}
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
                 aria-label="Sign up for PostMyGig with Google or X authentication"
               >

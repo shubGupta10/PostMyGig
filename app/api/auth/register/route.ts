@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 import ratelimiter from "@/lib/ratelimit";
+import { postMyGigWelcomeTemplate } from "@/lib/email/templates";
+import { EmailSender } from "@/lib/email/send";
 
 export async function POST(req: NextRequest) {
     const ip = req.headers.get("x-forwarded-for") || "anonymous";
@@ -57,6 +59,14 @@ export async function POST(req: NextRequest) {
             password: hashedPassword,
             provider: "credentials",
         };
+
+
+        //send welcome email
+        await EmailSender({
+            to: email,
+            subject: "Welcome to PostMyGig",
+            html: postMyGigWelcomeTemplate(name as string)
+        })
 
         await userModel.create(newUser);
 

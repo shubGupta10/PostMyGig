@@ -4,12 +4,14 @@ import userModel from "@/models/UserModel"
 import { ConnectoDatabase } from "@/lib/db"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/options"
+import { EmailSender } from "@/lib/email/send"
+import { postMyGigPingTemplate } from "@/lib/email/templates"
+import ProjectModel from "@/models/ProjectModel"
 
 export async function POST(req: NextRequest) {
   try {
     await ConnectoDatabase()
 
-    // Check authentication
     const session = await getServerSession(authOptions)
     if (!session || !session.user?.id) {
       return NextResponse.json(
@@ -63,6 +65,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    //fetch Project details
+    const fetchedProject = await ProjectModel.findById(projectId);
+    if(!fetchedProject) {
+      return NextResponse.json({
+        message: "Project not found",
+      }, { status: 404 })
+    }
+
     const posterEmail = poster?.email
 
     // Create the ping with optional fields
@@ -72,9 +82,30 @@ export async function POST(req: NextRequest) {
       posterId,
       posterEmail,
       message,
-      bestWorkLink: bestWorkLink || "", // Make optional
-      bestWorkDescription: bestWorkDescription || "", // Make optional
+      bestWorkLink: bestWorkLink || "",
+      bestWorkDescription: bestWorkDescription || "",
     })
+
+    //config html email
+    const emailData = postMyGigPingTemplate({
+      receiverName: poster.name || "Project Owner",
+      senderName: session.user.name || "Applicant",
+      senderEmail: userEmail,
+      gigId: ping.projectId,
+      gigTitle: fetchedProject.title || "Untitled Project",
+      message: message,
+    })
+
+    //send email
+    const emailResult = await EmailSender({
+      to: posterEmail,
+      subject: `New Application for Your Project: ${ping.projectId}`,
+      html: emailData,
+    })
+
+    if (!emailResult.success) {
+      console.error("Failed to send ping notification email:", emailResult.error);
+    }
 
     return NextResponse.json(
       {

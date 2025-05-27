@@ -14,7 +14,6 @@ export default withAuth(
                 if (publicRoutes.includes(pathname)) {
                     return true;
                 }
-                console.log("TOKEN:", token);
                 return !!token;
             }
         }
