@@ -60,6 +60,7 @@ function OpenGig() {
   const [owner, setOwner] = useState<Owner | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isPinged, setIsPinged] = useState(false);
   const router = useRouter()
 
   const params = useParams()
@@ -96,6 +97,31 @@ function OpenGig() {
       setLoading(false)
     }
   }
+
+  //check pinged status
+  useEffect(() => {
+    const handlePinged = async () => {
+      try {
+        const response = await fetch("/api/ping/check-if-pinged", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            userEmail: session?.user.email,
+            projectId: gigId,
+          })
+        })
+        const data = await response.json();
+        setIsPinged(data.pinged);
+        console.log(data);
+      } catch (error) {
+        console.error("Error checking ping status:", error);
+      }
+    }
+    handlePinged();
+  }, [gigId, session?.user.email])
+
 
   const handleDelete = async () => {
     if (!gig) return
@@ -420,15 +446,27 @@ function OpenGig() {
               ) : (
                 <>
                   {canApply ? (
-                    <button
-                      onClick={() =>
-                        router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
-                      }
-                      className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                    >
-                      <CheckCircle className="w-5 h-5" />
-                      Apply Now
-                    </button>
+                    <>
+                      {isPinged === true ? (
+                        <button
+                          disabled
+                          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gray-400 text-gray-600 rounded-xl font-bold cursor-not-allowed opacity-60"
+                        >
+                          <CheckCircle className="w-5 h-5" />
+                          Applied
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
+                          }
+                          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        >
+                          <CheckCircle className="w-5 h-5" />
+                          Apply Now
+                        </button>
+                      )}
+                    </>
                   ) : (
                     <div>
                       <button
@@ -661,15 +699,27 @@ function OpenGig() {
                   {user?.email !== gig.createdBy ? (
                     <>
                       {canApply ? (
-                        <button
-                          onClick={() =>
-                            router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
-                          }
-                          className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                        >
-                          <CheckCircle className="w-5 h-5" />
-                          Apply for this Gig
-                        </button>
+                        <>
+                          {isPinged === true ? (
+                            <button
+                              disabled
+                              className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gray-400 text-gray-600 rounded-xl font-bold cursor-not-allowed opacity-60"
+                            >
+                              <CheckCircle className="w-5 h-5" />
+                              Applied
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
+                              }
+                              className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            >
+                              <CheckCircle className="w-5 h-5" />
+                              Apply for this Gig
+                            </button>
+                          )}
+                        </>
                       ) : (
                         <div>
                           <button

@@ -376,13 +376,13 @@ function Dashboard() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="active"
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-green-500 data-[state=active]:text-white text-gray-600 font-medium"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-500 data-[state=active]:text-white text-gray-600 font-medium"
                 >
                   Active ({activeProjects})
                 </TabsTrigger>
                 <TabsTrigger
                   value="expired"
-                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-green-500 data-[state=active]:text-white text-gray-600 font-medium"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-500 data-[state=active]:text-white text-gray-600 font-medium"
                 >
                   Expired ({expiredProjects})
                 </TabsTrigger>
@@ -546,7 +546,7 @@ function EmptyState({ message = "No projects found" }: { message?: string }) {
         </p>
         <Button
           onClick={() => router.push("/add-gigs")}
-          className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+          className="bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white px-8 py-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
         >
           <Plus className="mr-2 h-5 w-5" />
           Create Your First Gig
