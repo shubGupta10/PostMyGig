@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import type React from "react"
 import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+import {toast} from 'sonner'
 
 interface FormData {
   title: string
@@ -159,17 +160,17 @@ function EditGig() {
       const data = await response.json()
 
       if (response.ok) {
-        alert("Gig updated successfully!")
+        toast.success("Gig updated successfully!")
         router.push("/view-gigs")
       } else if (response.status === 401) {
-        alert("Please login to update this gig")
+        toast.error("Please login to update this gig")
         router.push("/login")
       } else {
-        alert(data.message || "Failed to update gig")
+        toast.error(data.message || "Failed to update gig")
       }
     } catch (error) {
       console.error("Error updating gig:", error)
-      alert("An error occurred while updating the gig")
+      toast.error("An error occurred while updating the gig")
     } finally {
       setIsLoading(false)
     }

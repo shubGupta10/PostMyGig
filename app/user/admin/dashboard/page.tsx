@@ -91,7 +91,6 @@ function AdminDashboard() {
         body: JSON.stringify({ userEmail: user?.email }),
       })
       const data = await res.json()
-      console.log(data)
       setDashboardData(data.data)
     } catch (error) {
       console.error("Failed to fetch data", error)

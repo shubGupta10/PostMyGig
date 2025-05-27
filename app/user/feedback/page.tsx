@@ -21,6 +21,7 @@ import {
   Plus,
 } from "lucide-react"
 import { useSession } from "next-auth/react"
+import {toast} from 'sonner'
 
 export default function FeedbackPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -63,9 +64,10 @@ export default function FeedbackPage() {
       setSubmitted(true)
       form.reset()
       setFeedbackType("general")
+      toast.success("Feedback Submit Successfully")
     } catch (error: any) {
       console.error("Feedback submission error:", error)
-      alert(error.message || "Failed to submit feedback.")
+      toast.error(error.message || "Failed to submit feedback.")
     } finally {
       setIsLoading(false)
     }

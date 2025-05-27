@@ -460,7 +460,7 @@ function OpenGig() {
                           onClick={() =>
                             router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
                           }
-                          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                         >
                           <CheckCircle className="w-5 h-5" />
                           Apply Now
@@ -656,7 +656,7 @@ function OpenGig() {
                         <span className="text-gray-600 font-medium">Budget</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-green-600">${gig.budget}</span>
+                        <span className="text-2xl font-bold text-green-600">{gig.budget}</span>
                       </div>
                     </div>
                   )}
@@ -713,7 +713,7 @@ function OpenGig() {
                               onClick={() =>
                                 router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
                               }
-                              className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                              className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                             >
                               <CheckCircle className="w-5 h-5" />
                               Apply for this Gig

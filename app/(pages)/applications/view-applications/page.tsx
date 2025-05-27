@@ -25,6 +25,7 @@ import {
   Search,
   Download,
 } from "lucide-react"
+import {toast} from 'sonner'
 
 interface Applyer {
   _id: string
@@ -197,15 +198,15 @@ function ViewApplication() {
       })
 
       if (!response.ok) {
-        alert("Failed to accept applicant")
+        toast.error("Failed to accept applicant")
         return
       }
 
-      alert("Applicant accepted successfully")
-      await fetchApplications() // Refresh the list
+      toast.success("Applicant accepted successfully")
+      await fetchApplications()
     } catch (error) {
       console.error("Error accepting applicant:", error)
-      alert("Something went wrong")
+      toast.error("Something went wrong")
     } finally {
       setLoading(false)
     }
@@ -226,15 +227,15 @@ function ViewApplication() {
       })
 
       if (response.ok) {
-        alert("Application deleted successfully")
+        toast.success("Application deleted successfully")
         closeDialog()
-        await fetchApplications() // Refresh the list
+        await fetchApplications() 
       } else {
-        alert("Error deleting application")
+        toast.error("Error deleting application")
       }
     } catch (error) {
       console.error("Error deleting application", error)
-      alert("Something went wrong")
+      toast.error("Something went wrong")
     } finally {
       setLoading(false)
     }
@@ -262,7 +263,7 @@ function ViewApplication() {
       setContactDialogOpen(true)
     } catch (error) {
       console.error("Error contacting applicant:", error)
-      alert("Failed to contact applicant. Please try again later.")
+      toast.error("Failed to contact applicant. Please try again later.")
     }
   }
 
