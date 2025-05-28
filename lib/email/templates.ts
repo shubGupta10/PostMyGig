@@ -127,3 +127,44 @@ export const postMyGigResetPasswordTemplate = (name: string, resetUrl: string) =
     </div>
   `;
 };
+
+export const postMyGigPingRejectionTemplate = (userName: string, gigTitle: string) => {
+  return `
+    <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1 style="font-size: 24px; font-weight: 600; color: #0f172a;">
+          📩 Update on Your Ping - <span style="color: #2563eb;">PostMyGig</span>
+        </h1>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
+          Hi ${userName}, we have an update regarding your ping for the gig: <strong>"${gigTitle}"</strong>.
+        </p>
+        <div style="margin-top: 24px; padding: 16px; background-color: #fef2f2; border-left: 4px solid #ef4444; border-radius: 6px;">
+          <p style="font-size: 16px; color: #991b1b; line-height: 1.6; margin: 0; font-weight: 500;">
+            Unfortunately, the gig poster has decided to move forward with other candidates for this opportunity.
+          </p>
+        </div>
+        <p style="margin-top: 24px; font-size: 16px; color: #334155; line-height: 1.6;">
+          We know this isn't the news you were hoping for, but don't let it discourage you! There are many other exciting opportunities waiting for you on PostMyGig.
+        </p>
+        <div style="margin-top: 24px;">
+          <a href="${LIVE_URL}/view-gigs"
+             style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 16px;">
+            Explore More Gigs
+          </a>
+        </div>
+        <div style="margin-top: 24px; padding: 16px; background-color: #f0f9ff; border-left: 4px solid #0ea5e9; border-radius: 6px;">
+          <p style="font-size: 14px; color: #0c4a6e; margin: 0; line-height: 1.5;">
+            💡 <strong>Pro Tip:</strong> Keep refining your profile and ping messages. The right opportunity is just around the corner!
+          </p>
+        </div>
+        <p style="margin-top: 24px; font-size: 14px; color: #475569; line-height: 1.6;">
+          As part of our beta community, your feedback helps us improve PostMyGig for India's freelancers. Follow us on X at <a href="https://x.com/i_m_shubham45" style="color: #2563eb;">@i_m_shubham45</a> for updates and tips!
+        </p>
+        <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
+          Questions or need support? We're here to help at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.<br />
+          This is an automated notification from PostMyGig.
+        </p>
+      </div>
+    </div>
+  `;
+};
