@@ -86,3 +86,44 @@ export const postMyGigPingTemplate = ({
   `;
 };
 
+
+export const postMyGigResetPasswordTemplate = (name: string, resetUrl: string) => {
+  return `
+    <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1 style="font-size: 24px; font-weight: 600; color: #0f172a;">
+          🔒 Password Reset Request - <span style="color: #2563eb;">PostMyGig</span>
+        </h1>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
+          Hi ${name}, we received a request to reset your password for your PostMyGig account.
+        </p>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
+          Click the button below to create a new password. This link will expire in 15 minutes for security reasons.
+        </p>
+        <div style="margin-top: 24px; text-align: center;">
+          <a href="${resetUrl}" 
+             style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+            Reset Your Password
+          </a>
+        </div>
+        <p style="margin-top: 24px; font-size: 14px; color: #475569; line-height: 1.6;">
+          If the button doesn't work, you can also copy and paste this link into your browser:
+        </p>
+        <div style="margin-top: 8px; padding: 12px; background-color: #f1f5f9; border-radius: 6px; word-break: break-all;">
+          <span style="font-size: 14px; color: #334155;">
+            ${resetUrl}
+          </span>
+        </div>
+        <div style="margin-top: 24px; padding: 16px; background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px;">
+          <p style="font-size: 14px; color: #92400e; margin: 0; font-weight: 500;">
+            ⚠️ Security Notice: If you didn't request this password reset, please ignore this email or contact us immediately.
+          </p>
+        </div>
+        <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
+          Need help? Contact us at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.<br />
+          This is an automated email from PostMyGig. Please do not reply to this email.
+        </p>
+      </div>
+    </div>
+  `;
+};
