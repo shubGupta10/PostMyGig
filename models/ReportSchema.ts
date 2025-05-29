@@ -4,6 +4,7 @@ export interface Report extends Document {
   reportedBy: mongoose.Types.ObjectId;
   reportedUser?: mongoose.Types.ObjectId;
   reportedProject?: mongoose.Types.ObjectId;
+  reportedTimes: number;
   reason: string;
   details?: string;
   status: 'pending' | 'reviewed' | 'resolved';
@@ -27,6 +28,9 @@ const reportSchema = new Schema<Report>(
       type: Schema.Types.ObjectId,
       ref: 'Project',
       required: false,
+    },
+    reportedTimes: {
+      type: Number
     },
     reason: {
       type: String,
