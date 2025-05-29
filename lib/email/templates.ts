@@ -168,3 +168,64 @@ export const postMyGigPingRejectionTemplate = (userName: string, gigTitle: strin
     </div>
   `;
 };
+
+export const postMyGigChatInvitationTemplate = ({
+  applyerName,
+  posterName,
+  projectId,
+  projectName,
+}: {
+  applyerName: string;
+  posterName: string;
+  projectId: string;
+  projectName: string;
+}) => {
+  return `
+    <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1 style="font-size: 24px; font-weight: 600; color: #0f172a;">
+          💬 You've Been Invited to Chat on <span style="color: #2563eb;">PostMyGig</span>!
+        </h1>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
+          Hi ${applyerName}, <strong>${posterName}</strong> has invited you to chat about the project: <strong>"${projectName}"</strong>.
+        </p>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155;">
+          This is a great opportunity to connect and discuss the details. Click the button below to join the chat.
+        </p>
+
+        <p style="margin-top: 24px; font-size: 16px; color: #334155;">
+          Your Project ID: <strong>${projectId}</strong><br/>
+          Please copy this Project ID and click on the chat link below. When prompted, paste the Project ID to join the room and begin the conversation.
+        </p>
+
+        <!-- Better email-compatible button -->
+        <div style="margin-top: 24px; text-align: center;">
+          <table style="margin: 0 auto;" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td style="background-color: #2563eb; border-radius: 8px; padding: 0;">
+                <a href="${LIVE_URL}/chat?projectId=${projectId}" 
+                   style="display: block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 16px; border: none; cursor: pointer;"
+                   target="_blank">
+                  Join Chat
+                </a>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Fallback link for better compatibility -->
+        <p style="margin-top: 16px; text-align: center; font-size: 14px; color: #64748b;">
+          Can't see the button? <a href="${LIVE_URL}/chat?projectId=${projectId}" style="color: #2563eb; text-decoration: underline;" target="_blank">Click here to join the chat</a>
+        </p>
+
+        <p style="margin-top: 24px; font-size: 14px; color: #475569;">
+          Be professional and courteous during your chat—your communication represents your work!
+        </p>
+
+        <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
+          Need help? Contact us at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.
+        </p>
+      </div>
+    </div>
+  `;
+};

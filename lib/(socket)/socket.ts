@@ -1,12 +1,25 @@
 import { io, Socket } from 'socket.io-client';
 
 /**
- * Interface for sending messages to a specific room
+ * Interface for initializing user on socket connection
  */
-interface MessageData {
-  roomId: string;
+interface InitUserData {
+  userId: string;
+}
+
+/**
+ * Interface for joining a private room
+ */
+interface JoinRoomData {
+  targetUserId: string;
+}
+
+/**
+ * Interface for sending private messages
+ */
+interface SendMessageData {
+  targetUserId: string;
   message: string;
-  sender: string;
 }
 
 /**
@@ -27,24 +40,22 @@ interface SocketConfig {
 
 /**
  * Internal state for the socket service
- * This replaces the class instance variables
  */
 interface SocketState {
   socket: Socket | null;
   serverUrl: string;
+  currentUserId: string | null;
 }
 
 // Private state object - acts as our "singleton" state
 let socketState: SocketState = {
   socket: null,
-  serverUrl: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
+  serverUrl: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000',
+  currentUserId: null
 };
 
 /**
  * Initializes the socket service with custom configuration
- * Call this before using other socket functions if you need custom settings
- * 
- * @param config - Configuration options for the socket service
  */
 export const initializeSocket = (config: SocketConfig = {}): void => {
   const newServerUrl = config.serverUrl || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
@@ -66,10 +77,6 @@ export const initializeSocket = (config: SocketConfig = {}): void => {
 
 /**
  * Establishes connection to the Socket.IO server
- * Returns a Promise that resolves when connection is successful
- * 
- * @returns Promise<Socket> - Resolves with the connected socket instance
- * @throws Error if connection fails
  */
 export const connectSocket = (): Promise<Socket> => {
   return new Promise((resolve, reject) => {
@@ -114,13 +121,98 @@ export const connectSocket = (): Promise<Socket> => {
     // Handle successful reconnection
     socketState.socket.on('reconnect', () => {
       console.log('✅ Reconnected to server');
+      // Re-initialize user if we have a userId stored
+      if (socketState.currentUserId) {
+        initUser(socketState.currentUserId);
+      }
     });
   });
 };
 
 /**
+ * Initialize user on the socket connection
+ */
+export const initUser = (userId: string): void => {
+  if (!socketState.socket?.connected) {
+    throw new Error('Socket not connected. Call connectSocket() first.');
+  }
+  
+  socketState.currentUserId = userId;
+  console.log(`👤 Initializing user: ${userId}`);
+  socketState.socket.emit('init_user', userId);
+};
+
+/**
+ * Joins a private room with target user
+ */
+export const joinPrivateRoom = (targetUserId: string): void => {
+  if (!socketState.socket?.connected) {
+    throw new Error('Socket not connected. Call connectSocket() first.');
+  }
+  
+  if (!socketState.currentUserId) {
+    throw new Error('User not initialized. Call initUser() first.');
+  }
+  
+  console.log(`🏠 Joining private room with user: ${targetUserId}`);
+  socketState.socket.emit('join_room', { targetUserId });
+};
+
+/**
+ * Sends a private message to target user
+ */
+export const sendPrivateMessage = (targetUserId: string, message: string): void => {
+  if (!socketState.socket?.connected) {
+    throw new Error('Socket not connected. Call connectSocket() first.');
+  }
+  
+  if (!socketState.currentUserId) {
+    throw new Error('User not initialized. Call initUser() first.');
+  }
+  
+  console.log(`📤 Sending private message to ${targetUserId}:`, message);
+  socketState.socket.emit('send_message', { targetUserId, message });
+};
+
+/**
+ * Sets up listener for incoming private messages
+ */
+export const onReceiveMessage = (callback: (data: ReceiveMessageData) => void): void => {
+  if (!socketState.socket) {
+    throw new Error('Socket not connected. Call connectSocket() first.');
+  }
+  
+  console.log('👂 Setting up private message listener');
+  socketState.socket.on('receive_message', (data: ReceiveMessageData) => {
+    console.log(`📥 Received private message from ${data.sender}:`, data.message);
+    callback(data);
+  });
+};
+
+/**
+ * Sets up listener for connection events
+ */
+export const onConnect = (callback: () => void): void => {
+  if (!socketState.socket) {
+    throw new Error('Socket not connected. Call connectSocket() first.');
+  }
+  
+  socketState.socket.on('connect', callback);
+};
+
+/**
+ * Sets up listener for disconnection events
+ */
+export const onDisconnect = (callback: () => void): void => {
+  if (!socketState.socket) {
+    throw new Error('Socket not connected. Call connectSocket() first.');
+  }
+  
+  socketState.socket.on('disconnect', callback);
+};
+
+/**
  * Gracefully disconnects from the Socket.IO server
- * Cleans up all event listeners and resets internal state
  */
 export const disconnectSocket = (): void => {
   if (socketState.socket) {
@@ -134,6 +226,7 @@ export const disconnectSocket = (): void => {
     
     // Reset internal state
     socketState.socket = null;
+    socketState.currentUserId = null;
     
     console.log('✅ Socket disconnected successfully');
   } else {
@@ -142,89 +235,7 @@ export const disconnectSocket = (): void => {
 };
 
 /**
- * Joins a specific chat room
- * Must be called after successful connection
- * 
- * @param roomId - Unique identifier for the room to join
- * @throws Error if socket is not connected
- */
-export const joinRoom = (roomId: string): void => {
-  if (!socketState.socket?.connected) {
-    throw new Error('Socket not connected. Call connectSocket() first.');
-  }
-  
-  console.log(`🏠 Joining room: ${roomId}`);
-  socketState.socket.emit('join_room', roomId);
-};
-
-/**
- * Sends a message to a specific room
- * All users in the room will receive this message
- * 
- * @param messageData - Object containing room ID, message content, and sender info
- * @throws Error if socket is not connected
- */
-export const sendMessage = (messageData: MessageData): void => {
-  if (!socketState.socket?.connected) {
-    throw new Error('Socket not connected. Call connectSocket() first.');
-  }
-  
-  console.log(`📤 Sending message to room ${messageData.roomId}:`, messageData.message);
-  socketState.socket.emit('send_message', messageData);
-};
-
-/**
- * Sets up listener for incoming messages from other users
- * The callback will be triggered whenever a message is received
- * 
- * @param callback - Function to handle received messages
- * @throws Error if socket is not connected
- */
-export const onReceiveMessage = (callback: (data: ReceiveMessageData) => void): void => {
-  if (!socketState.socket) {
-    throw new Error('Socket not connected. Call connectSocket() first.');
-  }
-  
-  console.log('👂 Setting up message listener');
-  socketState.socket.on('receive_message', (data: ReceiveMessageData) => {
-    console.log(`📥 Received message from ${data.sender}:`, data.message);
-    callback(data);
-  });
-};
-
-/**
- * Sets up listener for connection events
- * Useful for updating UI when connection is established
- * 
- * @param callback - Function to call when connected
- * @throws Error if socket is not connected
- */
-export const onConnect = (callback: () => void): void => {
-  if (!socketState.socket) {
-    throw new Error('Socket not connected. Call connectSocket() first.');
-  }
-  
-  socketState.socket.on('connect', callback);
-};
-
-/**
- * Sets up listener for disconnection events
- * Useful for updating UI when connection is lost
- * 
- * @param callback - Function to call when disconnected
- * @throws Error if socket is not connected
- */
-export const onDisconnect = (callback: () => void): void => {
-  if (!socketState.socket) {
-    throw new Error('Socket not connected. Call connectSocket() first.');
-  }
-  
-  socketState.socket.on('disconnect', callback);
-};
-
-/**
  * Removes the message listener to prevent memory leaks
- * Call this when component unmounts or when you no longer need to listen for messages
  */
 export const offReceiveMessage = (): void => {
   if (socketState.socket) {
@@ -253,8 +264,6 @@ export const offDisconnect = (): void => {
 
 /**
  * Checks if the socket is currently connected to the server
- * 
- * @returns boolean - True if connected, false otherwise
  */
 export const isConnected = (): boolean => {
   const connected = socketState.socket?.connected || false;
@@ -264,17 +273,20 @@ export const isConnected = (): boolean => {
 
 /**
  * Returns the current socket instance
- * Useful for advanced operations not covered by this service
- * 
- * @returns Socket | null - The socket instance or null if not connected
  */
 export const getSocket = (): Socket | null => {
   return socketState.socket;
 };
 
 /**
+ * Returns the current user ID
+ */
+export const getCurrentUserId = (): string | null => {
+  return socketState.currentUserId;
+};
+
+/**
  * Utility function to clean up all listeners at once
- * Useful when component unmounts or app shuts down
  */
 export const cleanupListeners = (): void => {
   console.log('🧹 Cleaning up all socket listeners');
@@ -284,4 +296,10 @@ export const cleanupListeners = (): void => {
 };
 
 // Export types for use in other files
-export type { MessageData, ReceiveMessageData, SocketConfig };
+export type { 
+  InitUserData, 
+  JoinRoomData, 
+  SendMessageData, 
+  ReceiveMessageData, 
+  SocketConfig 
+};

@@ -23,6 +23,7 @@ import {
   Search,
   Shield,
   AlertTriangle,
+  Contact2,
 } from "lucide-react"
 import { toast } from "sonner"
 import { useSession } from "next-auth/react"
@@ -513,6 +514,7 @@ function ViewApplication() {
                               View
                             </Button>
                             {applicant.status?.toLowerCase() === "accepted" && (
+                              <>
                               <Button
                                 size="sm"
                                 onClick={() => handleContactApplicant(applicant.applicant.email)}
@@ -521,6 +523,16 @@ function ViewApplication() {
                                 <User2 className="w-4 h-4 mr-1" />
                                 Contact
                               </Button>
+
+                              <Button
+                                size="sm"
+                                onClick={() => window.location.href=`/chat/?projectId=${applicant.projectId}`}
+                                className="bg-gradient-to-r from-green-500 to-green-500 hover:from-green-600 hover:to-green-600 text-white font-medium shadow-lg"
+                              >
+                                <Contact2 className="w-4 h-4 mr-1" />
+                                Chat With User
+                              </Button>
+                              </>
                             )}
                             <Button
                               onClick={() => handleAccept(applicant._id, applicant.applicant.email)}
