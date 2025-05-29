@@ -37,7 +37,7 @@ interface SocketState {
 // Private state object - acts as our "singleton" state
 let socketState: SocketState = {
   socket: null,
-  serverUrl: process.env.BACKEND_URL || 'http://localhost:5000'
+  serverUrl: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
 };
 
 /**
@@ -47,7 +47,7 @@ let socketState: SocketState = {
  * @param config - Configuration options for the socket service
  */
 export const initializeSocket = (config: SocketConfig = {}): void => {
-  const newServerUrl = config.serverUrl || process.env.BACKEND_URL || 'http://localhost:3001';
+  const newServerUrl = config.serverUrl || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
   
   // If socket is already connected and URL hasn't changed, keep existing connection
   if (socketState.socket?.connected && socketState.serverUrl === newServerUrl) {
