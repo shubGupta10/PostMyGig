@@ -121,9 +121,15 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
 
         const data: UserData = await response.json()
         setUserData(data)
+        console.log("User data", data);
+        
 
         const posterId = data.posterData._id
+        console.log("Poster data",posterId);
+        
         const applyerId = data.applyerData._id
+        console.log("Applyer data", applyerId);
+        
 
         setPosterUserId(posterId)
         setApplyerUserId(applyerId)

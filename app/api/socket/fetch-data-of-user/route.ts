@@ -5,7 +5,7 @@ import PingModel from "@/models/PingSchema";
 import ProjectModel from "@/models/ProjectModel";
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigChatInvitationTemplate } from "@/lib/email/templates";
-import redis from "@/lib/redis";  // Upstash redis client import
+import redis from "@/lib/redis"; 
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,11 +43,15 @@ export async function POST(req: NextRequest) {
     }
 
     const redisKey = `invite_sent:${projectId}:${applyerEmail}`;
-
-    // Check if invite was already sent recently
     const alreadySent = await redis.get(redisKey);
+
     if (alreadySent) {
-      return NextResponse.json({ message: "Invitation already sent recently" }, { status: 200 });
+      // Return full data even if invitation already sent
+      return NextResponse.json({
+        message: "Invitation already sent recently",
+        posterData,
+        applyerData,
+      }, { status: 200 });
     }
 
     // Send email
@@ -62,7 +66,6 @@ export async function POST(req: NextRequest) {
       }),
     });
 
-    // Set key with expiry of 24 hours (86400 seconds)
     await redis.set(redisKey, "true", { ex: 600 });
 
     return NextResponse.json({
