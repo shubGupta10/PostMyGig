@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef, type JSX } from "react"
 import { Send, MessageCircle, Loader, AlertCircle, ChevronDown } from "lucide-react"
+import { toast } from "sonner"
 import {
   connectSocket,
   initUser,
@@ -151,8 +151,8 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
 
         await initializeSocketConnection(currentUserId, targetUserId)
       } catch (err) {
-        console.error("Error fetching user data:", err)
         setError(err instanceof Error ? err.message : "Failed to initialize chat")
+        toast.error("Failed to initialize chat")
       } finally {
         setIsLoading(false)
       }
@@ -166,11 +166,14 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
   const initializeSocketConnection = async (userId: string, targetId: string) => {
     try {
       setIsConnecting(true)
+      toast.loading("Connecting to chat...", { id: "chat-connection" })
 
       await connectSocket()
       initUser(userId)
       joinPrivateRoom(targetId)
       setIsConnected(true)
+
+      toast.success("Connected to chat", { id: "chat-connection" })
 
       onReceiveMessage((data: ReceiveMessageData) => {
         setMessages((prev) => [
@@ -182,16 +185,17 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
             isOwn: false,
           },
         ])
+        toast.success("New message received")
       })
 
       onDisconnect(() => {
         setIsConnected(false)
-        console.log("Disconnected from server")
+        toast.error("Disconnected from chat server")
       })
     } catch (error) {
-      console.error("Failed to connect:", error)
       setError("Failed to connect to chat server")
       setIsConnected(false)
+      toast.error("Failed to connect to chat server", { id: "chat-connection" })
     } finally {
       setIsConnecting(false)
     }
@@ -224,8 +228,8 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
       sendPrivateMessage(targetUserId, message.trim())
       setMessage("")
     } catch (error) {
-      console.error("Failed to send message:", error)
       setError("Failed to send message")
+      toast.error("Failed to send message")
     }
   }
 
@@ -276,13 +280,18 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
 
   if (status === "loading" || isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200 text-center max-w-md w-full">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Loader className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-10 border border-gray-200 text-center max-w-lg w-full">
+          <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+            <Loader className="w-10 h-10 animate-spin text-blue-600" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-3">Initializing Chat</h2>
-          <p className="text-slate-600">Setting up your private conversation...</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">Initializing Chat</h2>
+          <p className="text-gray-600 text-lg leading-relaxed">Setting up your private conversation...</p>
+          <div className="mt-6 flex justify-center space-x-1">
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+          </div>
         </div>
       </div>
     )
@@ -290,16 +299,16 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
 
   if (status === "unauthenticated" || !session?.user?.id) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-red-200 text-center max-w-md w-full">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="w-8 h-8 text-red-600" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-10 border border-red-200 text-center max-w-lg w-full">
+          <div className="w-20 h-20 bg-red-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+            <AlertCircle className="w-10 h-10 text-red-600" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-3">Unauthorized Access</h2>
-          <p className="text-slate-600 mb-6">You need to be logged in to access this chat.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">Unauthorized Access</h2>
+          <p className="text-gray-600 mb-8 text-lg leading-relaxed">You need to be logged in to access this chat.</p>
           <button
             onClick={() => router.push("/auth/login")}
-            className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors font-medium"
+            className="px-8 py-4 bg-blue-500 text-white rounded-2xl hover:bg-blue-600 transition-all duration-200 font-bold text-lg shadow-lg hover:scale-105 active:scale-95"
           >
             Go to Login
           </button>
@@ -310,16 +319,16 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-red-200 text-center max-w-md w-full">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="w-8 h-8 text-red-600" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl shadow-2xl p-10 border border-red-200 text-center max-w-lg w-full">
+          <div className="w-20 h-20 bg-red-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+            <AlertCircle className="w-10 h-10 text-red-600" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800 mb-3">Chat Error</h2>
-          <p className="text-slate-600 mb-6">{error}</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">Chat Error</h2>
+          <p className="text-gray-600 mb-8 text-lg leading-relaxed">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium"
+            className="px-8 py-4 bg-red-500 text-white rounded-2xl hover:bg-red-600 transition-all duration-200 font-bold text-lg shadow-lg hover:scale-105 active:scale-95"
           >
             Retry Connection
           </button>
@@ -332,54 +341,58 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
   const partnerColors = getPartnerColors()
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 flex items-center justify-center">
-      <div className="w-full max-w-4xl h-screen max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-2xl shadow-xl overflow-hidden">
-        {/* Header */}
-        <div className={`bg-white border-b-2 ${roleColors.border} p-4`}>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-5xl mx-auto h-screen max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+        {/* Enhanced Header */}
+        <div className={`bg-white border-b ${roleColors.border} p-6 backdrop-blur-sm`}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 ${roleColors.bg} rounded-full flex items-center justify-center shadow-md`}>
-                <MessageCircle className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-4">
+              <div className={`w-14 h-14 ${roleColors.bg} rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white`}>
+                <MessageCircle className="w-7 h-7 text-white" />
               </div>
-              <div>
-                <h2 className="text-lg font-bold text-slate-800">{chatPartnerName}</h2>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className={`w-2 h-2 rounded-full ${getConnectionDot()}`}></div>
-                  <span className={`font-medium ${getConnectionStatus().color}`}>{getConnectionStatus().text}</span>
-                  <span className="text-slate-400">•</span>
-                  <span className={`font-medium ${roleColors.text} capitalize`}>{currentUserRole}</span>
+              <div className="flex flex-col">
+                <h2 className="text-xl font-bold text-gray-900 tracking-tight">{chatPartnerName}</h2>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className={`w-3 h-3 rounded-full ${getConnectionDot()} animate-pulse`}></div>
+                  <span className={`font-semibold ${getConnectionStatus().color}`}>{getConnectionStatus().text}</span>
+                  <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+                  <span className={`font-medium ${roleColors.text} capitalize px-2 py-1 rounded-md bg-gray-100`}>{currentUserRole}</span>
                 </div>
               </div>
             </div>
-            <div className={`px-3 py-1 ${roleColors.light} ${roleColors.border} border rounded-full`}>
-              <span className={`text-xs font-medium ${roleColors.text}`}>Project Chat</span>
+            <div className={`px-4 py-2 ${roleColors.light} ${roleColors.border} border-2 rounded-2xl shadow-sm`}>
+              <span className={`text-sm font-bold ${roleColors.text} tracking-wide`}>PROJECT CHAT</span>
             </div>
           </div>
         </div>
 
-        {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 bg-slate-50 relative" ref={messagesContainerRef}>
-          <div className="space-y-3">
+        {/* Enhanced Messages Area */}
+        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white relative" ref={messagesContainerRef}>
+          <div className="space-y-4">
             {messages.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="w-8 h-8 text-slate-400" />
+              <div className="text-center py-16">
+                <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                  <MessageCircle className="w-10 h-10 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-slate-700 mb-2">Start Your Conversation</h3>
-                <p className="text-slate-500 text-sm">Begin chatting with {chatPartnerName} about your project</p>
+                <h3 className="text-xl font-bold text-gray-700 mb-3">Start Your Conversation</h3>
+                <p className="text-gray-500 text-base max-w-md mx-auto leading-relaxed">
+                  Begin discussing your project with <span className="font-semibold text-gray-700">{chatPartnerName}</span>
+                </p>
               </div>
             ) : (
               messages.map((msg: Message, index: number) => (
-                <div key={index} className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}>
-                  <div
-                    className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-sm ${
-                      msg.isOwn
-                        ? `${roleColors.bg} text-white`
-                        : `${partnerColors.bg} ${partnerColors.text} border ${partnerColors.border}`
-                    }`}
-                  >
-                    <div className="break-words">{msg.message}</div>
-                    <div className={`text-xs mt-1 ${msg.isOwn ? "text-white/70" : "text-slate-500"}`}>
+                <div key={index} className={`flex ${msg.isOwn ? "justify-end" : "justify-start"} mb-4`}>
+                  <div className={`flex flex-col ${msg.isOwn ? "items-end" : "items-start"} max-w-sm lg:max-w-md`}>
+                    <div
+                      className={`px-5 py-4 rounded-3xl shadow-md transition-all duration-200 hover:shadow-lg ${
+                        msg.isOwn
+                          ? `${roleColors.bg} text-white rounded-br-lg`
+                          : `${partnerColors.bg} ${partnerColors.text} border-2 ${partnerColors.border} rounded-bl-lg`
+                      }`}
+                    >
+                      <div className="break-words leading-relaxed font-medium">{msg.message}</div>
+                    </div>
+                    <div className={`text-xs mt-2 px-2 font-medium ${msg.isOwn ? "text-gray-500" : "text-gray-400"}`}>
                       {msg.timestamp}
                     </div>
                   </div>
@@ -389,37 +402,49 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Scroll to Bottom Button */}
+          {/* Enhanced Scroll Button */}
           {showScrollButton && (
             <button
               onClick={scrollToBottom}
-              className={`fixed bottom-24 right-8 w-12 h-12 ${roleColors.bg} ${roleColors.hover} text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 z-10`}
+              className={`fixed bottom-32 right-8 w-14 h-14 ${roleColors.bg} ${roleColors.hover} text-white rounded-2xl shadow-xl flex items-center justify-center transition-all duration-300 z-10 hover:scale-110 ring-4 ring-white`}
             >
-              <ChevronDown className="w-5 h-5" />
+              <ChevronDown className="w-6 h-6" />
             </button>
           )}
         </div>
 
-        {/* Message Input */}
-        <div className={`bg-white border-t-2 ${roleColors.border} p-4`}>
-          <div className="flex gap-3">
-            <input
-              type="text"
-              value={message}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder={`Message ${chatPartnerName}...`}
-              disabled={!isConnected || isConnecting || isLoading}
-              className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:bg-slate-50 text-slate-800 placeholder-slate-400"
-            />
+        {/* Enhanced Input Area */}
+        <div className={`bg-white border-t-2 ${roleColors.border} p-6 backdrop-blur-sm`}>
+          <div className="flex gap-4 items-end">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={message}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder={`Message ${chatPartnerName}...`}
+                disabled={!isConnected || isConnecting || isLoading}
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 disabled:opacity-50 disabled:bg-gray-50 text-gray-800 placeholder-gray-500 font-medium text-base transition-all duration-200 shadow-sm"
+              />
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                <div className={`w-2 h-2 rounded-full ${getConnectionDot()}`}></div>
+              </div>
+            </div>
             <button
               onClick={sendMessage}
               disabled={!isConnected || !message.trim() || isConnecting || isLoading}
-              className={`px-5 py-3 ${roleColors.bg} ${roleColors.hover} text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md font-medium`}
+              className={`px-6 py-4 ${roleColors.bg} ${roleColors.hover} text-white rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg font-bold text-base hover:scale-105 active:scale-95`}
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5" />
               <span className="hidden sm:inline">Send</span>
             </button>
+          </div>
+          
+          {/* Typing Indicator Area */}
+          <div className="mt-3 h-4 flex items-center">
+            <div className={`text-xs ${roleColors.text} font-medium opacity-0`}>
+              {chatPartnerName} is typing...
+            </div>
           </div>
         </div>
       </div>

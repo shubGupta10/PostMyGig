@@ -5,6 +5,7 @@ import PingModel from "@/models/PingSchema";
 import ProjectModel from "@/models/ProjectModel";
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigChatInvitationTemplate } from "@/lib/email/templates";
+import redis from "@/lib/redis";  // Upstash redis client import
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,15 +17,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Project ID is required" }, { status: 400 });
     }
 
-    // Fetch project details
     const projectData = await ProjectModel.findById(projectId).lean();
     if (!projectData) {
       return NextResponse.json({ message: "Project not found" }, { status: 404 });
     }
 
-    const projectName = projectData.title;
-
-    // Get ping info to determine poster and applicant
     const pingData = await PingModel.findOne({ projectId }).lean();
     if (!pingData) {
       return NextResponse.json({ message: "Ping not found" }, { status: 404 });
@@ -32,7 +29,6 @@ export async function POST(req: NextRequest) {
 
     const { posterEmail, userEmail: applyerEmail } = pingData;
 
-    // Fetch user data but exclude password and sensitive fields
     const [posterData, applyerData] = await Promise.all([
       userModel.findOne({ email: posterEmail }).select("name email").lean(),
       userModel.findOne({ email: applyerEmail }).select("name email").lean(),
@@ -46,7 +42,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Applicant not found" }, { status: 404 });
     }
 
-    // Send email to the applicant
+    const redisKey = `invite_sent:${projectId}:${applyerEmail}`;
+
+    // Check if invite was already sent recently
+    const alreadySent = await redis.get(redisKey);
+    if (alreadySent) {
+      return NextResponse.json({ message: "Invitation already sent recently" }, { status: 200 });
+    }
+
+    // Send email
     await EmailSender({
       to: applyerData.email,
       subject: "You've been invited to chat about a project",
@@ -54,14 +58,17 @@ export async function POST(req: NextRequest) {
         applyerName: applyerData.name,
         posterName: posterData.name,
         projectId,
-        projectName,
+        projectName: projectData.title,
       }),
     });
 
+    // Set key with expiry of 24 hours (86400 seconds)
+    await redis.set(redisKey, "true", { ex: 600 });
+
     return NextResponse.json({
       message: "Invitation sent successfully",
-      posterData: posterData,
-      applyerData: applyerData,
+      posterData,
+      applyerData,
     }, { status: 200 });
 
   } catch (error) {
