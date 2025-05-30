@@ -229,3 +229,36 @@ export const postMyGigChatInvitationTemplate = ({
     </div>
   `;
 };
+
+export const postMyGigApplicationAcceptedTemplate = (
+  name: string,
+  gigTitle: string
+) => {
+  return `
+    <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1 style="font-size: 24px; font-weight: 600; color: #0f172a;">
+          🎉 Great news, ${name}!
+        </h1>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
+          Your application for the gig <strong>“${gigTitle}”</strong> has been <span style="color: #22c55e; font-weight: 600;">accepted</span>!
+        </p>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155;">
+          The client is excited to connect with you. You can now discuss project details, expectations, and timelines directly.
+        </p>
+        <div style="margin-top: 24px; text-align: center;">
+          <a href="${LIVE_URL}/applications/view-applications"
+             style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+            View Your Application
+          </a>
+        </div>
+        <p style="margin-top: 24px; font-size: 14px; color: #475569;">
+          Keep an eye on your inbox for updates and next steps. Thank you for being part of <strong>PostMyGig</strong> – India’s freelance revolution!
+        </p>
+        <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
+          Have questions or need help? Reach us at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.
+        </p>
+      </div>
+    </div>
+  `;
+};

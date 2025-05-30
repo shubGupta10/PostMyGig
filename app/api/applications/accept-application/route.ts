@@ -2,6 +2,9 @@ import { NextResponse, NextRequest } from "next/server";
 import PingModel from "@/models/PingSchema";
 import ProjectModel from "@/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
+import { EmailSender } from "@/lib/email/send";
+import { postMyGigApplicationAcceptedTemplate } from "@/lib/email/templates";
+import userModel from "@/models/UserModel";
 
 //accept application
 export async function POST(req: NextRequest){
@@ -31,6 +34,24 @@ export async function POST(req: NextRequest){
         await ProjectModel.findByIdAndUpdate(gigId, {
             status: "completed"
         }, { new: true });
+
+        //find freelancerName
+        const freelancerWeSearchingFor = await userModel.findOne({email: applicantEmail});
+        if (!freelancerWeSearchingFor) {
+            return NextResponse.json({ error: "Freelancer not found" }, { status: 404 });
+        }
+        //fetch gigTitle
+        const fetchGigTitle = await ProjectModel.findById(gigId);
+
+        //send mail for application accepted
+        await EmailSender({
+            to: applicantEmail,
+            subject: "You Application got selected",
+            html: postMyGigApplicationAcceptedTemplate(
+                freelancerWeSearchingFor.name,
+                fetchGigTitle?.title as string,
+            )
+        })
 
         return NextResponse.json({
             message: "Application accepted successfully",
