@@ -2,6 +2,8 @@ import { NextResponse, NextRequest } from "next/server";
 import ProjectModel from "@/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
+import Chat from "@/models/ChatSchema";
+import userModel from "@/models/UserModel";
 
 export async function DELETE(req: NextRequest) {
     try {
@@ -34,6 +36,16 @@ export async function DELETE(req: NextRequest) {
         }
 
         await redis.del(cacheKey);
+
+        //fetch user first
+        const userData = await userModel.findOne({
+            email: gig.createdBy
+        })
+
+        //set to delete the gig
+        await Chat.deleteMany({
+            senderId: userData?.id
+        })
 
         return NextResponse.json({
             message: "Gig deleted and cache invalidated"

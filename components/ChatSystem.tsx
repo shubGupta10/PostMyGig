@@ -10,13 +10,16 @@ import {
   joinPrivateRoom,
   sendPrivateMessage,
   onReceiveMessage,
+  onChatHistory,
   onDisconnect,
   offReceiveMessage,
+  offChatHistory,
   offDisconnect,
   disconnectSocket,
   isConnected as socketIsConnected,
   getCurrentUserId,
   type ReceiveMessageData,
+  type ChatHistoryData,
 } from "@/lib/(socket)/socket"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -68,6 +71,7 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
   const [currentUserRole, setCurrentUserRole] = useState<"poster" | "applyer" | "">("")
   const [chatPartnerName, setChatPartnerName] = useState<string>("")
   const [showScrollButton, setShowScrollButton] = useState<boolean>(false)
+  const [historyLoaded, setHistoryLoaded] = useState<boolean>(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -121,15 +125,13 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
 
         const data: UserData = await response.json()
         setUserData(data)
-        console.log("User data", data);
-        
+        console.log("User data", data)
 
         const posterId = data.posterData._id
-        console.log("Poster data",posterId);
-        
+        console.log("Poster data", posterId)
+
         const applyerId = data.applyerData._id
-        console.log("Applyer data", applyerId);
-        
+        console.log("Applyer data", applyerId)
 
         setPosterUserId(posterId)
         setApplyerUserId(applyerId)
@@ -181,6 +183,24 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
 
       toast.success("Connected to chat", { id: "chat-connection" })
 
+      // Handle chat history
+      onChatHistory((historyData: ChatHistoryData[]) => {
+        const formattedMessages: Message[] = historyData.map((chat) => ({
+          message: chat.message,
+          sender: chat.senderId,
+          timestamp: new Date(chat.timeStamp).toLocaleTimeString(),
+          isOwn: chat.senderId === userId,
+        }))
+
+        setMessages(formattedMessages)
+        setHistoryLoaded(true)
+
+        // Scroll to bottom after loading history
+        setTimeout(() => {
+          scrollToBottom()
+        }, 100)
+      })
+
       onReceiveMessage((data: ReceiveMessageData) => {
         setMessages((prev) => [
           ...prev,
@@ -210,34 +230,60 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
   useEffect(() => {
     return () => {
       offReceiveMessage()
+      offChatHistory()
       offDisconnect()
       disconnectSocket()
     }
   }, [])
 
-  const sendMessage = (): void => {
-    if (!socketIsConnected() || !message.trim() || !posterUserId || !applyerUserId) return
+const sendMessage = (): void => {
+  if (!socketIsConnected() || !message.trim() || !posterUserId || !applyerUserId) return
 
-    const currentUserId = getCurrentUserId()
-    const targetUserId = currentUserId === posterUserId ? applyerUserId : posterUserId
+  const currentUserId = getCurrentUserId()
+  const targetUserId = currentUserId === posterUserId ? applyerUserId : posterUserId
 
-    const messageData: Message = {
-      message: message.trim(),
-      sender: currentUserId || "",
-      timestamp: new Date().toLocaleTimeString(),
-      isOwn: true,
-    }
+  // Determine sender and receiver data based on current user role
+  let senderName: string, senderEmail: string, receiverName: string, receiverEmail: string
 
-    setMessages((prev) => [...prev, messageData])
-
-    try {
-      sendPrivateMessage(targetUserId, message.trim())
-      setMessage("")
-    } catch (error) {
-      setError("Failed to send message")
-      toast.error("Failed to send message")
-    }
+  if (currentUserRole === "poster") {
+    // Current user is poster, so they are sender
+    senderName = userData?.posterData.name as string
+    senderEmail = userData?.posterData.email as string
+    receiverName = userData?.applyerData.name as string
+    receiverEmail = userData?.applyerData.email as string
+  } else {
+    // Current user is applyer, so they are sender
+    senderName = userData?.applyerData.name as string
+    senderEmail = userData?.applyerData.email as string
+    receiverName = userData?.posterData.name as string
+    receiverEmail = userData?.posterData.email as string
   }
+
+  const messageData: Message = {
+    message: message.trim(),
+    sender: currentUserId || "",
+    timestamp: new Date().toLocaleTimeString(),
+    isOwn: true,
+  }
+
+  setMessages((prev) => [...prev, messageData])
+
+  try {
+    sendPrivateMessage(
+      targetUserId, 
+      message.trim(), 
+      projectId, 
+      senderName,    // Current user's name
+      senderEmail,   // Current user's email
+      receiverName,  // Target user's name
+      receiverEmail  // Target user's email
+    )
+    setMessage("")
+  } catch (error) {
+    setError("Failed to send message")
+    toast.error("Failed to send message")
+  }
+}
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter") {
@@ -295,8 +341,8 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
           <p className="text-gray-600 text-lg leading-relaxed">Setting up your private conversation...</p>
           <div className="mt-6 flex justify-center space-x-1">
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
           </div>
         </div>
       </div>
@@ -353,7 +399,9 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
         <div className={`bg-white border-b ${roleColors.border} p-6 backdrop-blur-sm`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className={`w-14 h-14 ${roleColors.bg} rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white`}>
+              <div
+                className={`w-14 h-14 ${roleColors.bg} rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white`}
+              >
                 <MessageCircle className="w-7 h-7 text-white" />
               </div>
               <div className="flex flex-col">
@@ -362,7 +410,9 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
                   <div className={`w-3 h-3 rounded-full ${getConnectionDot()} animate-pulse`}></div>
                   <span className={`font-semibold ${getConnectionStatus().color}`}>{getConnectionStatus().text}</span>
                   <div className="w-1 h-1 rounded-full bg-gray-300"></div>
-                  <span className={`font-medium ${roleColors.text} capitalize px-2 py-1 rounded-md bg-gray-100`}>{currentUserRole}</span>
+                  <span className={`font-medium ${roleColors.text} capitalize px-2 py-1 rounded-md bg-gray-100`}>
+                    {currentUserRole}
+                  </span>
                 </div>
               </div>
             </div>
@@ -373,16 +423,23 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
         </div>
 
         {/* Enhanced Messages Area */}
-        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white relative" ref={messagesContainerRef}>
+        <div
+          className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white relative"
+          ref={messagesContainerRef}
+        >
           <div className="space-y-4">
             {messages.length === 0 ? (
               <div className="text-center py-16">
                 <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                   <MessageCircle className="w-10 h-10 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-3">Start Your Conversation</h3>
+                <h3 className="text-xl font-bold text-gray-700 mb-3">
+                  {historyLoaded ? "No Messages Yet" : "Loading Chat History..."}
+                </h3>
                 <p className="text-gray-500 text-base max-w-md mx-auto leading-relaxed">
-                  Begin discussing your project with <span className="font-semibold text-gray-700">{chatPartnerName}</span>
+                  {historyLoaded
+                    ? `Begin discussing your project with ${chatPartnerName}`
+                    : "Fetching your conversation history..."}
                 </p>
               </div>
             ) : (
@@ -445,12 +502,10 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
               <span className="hidden sm:inline">Send</span>
             </button>
           </div>
-          
+
           {/* Typing Indicator Area */}
           <div className="mt-3 h-4 flex items-center">
-            <div className={`text-xs ${roleColors.text} font-medium opacity-0`}>
-              {chatPartnerName} is typing...
-            </div>
+            <div className={`text-xs ${roleColors.text} font-medium opacity-0`}>{chatPartnerName} is typing...</div>
           </div>
         </div>
       </div>

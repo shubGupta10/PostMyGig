@@ -25,6 +25,7 @@ import {
   MessageSquare,
   Shield,
   User2Icon,
+  MessageCircleCodeIcon,
 } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
@@ -226,6 +227,11 @@ function Navbar() {
                    <DropdownMenuItem onClick={() => router.push("/user-gigs")} className="cursor-pointer">
                     <User2Icon className="mr-2 h-4 w-4" />
                     Your Gigs
+                  </DropdownMenuItem>
+
+                     <DropdownMenuItem onClick={() => router.push("/chat-history")} className="cursor-pointer">
+                    <MessageCircleCodeIcon className="mr-2 h-4 w-4" />
+                    Your Chats
                   </DropdownMenuItem>
 
                   {data?.user?.role === 'admin' ? (

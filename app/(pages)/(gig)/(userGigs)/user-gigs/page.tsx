@@ -201,8 +201,8 @@ function UserGigs() {
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-12">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">My Projects</h1>
-                    <p className="text-lg text-gray-600">Manage and track your project listings</p>
+                    <h1 className="text-4xl font-bold text-gray-800 mb-4">Your Gigs</h1>
+                    <p className="text-lg text-gray-600">Manage and track your own published gigs and applied gigs</p>
                     <div className="mt-6 bg-white rounded-lg p-4 shadow-sm border border-gray-100">
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-700">
