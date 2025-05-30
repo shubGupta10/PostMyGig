@@ -125,13 +125,15 @@ function ProblemSolving() {
                     </div>
                   </div>
 
+                  
                   {/* Solution Description */}
                   <div className="text-center space-y-4">
                     <h3 className="text-2xl font-bold text-gray-900">The Solution</h3>
                     <p className="text-lg text-gray-700 leading-relaxed">
-                      PostMyGig lets you list projects, share extra work, or find gigs effortlessly. Connect directly
-                      via WhatsApp or email, with your privacy protected.
+                      PostMyGig lets you list projects, share extra work, or find gigs effortlessly. Connect directly through our real-time chat system, or reach out via email, WhatsApp, or any contact method the freelancer has provided.
                     </p>
+
+
                   </div>
 
                   {/* Solution Points */}
