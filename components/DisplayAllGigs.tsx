@@ -333,7 +333,7 @@ function DisplayAllGigs() {
                 Be the first to discover new opportunities! Check back soon or create your own gig to get started.
               </p>
               <button
-                onClick={() => router.push("/post-project")}
+                onClick={() => router.push("/add-gigs")}
                 className="mt-8 inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all duration-200 font-semibold text-lg shadow-xl hover:shadow-2xl"
               >
                 <Briefcase className="w-5 h-5" />

@@ -24,6 +24,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   Shield,
+  User2Icon,
 } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
@@ -220,6 +221,11 @@ function Navbar() {
                   <DropdownMenuItem onClick={() => router.push("/user/profile")} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     Profile
+                  </DropdownMenuItem>
+
+                   <DropdownMenuItem onClick={() => router.push("/user-gigs")} className="cursor-pointer">
+                    <User2Icon className="mr-2 h-4 w-4" />
+                    Your Gigs
                   </DropdownMenuItem>
 
                   {data?.user?.role === 'admin' ? (
