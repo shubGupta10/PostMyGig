@@ -299,6 +299,14 @@ function Navbar() {
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleNavigation("/user-gigs")} className="cursor-pointer">
+                    <User2Icon className="mr-2 h-4 w-4" />
+                    Your Gigs
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleNavigation("/chat-history")} className="cursor-pointer">
+                    <MessageCircleCodeIcon className="mr-2 h-4 w-4" />
+                    Your Chats
+                  </DropdownMenuItem>
                   {/* Add Admin Dashboard to mobile dropdown */}
                   {data?.user?.role === 'admin' && (
                     <DropdownMenuItem className="cursor-pointer" onClick={() => handleNavigation("/user/admin/dashboard")}>
@@ -306,10 +314,6 @@ function Navbar() {
                       Admin Dashboard
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleMobileLogout}
@@ -335,7 +339,7 @@ function Navbar() {
 
         {/* Mobile Navigation Menu */}
         <div
-          className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${isMobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${isMobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
             }`}
         >
           <div className="py-4 border-t border-gray-100">
@@ -359,17 +363,37 @@ function Navbar() {
                 </button>
               </li>
               {status === "authenticated" && (
-                <li>
-                  <button
-                    className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
-                    onClick={() => handleNavigation("/dashboard")}
-                  >
-                    <LayoutDashboard className="w-5 h-5" />
-                    <span>Dashboard</span>
-                  </button>
-                </li>
+                <>
+                  <li>
+                    <button
+                      className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      onClick={() => handleNavigation("/dashboard")}
+                    >
+                      <LayoutDashboard className="w-5 h-5" />
+                      <span>Dashboard</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      onClick={() => handleNavigation("/user-gigs")}
+                    >
+                      <User2Icon className="w-5 h-5" />
+                      <span>Your Gigs</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      onClick={() => handleNavigation("/chat-history")}
+                    >
+                      <MessageCircleCodeIcon className="w-5 h-5" />
+                      <span>Your Chats</span>
+                    </button>
+                  </li>
+                </>
               )}
-              {/* Add Admin Dashboard to mobile menu */}
+              {/* Add Admin Dashboard to mobile menu with same protection logic */}
               {status === "authenticated" && data?.user?.role === 'admin' && (
                 <li>
                   <button
