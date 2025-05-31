@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,17 +32,17 @@ export const metadata: Metadata = {
     "secure connections",
   ],
   authors: [
-    { name: "Shubham Kumar Gupta", url: "https://x.com/your-username" },
+    { name: "Shubham Kumar Gupta", url: "https://x.com/i_m_shubham45" },
   ],
   openGraph: {
     title: "PostMyGig: Share & Find Freelance Projects Free",
     description:
       "Post or find freelance projects with ease. Secure WhatsApp/email connections. Built in India for everyone.",
-    url: "https://www.postmygig.vercel.app",
+    url: "https://postmygig.vercel.app",
     siteName: "PostMyGig",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "PostMyGig freelance project platform",
@@ -71,11 +72,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://cloud.umami.is/script.js"
+          data-website-id="ba1af766-a1bd-4d64-8c20-66cddf7ac5e5"
+          strategy="lazyOnload"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProviderWrapper>
           <Navbar />
+          <Analytics />
           <Suspense>{children}</Suspense>
           <Toaster />
           <Footer />
