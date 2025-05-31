@@ -119,7 +119,7 @@ function Navbar() {
               <div className="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                 <Image src='/AppIcon.png' alt="App Icon" width={100} height={100} />
               </div>
-              <span className="text-xl font-bold group-hover:text-blue-600 transition-colors duration-200 hidden sm:block text-blue-600">
+              <span className="text-xl font-bold group-hover:text-blue-600 transition-colors duration-200 text-blue-600">
                 PostMy<span className="text-emerald-600">Gig</span>
               </span>
             </div>
@@ -398,12 +398,12 @@ function Navbar() {
                 <Button
                   variant="outline"
                   className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 py-3 rounded-lg font-medium transition-all duration-200"
-                  onClick={() => handleNavigation("/auth/signin")}
+                  onClick={() => handleNavigation("/auth/login")}
                 >
                   Sign In
                 </Button>
                 <Button
-                  className="w-full bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white py-3 rounded-lg font-medium transition-all duration-200 shadow-sm"
+                  className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white py-3 rounded-lg font-medium transition-all duration-200 shadow-sm"
                   onClick={() => handleNavigation("/view-gigs")}
                 >
                   Get Started

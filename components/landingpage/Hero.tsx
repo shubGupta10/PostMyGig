@@ -45,7 +45,7 @@ function Hero() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
-                href={ session ? `/view-gigs` : '/auth/login'}
+                href={session ? `/view-gigs` : '/auth/login'}
                 className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
                 aria-label="Sign up for PostMyGig with Google or X authentication"
               >
@@ -61,38 +61,41 @@ function Hero() {
             </div>
 
             {/* Additional Trust Elements */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-500">
-              <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+            <div className="flex flex-row items-center justify-center lg:justify-start gap-2 xs:gap-3 sm:gap-4 md:gap-6 lg:gap-8 text-xs xs:text-sm sm:text-base text-gray-500 overflow-x-auto scrollbar-hide">
+              <div className="flex items-center space-x-1.5 xs:space-x-2 sm:space-x-3 flex-shrink-0">
+                <svg className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>No platform fees</span>
+                <span className="whitespace-nowrap font-medium text-xs xs:text-sm sm:text-base">No platform fees</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+
+              <div className="flex items-center space-x-1.5 xs:space-x-2 sm:space-x-3 flex-shrink-0">
+                <svg className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>WhatsApp integration</span>
+                <span className="whitespace-nowrap font-medium text-xs xs:text-sm sm:text-base">WhatsApp integration</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+
+              <div className="flex items-center space-x-1.5 xs:space-x-2 sm:space-x-3 flex-shrink-0">
+                <svg className="w-3.5 h-3.5 xs:w-4 xs:h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>Safe connections</span>
+                <span className="whitespace-nowrap font-medium text-xs xs:text-sm sm:text-base">Safe connections</span>
               </div>
             </div>
+
           </div>
 
           {/* Visual Section */}
