@@ -49,13 +49,6 @@ function FreelancerClient() {
                       </div>
                     </div>
 
-                    {/* Code elements floating */}
-                    <div className="absolute -top-2 -right-2 bg-white rounded-lg p-2 shadow-lg">
-                      <div className="text-xs font-mono text-gray-700">{"<code/>"}</div>
-                    </div>
-                    <div className="absolute top-8 -left-8 bg-green-100 rounded-lg p-2 shadow-lg">
-                      <div className="text-xs font-medium text-green-700">React</div>
-                    </div>
                   </div>
                 </div>
 
@@ -183,16 +176,6 @@ function FreelancerClient() {
                       </div>
                     </div>
 
-                    {/* Project elements */}
-                    <div className="absolute -top-8 -left-4 bg-white rounded-lg p-2 shadow-lg">
-                      <div className="text-xs font-medium text-gray-700">New Project</div>
-                    </div>
-                    <div className="absolute -bottom-6 -right-4 bg-green-100 rounded-lg p-2 shadow-lg">
-                      <div className="text-xs font-medium text-green-700">Hiring</div>
-                    </div>
-                    <div className="absolute top-6 -right-8 bg-blue-100 rounded-lg p-2 shadow-lg">
-                      <div className="text-xs font-medium text-blue-700">Fast</div>
-                    </div>
                   </div>
                 </div>
 
