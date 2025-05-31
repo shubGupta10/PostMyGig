@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import ratelimiter from "@/lib/ratelimit";
 import redis from "@/lib/redis";
+import { ConnectoDatabase } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
     
@@ -20,6 +21,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    await ConnectoDatabase();
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

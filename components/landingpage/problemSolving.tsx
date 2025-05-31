@@ -59,13 +59,13 @@ export default function ProblemSolving() {
                   ].map((point, index) => (
                     <motion.div
                       key={index}
-                      className="flex items-start sm:items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-50 rounded-lg"
+                      className="flex items-center justify-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-50 rounded-lg"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.8 + index * 0.2 }}
                     >
-                      <div className="text-base sm:text-lg md:text-xl lg:text-2xl flex-shrink-0 mt-0.5 sm:mt-0">{point.icon}</div>
-                      <span className="text-xs sm:text-sm lg:text-base text-gray-700 font-medium leading-relaxed">
+                      <div className="text-base sm:text-lg md:text-xl lg:text-2xl flex-shrink-0">{point.icon}</div>
+                      <span className="text-xs sm:text-sm lg:text-base text-gray-700 font-medium leading-relaxed text-center">
                         {point.text}
                       </span>
                     </motion.div>
@@ -98,9 +98,8 @@ export default function ProblemSolving() {
                 <div className="text-center space-y-2 sm:space-y-3 md:space-y-4">
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">The Solution</h3>
                   <p className="text-sm sm:text-base lg:text-lg text-gray-700 leading-relaxed px-2">
-                    PostMyGig lets you list projects, share extra work, or find gigs effortlessly. Connect directly
-                    through our real-time chat system, or reach out via email, WhatsApp, or any contact method the
-                    freelancer has provided.
+                    PostMyGig lets you list work, share tasks, or find gigs. Contact others directly using chat, email,
+                    WhatsApp, or any contact method the freelancer has added.
                   </p>
                 </div>
 
@@ -113,13 +112,13 @@ export default function ProblemSolving() {
                   ].map((point, index) => (
                     <motion.div
                       key={index}
-                      className="flex items-start sm:items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-green-50 rounded-lg"
+                      className="flex items-center justify-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-green-50 rounded-lg"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.8 + index * 0.2 }}
                     >
-                      <div className="text-base sm:text-lg md:text-xl lg:text-2xl flex-shrink-0 mt-0.5 sm:mt-0">{point.icon}</div>
-                      <span className="text-xs sm:text-sm lg:text-base text-gray-700 font-medium leading-relaxed">
+                      <div className="text-base sm:text-lg md:text-xl lg:text-2xl flex-shrink-0">{point.icon}</div>
+                      <span className="text-xs sm:text-sm lg:text-base text-gray-700 font-medium leading-relaxed text-center">
                         {point.text}
                       </span>
                     </motion.div>
@@ -160,9 +159,11 @@ export default function ProblemSolving() {
                   "Overwhelming workload with no relief",
                   "Time wasted on inefficient sharing",
                 ].map((item, index) => (
-                  <div key={index} className="flex items-start space-x-3 text-left">
-                    <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 mt-1.5"></div>
-                    <span className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">{item}</span>
+                  <div key={index} className="flex items-center justify-center space-x-3">
+                    <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></div>
+                    <span className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed text-center">
+                      {item}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -185,9 +186,11 @@ export default function ProblemSolving() {
                   "Reduce workload by sharing excess projects",
                   "Instant connections with right talent",
                 ].map((item, index) => (
-                  <div key={index} className="flex items-start space-x-3 text-left">
-                    <CheckIcon className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm md:text-base text-gray-700 font-medium leading-relaxed">{item}</span>
+                  <div key={index} className="flex items-center justify-center space-x-3">
+                    <CheckIcon className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm md:text-base text-gray-700 font-medium leading-relaxed text-center">
+                      {item}
+                    </span>
                   </div>
                 ))}
               </div>
