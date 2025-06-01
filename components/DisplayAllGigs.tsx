@@ -554,7 +554,7 @@ function DisplayAllGigs() {
             </div>
 
             {/* Load More Button */}
-            <div className="text-center pt-10">
+            {/* <div className="text-center pt-10">
               <button
                 onClick={handleRetryClick}
                 disabled={rateLimitInfo.isLimited}
@@ -575,7 +575,7 @@ function DisplayAllGigs() {
                   </p>
                 </div>
               )}
-            </div>
+            </div> */}
           </div>
         )}
       </div>

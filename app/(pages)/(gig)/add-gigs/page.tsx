@@ -210,7 +210,7 @@ function AddGigs() {
         router.push("/view-gigs")
       } else if (response.status === 401) {
         toast.error("Please login to create a gig")
-        router.push("/login")
+        router.push("/auth/login")
       } else {
         alert(data.message || "Failed to create gig")
       }
