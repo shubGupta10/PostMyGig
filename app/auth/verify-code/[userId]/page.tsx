@@ -167,38 +167,38 @@ function VerifyCode() {
 
     if (success) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-                <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 text-center">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mb-6 shadow-lg">
-                        <CheckCircle className="h-10 w-10 text-white" />
+            <div className="min-h-screen bg-background flex items-center justify-center p-4">
+                <div className="w-full max-w-md bg-card rounded-3xl shadow-2xl p-8 text-center border border-border">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-full mb-6 shadow-lg">
+                        <CheckCircle className="h-10 w-10 text-primary-foreground" />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900 mb-3">Email Verified! ✨</h1>
-                    <p className="text-gray-600 mb-6">Your account has been successfully verified. Redirecting you to login...</p>
-                    <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <h1 className="text-2xl font-bold text-foreground mb-3">Email Verified! ✨</h1>
+                    <p className="text-muted-foreground mb-6">Your account has been successfully verified. Redirecting you to login...</p>
+                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
+            <div className="w-full max-w-lg bg-card rounded-3xl shadow-2xl overflow-hidden border border-border">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-6 text-white">
+                <div className="bg-primary px-8 py-6 text-primary-foreground">
                     <button
                         onClick={() => router.back()}
-                        className="flex items-center gap-2 text-white/80 hover:text-white transition-colors duration-200 mb-4"
+                        className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground transition-colors duration-200 mb-4"
                     >
                         <ArrowLeft className="w-4 h-4" />
                         Back
                     </button>
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                            <Mail className="w-6 h-6 text-white" />
+                        <div className="w-12 h-12 bg-primary-foreground/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <Mail className="w-6 h-6 text-primary-foreground" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold">Verify Your Email</h1>
-                            <p className="text-emerald-100">Enter the 6-digit code we sent you</p>
+                            <p className="text-primary-foreground/80">Enter the 6-digit code we sent you</p>
                         </div>
                     </div>
                 </div>
@@ -206,18 +206,18 @@ function VerifyCode() {
                 {/* Content */}
                 <div className="p-8">
                     {/* Timer */}
-                    <div className="flex items-center justify-center gap-2 mb-6 p-3 bg-gray-50 rounded-xl">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm text-gray-600">
-                            Code expires in: <span className="font-mono font-semibold text-orange-600">{formatTime(timeLeft)}</span>
+                    <div className="flex items-center justify-center gap-2 mb-6 p-3 bg-muted rounded-xl">
+                        <Clock className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                            Code expires in: <span className="font-mono font-semibold text-accent-foreground">{formatTime(timeLeft)}</span>
                         </span>
                     </div>
 
                     {/* Error Alert */}
                     {error && (
-                        <Alert variant="destructive" className="mb-6 border-red-200 bg-red-50 animate-in fade-in-50 duration-300 rounded-xl">
-                            <AlertCircle className="h-5 w-5 text-red-600" />
-                            <AlertDescription className="text-red-800 ml-2 font-medium">
+                        <Alert variant="destructive" className="mb-6 border-destructive/20 bg-destructive/10 animate-in fade-in-50 duration-300 rounded-xl">
+                            <AlertCircle className="h-5 w-5 text-destructive" />
+                            <AlertDescription className="text-destructive ml-2 font-medium">
                                 {error}
                             </AlertDescription>
                         </Alert>
@@ -225,7 +225,7 @@ function VerifyCode() {
 
                     {/* Instructions */}
                     <div className="text-center mb-8">
-                        <p className="text-gray-600 leading-relaxed">
+                        <p className="text-muted-foreground leading-relaxed">
                             We've sent a verification code to your email address.
                             Please enter it below to complete your registration.
                         </p>
@@ -241,7 +241,7 @@ function VerifyCode() {
                                 value={digit}
                                 onChange={(e) => handleInputChange(index, e.target.value)}
                                 onKeyDown={(e) => handleKeyDown(index, e)}
-                                className="w-14 h-14 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-emerald-500 focus:outline-none transition-all duration-200 disabled:bg-gray-50 disabled:cursor-not-allowed"
+                                className="w-14 h-14 text-center text-2xl font-bold border-2 border-border rounded-xl focus:border-ring focus:ring-ring focus:outline-none transition-all duration-200 disabled:bg-muted disabled:cursor-not-allowed bg-background text-foreground"
                                 maxLength={1}
                                 disabled={isLoading}
                                 autoComplete="off"
@@ -252,12 +252,12 @@ function VerifyCode() {
                     {/* Manual Verify Button */}
                     <Button
                         onClick={() => handleVerify()}
-                        className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
+                        className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
                         disabled={isLoading || verifyCode.some(digit => digit === '')}
                     >
                         {isLoading ? (
                             <div className="flex items-center gap-3">
-                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
                                 Verifying...
                             </div>
                         ) : (
@@ -270,16 +270,16 @@ function VerifyCode() {
 
                     {/* Resend Code */}
                     <div className="text-center">
-                        <p className="text-gray-600 mb-3">Didn't receive the code?</p>
+                        <p className="text-muted-foreground mb-3">Didn't receive the code?</p>
                         <Button
                             onClick={handleResendCode}
                             variant="outline"
-                            className="border-2 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 text-gray-700 font-semibold px-6 py-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="border-2 border-border hover:border-primary/30 hover:bg-primary/5 text-foreground font-semibold px-6 py-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={isResending || resendCooldown > 0 || timeLeft === 0}
                         >
                             {isResending ? (
                                 <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                                    <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin"></div>
                                     Sending...
                                 </div>
                             ) : resendCooldown > 0 ? (
@@ -297,14 +297,14 @@ function VerifyCode() {
                     </div>
 
                     {/* Help Text */}
-                    <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                    <div className="mt-8 p-4 bg-accent/20 border border-accent/30 rounded-xl">
                         <div className="flex gap-3">
-                            <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <span className="text-white text-xs font-bold">?</span>
+                            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <span className="text-primary-foreground text-xs font-bold">?</span>
                             </div>
-                            <div className="text-sm text-blue-800">
+                            <div className="text-sm text-accent-foreground">
                                 <p className="font-semibold mb-1">Having trouble?</p>
-                                <ul className="space-y-1 text-blue-700">
+                                <ul className="space-y-1 text-accent-foreground/80">
                                     <li>• Check your spam/junk folder</li>
                                     <li>• Make sure you entered the correct email</li>
                                     <li>• The code expires after 10 minutes</li>

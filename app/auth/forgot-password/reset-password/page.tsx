@@ -97,20 +97,20 @@ function ResetPassword() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <div className="bg-card rounded-2xl shadow-xl p-8 border border-border">
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <div className="mx-auto w-16 h-16 bg-gradient-to-r from-green-500 to-green-500 rounded-full flex items-center justify-center mb-4">
-                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-2xl font-bold text-foreground mb-2">
                             Create New Password
                         </h1>
-                        <p className="text-gray-600 text-sm leading-relaxed">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                             Enter your new password below. Make sure it's secure and easy to remember.
                         </p>
                     </div>
@@ -119,7 +119,7 @@ function ResetPassword() {
                     <div className="space-y-6">
                         {/* New Password Field */}
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
                                 New Password
                             </label>
                             <div className="relative">
@@ -130,13 +130,13 @@ function ResetPassword() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     onKeyPress={handleKeyPress}
-                                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                    className="w-full px-4 py-3 pr-12 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition-colors bg-input text-foreground"
                                     disabled={isLoading}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                 >
                                     {showPassword ? (
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,14 +150,14 @@ function ResetPassword() {
                                     )}
                                 </button>
                             </div>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 Password must be at least 6 characters long
                             </p>
                         </div>
 
                         {/* Confirm Password Field */}
                         <div>
-                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
                                 Confirm New Password
                             </label>
                             <div className="relative">
@@ -168,13 +168,13 @@ function ResetPassword() {
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     onKeyPress={handleKeyPress}
-                                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                                    className="w-full px-4 py-3 pr-12 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition-colors bg-input text-foreground"
                                     disabled={isLoading}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                 >
                                     {showConfirmPassword ? (
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,8 +194,8 @@ function ResetPassword() {
                         {message && (
                             <div className={`p-4 rounded-lg border ${
                                 messageType === 'success' 
-                                    ? 'bg-green-50 border-green-200 text-green-800'
-                                    : 'bg-red-50 border-red-200 text-red-800'
+                                    ? 'bg-secondary border-secondary text-secondary-foreground'
+                                    : 'bg-destructive/10 border-destructive text-destructive'
                             }`}>
                                 <div className="flex items-center">
                                     {messageType === 'success' ? (
@@ -216,11 +216,11 @@ function ResetPassword() {
                         <button
                             onClick={handleResetPassword}
                             disabled={isLoading || !password || !confirmPassword || !token}
-                            className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                            className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
                         >
                             {isLoading ? (
                                 <>
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
@@ -236,7 +236,7 @@ function ResetPassword() {
 
                 {/* Footer */}
                 <div className="text-center mt-6">
-                    <p className="text-gray-500 text-xs">
+                    <p className="text-muted-foreground text-xs">
                         Make sure to use a strong password that you haven't used before.
                     </p>
                 </div>

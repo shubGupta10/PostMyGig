@@ -223,14 +223,14 @@ function AddGigs() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
         <div className="mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
-            Post Your <span className="text-blue-600">Gig</span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4">
+            Post Your <span className="text-primary">Gig</span>
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl">
             Share your project details and connect with talented freelancers
           </p>
         </div>
@@ -238,16 +238,16 @@ function AddGigs() {
         <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10">
           {/* Project Information */}
           <div className="space-y-4 sm:space-y-6">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-secondary rounded-lg flex items-center justify-center">
+                <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 text-secondary-foreground" />
               </div>
               Project Information
             </h3>
 
             {/* Title */}
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-sm sm:text-base font-semibold text-gray-700">
+              <Label htmlFor="title" className="text-sm sm:text-base font-semibold text-foreground">
                 Gig Title
               </Label>
               <Input
@@ -257,12 +257,12 @@ function AddGigs() {
                 placeholder="e.g., Full Stack Developer for E-commerce Website"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={`text-sm sm:text-base py-2 sm:py-3 ${
-                  errors.title ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-blue-500"
+                className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground placeholder:text-muted-foreground ${
+                  errors.title ? "border-destructive focus:border-destructive" : "focus:border-primary"
                 }`}
               />
               {errors.title && (
-                <div className="flex items-center gap-2 text-red-600">
+                <div className="flex items-center gap-2 text-destructive">
                   <AlertCircle className="w-4 h-4" />
                   <p className="text-sm">{errors.title}</p>
                 </div>
@@ -271,7 +271,7 @@ function AddGigs() {
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm sm:text-base font-semibold text-gray-700">
+              <Label htmlFor="description" className="text-sm sm:text-base font-semibold text-foreground">
                 Project Description
               </Label>
               <Textarea
@@ -281,12 +281,12 @@ function AddGigs() {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={4}
-                className={`text-sm sm:text-base resize-none ${
-                  errors.description ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-blue-500"
+                className={`text-sm sm:text-base resize-none bg-input border-border text-foreground placeholder:text-muted-foreground ${
+                  errors.description ? "border-destructive focus:border-destructive" : "focus:border-primary"
                 }`}
               />
               {errors.description && (
-                <div className="flex items-center gap-2 text-red-600">
+                <div className="flex items-center gap-2 text-destructive">
                   <AlertCircle className="w-4 h-4" />
                   <p className="text-sm">{errors.description}</p>
                 </div>
@@ -295,7 +295,7 @@ function AddGigs() {
 
             {/* Skills */}
             <div className="space-y-2">
-              <Label htmlFor="skillsRequired" className="text-sm sm:text-base font-semibold text-gray-700">
+              <Label htmlFor="skillsRequired" className="text-sm sm:text-base font-semibold text-foreground">
                 Skills Required
               </Label>
               <Input
@@ -305,20 +305,20 @@ function AddGigs() {
                 placeholder="react, nextjs, nodejs, mongodb"
                 value={formData.skillsRequired}
                 onChange={handleInputChange}
-                className={`text-sm sm:text-base py-2 sm:py-3 ${
+                className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground placeholder:text-muted-foreground ${
                   errors.skillsRequired
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-gray-300 focus:border-blue-500"
+                    ? "border-destructive focus:border-destructive"
+                    : "focus:border-primary"
                 }`}
               />
-              <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                <p className="text-xs sm:text-sm text-blue-700">
+              <div className="bg-accent rounded-lg p-3 border border-accent-foreground/20">
+                <p className="text-xs sm:text-sm text-accent-foreground">
                   Separate skills with commas:{" "}
-                  <code className="bg-white px-2 py-1 rounded text-xs sm:text-sm">react, nextjs, nodejs</code>
+                  <code className="bg-card px-2 py-1 rounded text-xs sm:text-sm text-card-foreground">react, nextjs, nodejs</code>
                 </p>
               </div>
               {errors.skillsRequired && (
-                <div className="flex items-center gap-2 text-red-600">
+                <div className="flex items-center gap-2 text-destructive">
                   <AlertCircle className="w-4 h-4" />
                   <p className="text-sm">{errors.skillsRequired}</p>
                 </div>
@@ -327,22 +327,22 @@ function AddGigs() {
           </div>
 
           {/* Contact Information */}
-          <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8 border-t border-gray-200">
+          <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8 border-t border-border">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+              <h3 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-secondary rounded-lg flex items-center justify-center">
+                  <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-secondary-foreground" />
                 </div>
                 Contact Information
               </h3>
-              <div className="flex items-center gap-3 bg-gray-50 rounded-lg px-3 sm:px-4 py-2">
+              <div className="flex items-center gap-3 bg-muted rounded-lg px-3 sm:px-4 py-2">
                 <div className="flex items-center gap-2">
                   {formData.displayContactLinks ? (
-                    <Eye className="w-4 h-4 text-green-600" />
+                    <Eye className="w-4 h-4 text-primary" />
                   ) : (
-                    <EyeOff className="w-4 h-4 text-gray-500" />
+                    <EyeOff className="w-4 h-4 text-muted-foreground" />
                   )}
-                  <span className="text-xs sm:text-sm font-medium text-gray-700">
+                  <span className="text-xs sm:text-sm font-medium text-muted-foreground">
                     {formData.displayContactLinks ? "Public" : "Private"}
                   </span>
                 </div>
@@ -350,8 +350,8 @@ function AddGigs() {
               </div>
             </div>
 
-            <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
-              <p className="text-xs sm:text-sm text-amber-700">
+            <div className="bg-secondary rounded-lg p-3 border border-secondary-foreground/20">
+              <p className="text-xs sm:text-sm text-secondary-foreground">
                 {formData.displayContactLinks
                   ? "Your contact details will be visible on the gig page"
                   : "Your contact details will be hidden until someone applies"}
@@ -361,8 +361,8 @@ function AddGigs() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-blue-500" />
+                <Label htmlFor="email" className="text-xs sm:text-sm font-medium text-foreground flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-primary" />
                   Email
                 </Label>
                 <Input
@@ -371,7 +371,7 @@ function AddGigs() {
                   placeholder="your.email@example.com"
                   value={formData.contact.email}
                   onChange={(e) => handleContactChange("email", e.target.value)}
-                  className="text-xs sm:text-sm py-2 border-gray-300 focus:border-blue-500"
+                  className="text-xs sm:text-sm py-2 bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
 
@@ -379,9 +379,9 @@ function AddGigs() {
               <div className="space-y-2">
                 <Label
                   htmlFor="whatsapp"
-                  className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2"
+                  className="text-xs sm:text-sm font-medium text-foreground flex items-center gap-2"
                 >
-                  <MessageCircle className="w-4 h-4 text-green-500" />
+                  <MessageCircle className="w-4 h-4 text-primary" />
                   WhatsApp
                 </Label>
                 <Input
@@ -390,14 +390,14 @@ function AddGigs() {
                   placeholder="+1234567890"
                   value={formData.contact.whatsapp}
                   onChange={(e) => handleContactChange("whatsapp", e.target.value)}
-                  className="text-xs sm:text-sm py-2 border-gray-300 focus:border-green-500"
+                  className="text-xs sm:text-sm py-2 bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
 
               {/* X (Twitter) */}
               <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-                <Label htmlFor="x" className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Twitter className="w-4 h-4 text-gray-600" />X (Twitter)
+                <Label htmlFor="x" className="text-xs sm:text-sm font-medium text-foreground flex items-center gap-2">
+                  <Twitter className="w-4 h-4 text-muted-foreground" />X (Twitter)
                 </Label>
                 <Input
                   id="x"
@@ -405,17 +405,17 @@ function AddGigs() {
                   placeholder="@username"
                   value={formData.contact.x}
                   onChange={(e) => handleContactChange("x", e.target.value)}
-                  className="text-xs sm:text-sm py-2 border-gray-300 focus:border-gray-500"
+                  className="text-xs sm:text-sm py-2 bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-muted-foreground"
                 />
               </div>
             </div>
           </div>
 
           {/* Timeline & Budget */}
-          <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8 border-t border-gray-200">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2 sm:gap-3">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+          <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8 border-t border-border">
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-secondary rounded-lg flex items-center justify-center">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-secondary-foreground" />
               </div>
               Timeline & Budget
             </h3>
@@ -423,7 +423,7 @@ function AddGigs() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Deadline */}
               <div className="space-y-2">
-                <Label htmlFor="expiresAt" className="text-sm sm:text-base font-semibold text-gray-700">
+                <Label htmlFor="expiresAt" className="text-sm sm:text-base font-semibold text-foreground">
                   Project Deadline
                 </Label>
                 <Input
@@ -433,12 +433,12 @@ function AddGigs() {
                   value={formData.expiresAt}
                   onChange={handleInputChange}
                   min={new Date().toISOString().split("T")[0]}
-                  className={`text-sm sm:text-base py-2 sm:py-3 ${
-                    errors.expiresAt ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-blue-500"
+                  className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground ${
+                    errors.expiresAt ? "border-destructive focus:border-destructive" : "focus:border-primary"
                   }`}
                 />
                 {errors.expiresAt && (
-                  <div className="flex items-center gap-2 text-red-600">
+                  <div className="flex items-center gap-2 text-destructive">
                     <AlertCircle className="w-4 h-4" />
                     <p className="text-sm">{errors.expiresAt}</p>
                   </div>
@@ -447,19 +447,19 @@ function AddGigs() {
 
               {/* Budget */}
               <div className="space-y-2">
-                <Label htmlFor="budget" className="text-sm sm:text-base font-semibold text-gray-700">
+                <Label htmlFor="budget" className="text-sm sm:text-base font-semibold text-foreground">
                   Project Budget
                 </Label>
 
                 {/* Currency Toggle */}
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs sm:text-sm text-gray-600">Currency:</span>
-                  <div className="flex bg-gray-100 rounded-lg p-1">
+                  <span className="text-xs sm:text-sm text-muted-foreground">Currency:</span>
+                  <div className="flex bg-muted rounded-lg p-1">
                     <button
                       type="button"
                       onClick={() => handleCurrencyChange("USD")}
-                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium ${
-                        currency === "USD" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-colors ${
+                        currency === "USD" ? "bg-card text-card-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       USD ($)
@@ -467,8 +467,8 @@ function AddGigs() {
                     <button
                       type="button"
                       onClick={() => handleCurrencyChange("INR")}
-                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium ${
-                        currency === "INR" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-colors ${
+                        currency === "INR" ? "bg-card text-card-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       INR (₹)
@@ -478,7 +478,7 @@ function AddGigs() {
 
                 {/* Budget Input */}
                 <div className="relative">
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm sm:text-base font-semibold text-green-600">
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm sm:text-base font-semibold text-primary">
                     {currency === "USD" ? "$" : "₹"}
                   </div>
                   <Input
@@ -488,16 +488,16 @@ function AddGigs() {
                     placeholder={currency === "USD" ? "500" : "40000"}
                     value={budgetAmount}
                     onChange={handleBudgetChange}
-                    className={`text-sm sm:text-base py-2 sm:py-3 pl-7 sm:pl-8 ${
-                      errors.budget ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-green-500"
+                    className={`text-sm sm:text-base py-2 sm:py-3 pl-7 sm:pl-8 bg-input border-border text-foreground placeholder:text-muted-foreground ${
+                      errors.budget ? "border-destructive focus:border-destructive" : "focus:border-primary"
                     }`}
                   />
                 </div>
 
                 {/* Budget Preview */}
                 {formData.budget && (
-                  <div className="bg-green-50 rounded-lg p-2 border border-green-200">
-                    <div className="flex items-center gap-2 text-green-700">
+                  <div className="bg-accent rounded-lg p-2 border border-accent-foreground/20">
+                    <div className="flex items-center gap-2 text-accent-foreground">
                       <CheckCircle className="w-4 h-4" />
                       <span className="text-xs sm:text-sm">
                         Budget: <strong>{formData.budget}</strong>
@@ -507,7 +507,7 @@ function AddGigs() {
                 )}
 
                 {errors.budget && (
-                  <div className="flex items-center gap-2 text-red-600">
+                  <div className="flex items-center gap-2 text-destructive">
                     <AlertCircle className="w-4 h-4" />
                     <p className="text-sm">{errors.budget}</p>
                   </div>
@@ -517,15 +517,15 @@ function AddGigs() {
           </div>
 
           {/* Submit Button */}
-          <div className="pt-6 sm:pt-8 border-t border-gray-200">
+          <div className="pt-6 sm:pt-8 border-t border-border">
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full sm:w-auto sm:min-w-[200px] bg-green-600 hover:bg-green-700 text-white px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto sm:min-w-[200px] bg-primary hover:bg-primary/90 text-primary-foreground px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
                   Creating Gig...
                 </div>
               ) : (

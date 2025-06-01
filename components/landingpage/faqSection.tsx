@@ -4,7 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import Link from 'next/link'
 
 export default function FAQsTwo() {
-    const faqItems = [
+     const faqItems = [
         {
             id: 'item-1',
             question: 'How can I connect with clients on PostMyGig?',
@@ -33,23 +33,23 @@ export default function FAQsTwo() {
     ];
 
     return (
-        <section className="bg-gray-50 py-20 px-4 lg:px-8">
+        <section className="bg-background py-20 px-4 lg:px-8 transition-colors duration-300">
             <div className="mx-auto max-w-5xl">
                 <div className="mx-auto max-w-4xl text-center">
-                    {/* Title with blue underline */}
+                    {/* Title with primary color underline */}
                     <div className="mb-6">
                         <h2
-                            className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
-                            style={{ fontFamily: "Arial, sans-serif" }}
+                            className="text-4xl lg:text-5xl font-bold text-foreground mb-4"
+                            style={{ fontFamily: "var(--font-serif)" }}
                         >
-                            Frequently <span className='text-blue-500'>Asked</span> <span className='text-green-500'>Questions</span>
+                            Frequently <span className='text-primary'>Asked</span> <span className='text-secondary-foreground'>Questions</span>
                         </h2>
-                        <div className="w-20 h-1 bg-blue-600 rounded mx-auto"></div>
+                        <div className="w-20 h-1 bg-primary rounded mx-auto"></div>
                     </div>
 
                     <p
-                        className="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
-                        style={{ fontFamily: "Arial, sans-serif" }}
+                        className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+                        style={{ fontFamily: "var(--font-sans)" }}
                     >
                         Discover quick and comprehensive answers to common questions about our platform, services, and features.
                     </p>
@@ -59,22 +59,22 @@ export default function FAQsTwo() {
                     <Accordion
                         type="single"
                         collapsible
-                        className="bg-white w-full rounded-2xl border border-gray-200 px-8 py-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        className="bg-card w-full rounded-2xl border border-border px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300">
                         {faqItems.map((item) => (
                             <AccordionItem
                                 key={item.id}
                                 value={item.id}
-                                className="border-b border-gray-100 last:border-b-0">
+                                className="border-b border-border last:border-b-0">
                                 <AccordionTrigger
-                                    className="cursor-pointer text-lg lg:text-xl font-semibold text-gray-900 hover:text-blue-600 hover:no-underline py-6 transition-colors duration-200"
-                                    style={{ fontFamily: "Arial, sans-serif" }}
+                                    className="cursor-pointer text-lg lg:text-xl font-semibold text-card-foreground hover:text-primary hover:no-underline py-6 transition-colors duration-200"
+                                    style={{ fontFamily: "var(--font-sans)" }}
                                 >
                                     {item.question}
                                 </AccordionTrigger>
                                 <AccordionContent>
                                     <p
-                                        className="text-base lg:text-lg text-gray-600 leading-relaxed pb-4"
-                                        style={{ fontFamily: "Arial, sans-serif" }}
+                                        className="text-base lg:text-lg text-muted-foreground leading-relaxed pb-4"
+                                        style={{ fontFamily: "var(--font-sans)" }}
                                     >
                                         {item.answer}
                                     </p>
