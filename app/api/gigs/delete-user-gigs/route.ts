@@ -3,7 +3,6 @@ import ProjectModel from "@/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
 import Chat from "@/models/ChatModel";
-import userModel from "@/models/UserModel";
 
 export async function DELETE(req: NextRequest) {
     try {

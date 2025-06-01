@@ -38,18 +38,6 @@ interface RateLimitInfo {
   timestamp: number
 }
 
-interface CachedData {
-  gigs: Gig[]
-  timestamp: number
-  rateLimitInfo: RateLimitInfo
-}
-
-// Cache duration in milliseconds (5 minutes)
-const CACHE_DURATION = 5 * 60 * 1000
-
-// In-memory cache (you could also use a global state management solution)
-let gigsCache: CachedData | null = null
-
 function DisplayAllGigs() {
   const [gigs, setGigs] = useState<Gig[]>([])
   const [loading, setLoading] = useState(true)
@@ -62,39 +50,7 @@ function DisplayAllGigs() {
   })
   const router = useRouter()
 
-  // Check if cached data is still valid
-  const isCacheValid = useCallback(() => {
-    if (!gigsCache) return false
-    const now = Date.now()
-    return (now - gigsCache.timestamp) < CACHE_DURATION
-  }, [])
-
-  // Load data from cache if available and valid
-  const loadFromCache = useCallback(() => {
-    if (isCacheValid() && gigsCache) {
-      setGigs(gigsCache.gigs)
-      setRateLimitInfo(gigsCache.rateLimitInfo)
-      setLoading(false)
-      return true
-    }
-    return false
-  }, [isCacheValid])
-
-  // Save data to cache
-  const saveToCache = useCallback((data: Gig[], rateLimitData: RateLimitInfo) => {
-    gigsCache = {
-      gigs: data,
-      timestamp: Date.now(),
-      rateLimitInfo: rateLimitData
-    }
-  }, [])
-
-  const fetchAllGigs = useCallback(async (forceRefresh = false) => {
-    // If not forcing refresh and cache is valid, use cached data
-    if (!forceRefresh && loadFromCache()) {
-      return
-    }
-
+  const fetchAllGigs = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -105,6 +61,8 @@ function DisplayAllGigs() {
         headers: {
           "Content-Type": "application/json",
         },
+        // Disable caching to ensure fresh data
+        cache: "no-store",
       })
 
       if (response.status === 429) {
@@ -120,41 +78,35 @@ function DisplayAllGigs() {
 
         setRateLimitInfo(newRateLimitInfo)
         setError(rateLimitMessage)
-        
-        // Cache the rate limit info but not the gigs
-        saveToCache(gigs, newRateLimitInfo)
         return
       }
 
       if (!response.ok) {
-        throw new Error("Failed to fetch gigs")
+        throw new Error(`Failed to fetch gigs: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()
+      console.log("API Response:", data) // Debug log to see what's coming from API
+
       const fetchedGigs = data.gigs || []
-      
+      console.log("Fetched gigs:", fetchedGigs) // Debug log to see the gigs array
+
       setGigs(fetchedGigs)
-      
-      const successRateLimitInfo = {
+
+      setRateLimitInfo({
         isLimited: false,
         retryAfter: null,
         message: "",
         timestamp: 0,
-      }
-      
-      setRateLimitInfo(successRateLimitInfo)
-      
-      // Cache the successful response
-      saveToCache(fetchedGigs, successRateLimitInfo)
-      
+      })
     } catch (error) {
       console.error("Failed to fetch gigs", error)
-      const errorMessage = "Failed to load gigs. Please try again later."
+      const errorMessage = error instanceof Error ? error.message : "Failed to load gigs. Please try again later."
       setError(errorMessage)
     } finally {
       setLoading(false)
     }
-  }, [loadFromCache, saveToCache, gigs])
+  }, [])
 
   // Memoized date formatting functions
   const formatDate = useCallback((dateString: string) => {
@@ -165,17 +117,20 @@ function DisplayAllGigs() {
     })
   }, [])
 
-  const getTimeAgo = useCallback((dateString: string) => {
-    const now = new Date()
-    const date = new Date(dateString)
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+  const getTimeAgo = useCallback(
+    (dateString: string) => {
+      const now = new Date()
+      const date = new Date(dateString)
+      const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
 
-    if (diffInHours < 1) return "Just now"
-    if (diffInHours < 24) return `${diffInHours}h ago`
-    const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `${diffInDays}d ago`
-    return formatDate(dateString)
-  }, [formatDate])
+      if (diffInHours < 1) return "Just now"
+      if (diffInHours < 24) return `${diffInHours}h ago`
+      const diffInDays = Math.floor(diffInHours / 24)
+      if (diffInDays < 7) return `${diffInDays}d ago`
+      return formatDate(dateString)
+    },
+    [formatDate],
+  )
 
   const getDaysUntilExpiry = useCallback((dateString: string) => {
     const now = new Date()
@@ -185,45 +140,48 @@ function DisplayAllGigs() {
   }, [])
 
   // Memoized status configuration
-  const getStatusConfig = useMemo(() => (status: string) => {
-    switch (status.toLowerCase()) {
-      case "active":
-        return {
-          color: "bg-accent text-accent-foreground border-accent",
-          dot: "bg-primary",
-          icon: Zap,
-          borderColor: "border-primary",
-        }
-      case "completed":
-        return {
-          color: "bg-secondary text-secondary-foreground border-secondary",
-          dot: "bg-primary",
-          icon: Award,
-          borderColor: "border-primary",
-        }
-      case "expired":
-        return {
-          color: "bg-destructive/10 text-destructive border-destructive/20",
-          dot: "bg-destructive",
-          icon: Clock,
-          borderColor: "border-destructive",
-        }
-      case "accepted":
-        return {
-          color: "bg-primary/10 text-primary border-primary/20",
-          dot: "bg-primary",
-          icon: Award,
-          borderColor: "border-primary",
-        }
-      default:
-        return {
-          color: "bg-muted text-muted-foreground border-border",
-          dot: "bg-muted-foreground",
-          icon: Target,
-          borderColor: "border-border",
-        }
-    }
-  }, [])
+  const getStatusConfig = useMemo(
+    () => (status: string) => {
+      switch (status.toLowerCase()) {
+        case "active":
+          return {
+            color: "bg-accent text-accent-foreground border-accent",
+            dot: "bg-primary",
+            icon: Zap,
+            borderColor: "border-primary",
+          }
+        case "completed":
+          return {
+            color: "bg-secondary text-secondary-foreground border-secondary",
+            dot: "bg-primary",
+            icon: Award,
+            borderColor: "border-primary",
+          }
+        case "expired":
+          return {
+            color: "bg-destructive/10 text-destructive border-destructive/20",
+            dot: "bg-destructive",
+            icon: Clock,
+            borderColor: "border-destructive",
+          }
+        case "accepted":
+          return {
+            color: "bg-primary/10 text-primary border-primary/20",
+            dot: "bg-primary",
+            icon: Award,
+            borderColor: "border-primary",
+          }
+        default:
+          return {
+            color: "bg-muted text-muted-foreground border-border",
+            dot: "bg-muted-foreground",
+            icon: Target,
+            borderColor: "border-border",
+          }
+      }
+    },
+    [],
+  )
 
   const handleRetryClick = useCallback(() => {
     if (rateLimitInfo.isLimited) {
@@ -233,11 +191,11 @@ function DisplayAllGigs() {
       }))
       return
     }
-    fetchAllGigs(true) // Force refresh
+    fetchAllGigs()
   }, [rateLimitInfo.isLimited, fetchAllGigs])
 
   const handleRefreshClick = useCallback(() => {
-    fetchAllGigs(true) // Force refresh
+    fetchAllGigs()
   }, [fetchAllGigs])
 
   // Load data on mount
@@ -452,9 +410,7 @@ function DisplayAllGigs() {
           <div className="flex flex-col items-center justify-center py-20">
             <div
               className={`w-24 h-24 ${
-                rateLimitInfo.isLimited
-                  ? "bg-accent"
-                  : "bg-destructive/10"
+                rateLimitInfo.isLimited ? "bg-accent" : "bg-destructive/10"
               } rounded-3xl flex items-center justify-center mb-8 shadow-xl`}
             >
               {rateLimitInfo.isLimited ? (
@@ -536,46 +492,23 @@ function DisplayAllGigs() {
           </div>
         ) : (
           <div className="space-y-10">
-            {/* Header with Cache Info and Refresh */}
+            {/* Header with Refresh and Debug Info */}
             <div className="flex justify-between items-center">
+              <div className="text-sm text-muted-foreground">
+                Showing {gigs.length} gig{gigs.length !== 1 ? "s" : ""}
+              </div>
               <button
                 onClick={handleRefreshClick}
                 disabled={loading}
-                className="ml-4 inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors duration-200 text-sm font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors duration-200 text-sm font-medium"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                 Refresh
               </button>
             </div>
 
             {/* Gigs Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-              {gigCards}
-            </div>
-
-            {/* Load More Button */}
-            {/* <div className="text-center pt-10">
-              <button
-                onClick={handleRetryClick}
-                disabled={rateLimitInfo.isLimited}
-                className={`inline-flex items-center gap-3 px-10 py-4 border-2 border-border rounded-xl transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl ${
-                  rateLimitInfo.isLimited
-                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                    : "hover:bg-muted hover:border-primary/50 text-foreground"
-                }`}
-              >
-                <RefreshCw className="w-5 h-5" />
-                {rateLimitInfo.isLimited ? "Rate Limited" : "Load More Gigs"}
-              </button>
-
-              {rateLimitInfo.isLimited && (
-                <div className="bg-accent border border-accent rounded-lg p-4 mt-4 shadow-md">
-                  <p className="text-accent-foreground font-medium">
-                    Please wait {rateLimitInfo.retryAfter || "a moment"} seconds before loading more
-                  </p>
-                </div>
-              )}
-            </div> */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">{gigCards}</div>
           </div>
         )}
       </div>
