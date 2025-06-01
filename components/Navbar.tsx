@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "./ui/button"
 import {
   DropdownMenu,
@@ -34,13 +34,8 @@ function Navbar() {
   const { data, status } = useSession()
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isClient, setIsClient] = useState(false)
   const { handleLogout } = useAuthStore()
   const router = useRouter()
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
@@ -62,7 +57,8 @@ function Navbar() {
     handleLogout()
   }
 
-  if (!isClient || status === "loading") {
+  // Only show loading skeleton on initial load, not on route changes
+  if (status === "loading" && !data) {
     return (
       <nav className="w-full bg-background border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

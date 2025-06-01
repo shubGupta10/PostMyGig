@@ -30,19 +30,30 @@ export async function POST(req: NextRequest) {
 
     const userEmail = session.user.email;
     const cacheKey = `dashboard-data:${userEmail}`;
+    
+    // Try to get cached data
     const cachedData = await redis.get(cacheKey);
 
-    if (typeof cachedData === "string") {
-      return new NextResponse(cachedData, {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "X-RateLimit-Limit": limit.toString(),
-          "X-RateLimit-Remaining": remaining.toString(),
-          "X-RateLimit-Reset": reset.toString(),
-          "X-Cache": "HIT",
-        },
-      });
+    // Check if cached data exists and is valid
+    if (cachedData) {
+      let parsedData;
+      try {
+        // Handle both string and object responses from Redis
+        parsedData = typeof cachedData === "string" ? JSON.parse(cachedData) : cachedData;
+        
+        return NextResponse.json(parsedData, {
+          status: 200,
+          headers: {
+            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": reset.toString(),
+            "X-Cache": "HIT",
+          },
+        });
+      } catch (parseError) {
+        console.warn("Failed to parse cached data, will fetch fresh data:", parseError);
+        // Continue to fetch fresh data if cache parsing fails
+      }
     }
 
     // Fetch dashboard data
@@ -50,22 +61,26 @@ export async function POST(req: NextRequest) {
     const totalPings = await PingModel.countDocuments({ userEmail });
     const allProjects = await ProjectModel.find({ createdBy: userEmail }).lean();
 
-    const responseData = JSON.stringify({
+    const responseData = {
       message: "Dashboard data fetched successfully",
       dashboard: {
         totalProjects,
         totalPings,
         projects: allProjects,
       },
-    });
+    };
 
-    // Cache response for 10 minutes
-    await redis.set(cacheKey, responseData, { ex: 600 });
+    // Cache the response data (Redis will handle JSON serialization)
+    try {
+      await redis.set(cacheKey, JSON.stringify(responseData), { ex: 600 }); // 10 minutes
+    } catch (cacheError) {
+      console.warn("Failed to cache data:", cacheError);
+      // Don't fail the request if caching fails
+    }
 
-    return new NextResponse(responseData, {
+    return NextResponse.json(responseData, {
       status: 200,
       headers: {
-        "Content-Type": "application/json",
         "X-RateLimit-Limit": limit.toString(),
         "X-RateLimit-Remaining": remaining.toString(),
         "X-RateLimit-Reset": reset.toString(),
