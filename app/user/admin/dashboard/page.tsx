@@ -148,11 +148,11 @@ function AdminDashboard() {
   const getRoleBadgeColor = (role: string) => {
     switch (role.toLowerCase()) {
       case "admin":
-        return "bg-red-100 text-red-800 border-red-200"
+        return "bg-destructive/10 text-destructive border-destructive/20"
       case "freelancer":
-        return "bg-blue-100 text-blue-800 border-blue-200"
+        return "bg-primary/10 text-primary border-primary/20"
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
+        return "bg-muted text-muted-foreground border-border"
     }
   }
 
@@ -166,21 +166,21 @@ function AdminDashboard() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     )
   }
 
   if (status === "unauthenticated") {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <Card className="w-96">
           <CardHeader>
             <CardTitle className="text-center">Access Denied</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-center text-gray-600">Please log in to access the admin dashboard</p>
+            <p className="text-center text-muted-foreground">Please log in to access the admin dashboard</p>
           </CardContent>
         </Card>
       </div>
@@ -188,14 +188,14 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user?.name}</p>
+              <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+              <p className="text-muted-foreground">Welcome back, {user?.name}</p>
             </div>
             <div className="flex items-center space-x-4">
               <Avatar>
@@ -210,36 +210,36 @@ function AdminDashboard() {
       <div className="px-6 py-6">
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="border-l-4 border-l-blue-500">
+          <Card className="border-l-4 border-l-primary">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-blue-600" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Users</CardTitle>
+              <Users className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{dashboardData?.counts.totalUsers || 0}</div>
-              <p className="text-xs text-gray-500 mt-1">Registered users in the system</p>
+              <div className="text-2xl font-bold text-primary">{dashboardData?.counts.totalUsers || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Registered users in the system</p>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-green-500">
+          <Card className="border-l-4 border-l-chart-1">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Projects</CardTitle>
-              <FolderOpen className="h-4 w-4 text-green-600" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Projects</CardTitle>
+              <FolderOpen className="h-4 w-4 text-chart-1" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{dashboardData?.counts.totalProjects || 0}</div>
-              <p className="text-xs text-gray-500 mt-1">Active projects in the platform</p>
+              <div className="text-2xl font-bold text-chart-1">{dashboardData?.counts.totalProjects || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Active projects in the platform</p>
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-purple-500">
+          <Card className="border-l-4 border-l-chart-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Ping Sends</CardTitle>
-              <Send className="h-4 w-4 text-purple-600" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Ping Sends</CardTitle>
+              <Send className="h-4 w-4 text-chart-2" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{dashboardData?.counts.totalPingSends || 0}</div>
-              <p className="text-xs text-gray-500 mt-1">Total ping notifications sent</p>
+              <div className="text-2xl font-bold text-chart-2">{dashboardData?.counts.totalPingSends || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Total ping notifications sent</p>
             </CardContent>
           </Card>
         </div>
@@ -261,7 +261,7 @@ function AdminDashboard() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input
                         placeholder="Search users..."
                         value={searchTerm}
@@ -273,7 +273,7 @@ function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="rounded-md border">
+                <div className="rounded-md border border-border">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -297,7 +297,7 @@ function AdminDashboard() {
                               </Avatar>
                               <div>
                                 <div className="font-medium">{user.name}</div>
-                                <div className="text-sm text-gray-500 flex items-center">
+                                <div className="text-sm text-muted-foreground flex items-center">
                                   <Mail className="h-3 w-3 mr-1" />
                                   {user.email}
                                 </div>
@@ -311,7 +311,7 @@ function AdminDashboard() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center text-sm text-gray-600">
+                            <div className="flex items-center text-sm text-muted-foreground">
                               <MapPin className="h-3 w-3 mr-1" />
                               {user.location || "Not specified"}
                             </div>
@@ -331,14 +331,14 @@ function AdminDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center text-sm text-gray-600">
+                            <div className="flex items-center text-sm text-muted-foreground">
                               <Calendar className="h-3 w-3 mr-1" />
                               {formatDate(user.createdAt)}
                             </div>
                           </TableCell>
                           <TableCell>
                             <Badge
-                              className={user.isBanned ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}
+                              className={user.isBanned ? "bg-destructive/10 text-destructive" : "bg-chart-1/10 text-chart-1"}
                             >
                               {user.isBanned ? "Banned" : "Active"}
                             </Badge>
@@ -353,7 +353,7 @@ function AdminDashboard() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem>View Profile</DropdownMenuItem>
                                 <DropdownMenuItem>Send Message</DropdownMenuItem>
-                                <DropdownMenuItem className="text-red-600">
+                                <DropdownMenuItem className="text-destructive">
                                   {user.isBanned ? "Unban User" : "Ban User"}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -377,7 +377,7 @@ function AdminDashboard() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {dashboardData?.allData.totalProjectsData?.map((project) => (
-                    <Card key={project._id} className="border border-gray-200 hover:shadow-md transition-shadow">
+                    <Card key={project._id} className="border border-border hover:shadow-md transition-shadow">
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                           <CardTitle className="text-lg truncate pr-2">{project.title}</CardTitle>
@@ -390,7 +390,7 @@ function AdminDashboard() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                                   disabled={deletingProjectId === project._id}
                                 >
                                   {deletingProjectId === project._id ? (
@@ -411,7 +411,7 @@ function AdminDashboard() {
                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                                   <AlertDialogAction
                                     onClick={() => deleteGig(project._id)}
-                                    className="bg-red-600 hover:bg-red-700"
+                                    className="bg-destructive hover:bg-destructive/90"
                                   >
                                     Delete
                                   </AlertDialogAction>
@@ -423,12 +423,12 @@ function AdminDashboard() {
                       </CardHeader>
                       <CardContent>
                         <div className="flex items-center justify-between">
-                          <Badge className="bg-blue-100 text-blue-800">Active</Badge>
-                          <span className="text-xs text-gray-500">ID: {project._id.slice(-6)}</span>
+                          <Badge className="bg-primary/10 text-primary">Active</Badge>
+                          <span className="text-xs text-muted-foreground">ID: {project._id.slice(-6)}</span>
                         </div>
                       </CardContent>
                     </Card>
-                  )) || <div className="col-span-full text-center py-8 text-gray-500">No projects data available</div>}
+                  )) || <div className="col-span-full text-center py-8 text-muted-foreground">No projects data available</div>}
                 </div>
               </CardContent>
             </Card>

@@ -6,40 +6,40 @@ import Link from "next/link"
 function FreelancerClient() {
   const { data: session } = useSession();
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Title */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-            Built for <span className="text-blue-600">You</span>
+          <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+            Built for <span className="text-primary">You</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Whether you're sharing work or seeking talent, PostMyGig has you covered
           </p>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-green-600 mx-auto rounded-full mt-6"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent-foreground mx-auto rounded-full mt-6"></div>
         </div>
 
         {/* Two-Column Grid */}
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Freelancers Card */}
           <div className="group">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl shadow-xl border border-blue-200 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+            <div className="bg-card rounded-2xl shadow-xl border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
               {/* Image Section */}
-              <div className="relative h-64 bg-gradient-to-br from-blue-400 to-blue-600 overflow-hidden">
+              <div className="relative h-64 bg-gradient-to-br from-primary/80 to-primary overflow-hidden">
                 {/* Placeholder for Indian freelancer coding */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="relative">
                     {/* Laptop mockup */}
-                    <div className="w-32 h-20 bg-gray-800 rounded-lg shadow-lg transform rotate-12">
-                      <div className="w-full h-14 bg-gray-900 rounded-t-lg p-2">
-                        <div className="w-full h-full bg-green-400 rounded opacity-80"></div>
+                    <div className="w-32 h-20 bg-muted-foreground rounded-lg shadow-lg transform rotate-12">
+                      <div className="w-full h-14 bg-foreground rounded-t-lg p-2">
+                        <div className="w-full h-full bg-accent rounded opacity-80"></div>
                       </div>
                     </div>
 
                     {/* Freelancer avatar */}
-                    <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-card rounded-full shadow-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 20 20">
                           <path
                             fillRule="evenodd"
                             d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
@@ -53,7 +53,7 @@ function FreelancerClient() {
                 </div>
 
                 {/* Overlay pattern */}
-                <div className="absolute inset-0 bg-blue-600 opacity-20"></div>
+                <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30"></div>
                 <div
                   className="absolute inset-0"
                   style={{
@@ -65,8 +65,8 @@ function FreelancerClient() {
               {/* Content Section */}
               <div className="p-8">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -75,51 +75,51 @@ function FreelancerClient() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900">For Freelancers</h3>
+                  <h3 className="text-2xl font-bold text-card-foreground">For Freelancers</h3>
                 </div>
 
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
                   List your skills, share extra projects, or find work. Connect safely, no hassle.
                 </p>
 
                 {/* Benefits */}
                 <div className="space-y-3 mb-8">
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-gray-700">Share excess work easily</span>
+                    <span className="text-muted-foreground">Share excess work easily</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-gray-700">Connect via WhatsApp/Email</span>
+                    <span className="text-muted-foreground">Connect via WhatsApp/Email</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-gray-700">No platform fees</span>
+                    <span className="text-muted-foreground">No platform fees</span>
                   </div>
                 </div>
 
                 {/* CTA */}
                 <Link
                   href={ session ? `/add-gigs` : '/auth/login'}
-                  className="w-full inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl group-hover:scale-105 transform"
+                  className="w-full inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl group-hover:scale-105 transform"
                   aria-label="Post your skills and start sharing work"
                 >
                   Post Your Skills
@@ -133,17 +133,17 @@ function FreelancerClient() {
 
           {/* Clients Card */}
           <div className="group">
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl shadow-xl border border-green-200 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+            <div className="bg-card rounded-2xl shadow-xl border border-border overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
               {/* Image Section */}
-              <div className="relative h-64 bg-gradient-to-br from-green-400 to-green-600 overflow-hidden">
+              <div className="relative h-64 bg-gradient-to-br from-accent-foreground/80 to-accent-foreground overflow-hidden">
                 {/* Placeholder for startup team */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="relative">
                     {/* Team avatars */}
                     <div className="flex items-center space-x-2">
-                      <div className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center">
-                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="w-12 h-12 bg-card rounded-full shadow-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-secondary-foreground" fill="currentColor" viewBox="0 0 20 20">
                             <path
                               fillRule="evenodd"
                               d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
@@ -152,9 +152,9 @@ function FreelancerClient() {
                           </svg>
                         </div>
                       </div>
-                      <div className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="w-12 h-12 bg-card rounded-full shadow-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-accent-foreground" fill="currentColor" viewBox="0 0 20 20">
                             <path
                               fillRule="evenodd"
                               d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
@@ -163,9 +163,9 @@ function FreelancerClient() {
                           </svg>
                         </div>
                       </div>
-                      <div className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center">
-                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                      <div className="w-12 h-12 bg-card rounded-full shadow-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
                             <path
                               fillRule="evenodd"
                               d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
@@ -180,7 +180,7 @@ function FreelancerClient() {
                 </div>
 
                 {/* Overlay pattern */}
-                <div className="absolute inset-0 bg-green-600 opacity-20"></div>
+                <div className="absolute inset-0 bg-accent-foreground/20 dark:bg-accent-foreground/30"></div>
                 <div
                   className="absolute inset-0"
                   style={{
@@ -192,8 +192,8 @@ function FreelancerClient() {
               {/* Content Section */}
               <div className="p-8">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 bg-accent-foreground rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -202,51 +202,51 @@ function FreelancerClient() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900">For Clients</h3>
+                  <h3 className="text-2xl font-bold text-card-foreground">For Clients</h3>
                 </div>
 
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
                   Need talent? Post projects and connect with freelancers fast, securely.
                 </p>
 
                 {/* Benefits */}
                 <div className="space-y-3 mb-8">
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-accent-foreground" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-gray-700">Find talent quickly</span>
+                    <span className="text-muted-foreground">Find talent quickly</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-accent-foreground" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-gray-700">Direct communication</span>
+                    <span className="text-muted-foreground">Direct communication</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-5 h-5 text-accent-foreground" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-gray-700">Secure connections</span>
+                    <span className="text-muted-foreground">Secure connections</span>
                   </div>
                 </div>
 
                 {/* CTA */}
                 <Link
                   href={ session ? `/view-gigs` : '/auth/login'}
-                  className="w-full inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl group-hover:scale-105 transform"
+                  className="w-full inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-accent bg-accent-foreground hover:bg-accent-foreground/90 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl group-hover:scale-105 transform"
                   aria-label="Post a project and find freelancers"
                 >
                   Find Freelancers

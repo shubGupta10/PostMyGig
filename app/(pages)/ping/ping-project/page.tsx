@@ -86,21 +86,21 @@ function PingProject() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white py-12">
+    <div className="min-h-screen bg-background py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Back button */}
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-8 font-medium"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8 font-medium"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Gig
         </button>
 
-        <Card className="border border-slate-300 shadow-xl rounded-lg">
+        <Card className="border-border shadow-xl rounded-lg">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-slate-800">Apply for this Project</CardTitle>
-            <CardDescription className="text-slate-600">
+            <CardTitle className="text-2xl font-bold text-foreground">Apply for this Project</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Tell the project owner why you're the perfect fit for this gig
             </CardDescription>
           </CardHeader>
@@ -115,7 +115,7 @@ function PingProject() {
             )}
 
             {success && (
-              <Alert className="mb-6 bg-emerald-50 text-emerald-800 border-emerald-200">
+              <Alert className="mb-6 bg-accent text-accent-foreground border-border">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Success!</AlertTitle>
                 <AlertDescription>{success}</AlertDescription>
@@ -130,18 +130,18 @@ function PingProject() {
               className="space-y-6"
             >
               <div className="space-y-2">
-                <Label htmlFor="message" className="text-base font-semibold text-slate-700">
-                  Your Message <span className="text-red-500">*</span>
+                <Label htmlFor="message" className="text-base font-semibold text-foreground">
+                  Your Message <span className="text-destructive">*</span>
                 </Label>
                 <Textarea
                   id="message"
                   placeholder="Introduce yourself and explain why you're interested in this project. Highlight relevant skills and experience."
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="min-h-[120px] text-base"
+                  className="min-h-[120px] text-base bg-card border-border text-card-foreground"
                   required
                 />
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   This message will be sent to the project owner. Be professional and concise.
                 </p>
               </div>
@@ -149,9 +149,9 @@ function PingProject() {
               <div className="space-y-2">
                 <Label
                   htmlFor="bestWorkLink"
-                  className="text-base font-semibold text-slate-700 flex items-center gap-2"
+                  className="text-base font-semibold text-foreground flex items-center gap-2"
                 >
-                  <LinkIcon className="w-4 h-4 text-emerald-600" />
+                  <LinkIcon className="w-4 h-4 text-primary" />
                   Portfolio or Best Work Link
                 </Label>
                 <Input
@@ -160,9 +160,9 @@ function PingProject() {
                   placeholder="https://your-portfolio.com or link to your best work"
                   value={formData.bestWorkLink}
                   onChange={(e) => setFormData({ ...formData, bestWorkLink: e.target.value })}
-                  className="text-base"
+                  className="text-base bg-card border-border text-card-foreground"
                 />
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   Share a link to your portfolio, GitHub, or a specific project that showcases your skills.
                 </p>
               </div>
@@ -170,9 +170,9 @@ function PingProject() {
               <div className="space-y-2">
                 <Label
                   htmlFor="bestWorkDescription"
-                  className="text-base font-semibold text-slate-700 flex items-center gap-2"
+                  className="text-base font-semibold text-foreground flex items-center gap-2"
                 >
-                  <FileText className="w-4 h-4 text-emerald-600" />
+                  <FileText className="w-4 h-4 text-primary" />
                   Work Description
                 </Label>
                 <Textarea
@@ -180,9 +180,9 @@ function PingProject() {
                   placeholder="Briefly describe your relevant experience or the work you've linked above."
                   value={formData.bestWorkDescription}
                   onChange={(e) => setFormData({ ...formData, bestWorkDescription: e.target.value })}
-                  className="min-h-[100px] text-base"
+                  className="min-h-[100px] text-base bg-card border-border text-card-foreground"
                 />
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   Explain what makes your work impressive and relevant to this project.
                 </p>
               </div>
@@ -193,14 +193,14 @@ function PingProject() {
             <Button
               variant="outline"
               onClick={() => router.back()}
-              className="border-slate-300 text-slate-700"
+              className="border-border text-muted-foreground hover:text-foreground"
               disabled={isLoading}
             >
               Cancel
             </Button>
             <Button
               onClick={pingProject}
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8"
               disabled={isLoading}
             >
               {isLoading ? (

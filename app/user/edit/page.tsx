@@ -163,18 +163,18 @@ function EditPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+      <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="relative mb-8">
-              <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-20 w-20 border-4 border-muted border-t-primary mx-auto"></div>
               <div
-                className="absolute inset-0 rounded-full h-20 w-20 border-4 border-transparent border-t-green-500 animate-spin mx-auto"
+                className="absolute inset-0 rounded-full h-20 w-20 border-4 border-transparent border-t-accent animate-spin mx-auto"
                 style={{ animationDelay: "0.3s", animationDuration: "1.5s" }}
               ></div>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Loading Editor</h3>
-            <p className="text-gray-600 text-lg">Please wait while we prepare your profile editor...</p>
+            <h3 className="text-2xl font-bold text-foreground mb-3">Loading Editor</h3>
+            <p className="text-muted-foreground text-lg">Please wait while we prepare your profile editor...</p>
           </div>
         </div>
       </div>
@@ -182,32 +182,32 @@ function EditPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Enhanced Header */}
         <div className="mb-8 sm:mb-12">
           <button
             onClick={() => router.back()}
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors mb-6 px-4 py-2 rounded-lg hover:bg-blue-50 font-medium"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors mb-6 px-4 py-2 rounded-lg hover:bg-accent font-medium"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Profile
           </button>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8">
+          <div className="bg-card rounded-2xl shadow-lg border border-border p-6 sm:p-8">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg">
-                <Edit3 className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
+                <Edit3 className="w-8 h-8 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Edit Profile</h1>
-                <p className="text-gray-600 text-lg mt-2">Update your personal information and preferences</p>
+                <h1 className="text-3xl sm:text-4xl font-bold text-card-foreground">Edit Profile</h1>
+                <p className="text-muted-foreground text-lg mt-2">Update your personal information and preferences</p>
               </div>
             </div>
 
             {/* Progress Indicator */}
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <CheckCircle className="w-4 h-4 text-green-500" />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
               <span>All changes are saved automatically</span>
             </div>
           </div>
@@ -215,19 +215,19 @@ function EditPage() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div className="p-6 sm:p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <User className="w-5 h-5 text-blue-600" />
+              <h2 className="text-2xl font-bold text-card-foreground mb-6 flex items-center gap-3">
+                <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center">
+                  <User className="w-5 h-5 text-accent-foreground" />
                 </div>
                 Basic Information
               </h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <User className="w-4 h-4 text-blue-500" />
+                  <label htmlFor="name" className="text-sm font-semibold text-card-foreground flex items-center gap-2">
+                    <User className="w-4 h-4 text-primary" />
                     Full Name *
                   </label>
                   <Input
@@ -237,14 +237,14 @@ function EditPage() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="h-12 border-border focus:border-primary focus:ring-primary bg-input"
                     placeholder="Enter your full name"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-green-500" />
+                  <label htmlFor="email" className="text-sm font-semibold text-card-foreground flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-primary" />
                     Email Address *
                   </label>
                   <Input
@@ -254,14 +254,14 @@ function EditPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                    className="h-12 border-border focus:border-primary focus:ring-primary bg-input"
                     placeholder="Enter your email address"
                   />
                 </div>
 
                 <div className="lg:col-span-2 space-y-2">
-                  <label htmlFor="location" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-purple-500" />
+                  <label htmlFor="location" className="text-sm font-semibold text-card-foreground flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-primary" />
                     Location
                   </label>
                   <Input
@@ -271,7 +271,7 @@ function EditPage() {
                     value={formData.location}
                     onChange={handleInputChange}
                     placeholder="City, Country (e.g., Mumbai, India)"
-                    className="h-12 border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                    className="h-12 border-border focus:border-primary focus:ring-primary bg-input"
                   />
                 </div>
               </div>
@@ -279,17 +279,17 @@ function EditPage() {
           </div>
 
           {/* Bio Section */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div className="p-6 sm:p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                  <Globe className="w-5 h-5 text-green-600" />
+              <h2 className="text-2xl font-bold text-card-foreground mb-6 flex items-center gap-3">
+                <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-accent-foreground" />
                 </div>
                 About You
               </h2>
 
               <div className="space-y-2">
-                <label htmlFor="bio" className="text-sm font-semibold text-gray-700">
+                <label htmlFor="bio" className="text-sm font-semibold text-card-foreground">
                   Professional Bio
                 </label>
                 <Textarea
@@ -299,9 +299,9 @@ function EditPage() {
                   onChange={handleInputChange}
                   rows={6}
                   placeholder="Tell us about yourself, your experience, skills, and what makes you unique. This will be visible on your profile..."
-                  className="resize-none border-gray-300 focus:border-green-500 focus:ring-green-500"
+                  className="resize-none border-border focus:border-primary focus:ring-primary bg-input"
                 />
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {formData.bio.length}/500 characters • A good bio helps others understand your expertise
                 </p>
               </div>
@@ -309,11 +309,11 @@ function EditPage() {
           </div>
 
           {/* Skills Section */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div className="p-6 sm:p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                  <Star className="w-5 h-5 text-green-600" />
+              <h2 className="text-2xl font-bold text-card-foreground mb-6 flex items-center gap-3">
+                <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center">
+                  <Star className="w-5 h-5 text-accent-foreground" />
                 </div>
                 Skills & Expertise
               </h2>
@@ -327,14 +327,14 @@ function EditPage() {
                       onChange={(e) => setNewSkill(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Add a skill (e.g., React, Node.js, Design)"
-                      className="h-12 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                      className="h-12 border-border focus:border-primary focus:ring-primary bg-input"
                     />
                   </div>
                   <Button
                     type="button"
                     onClick={addSkill}
                     disabled={!newSkill.trim()}
-                    className="h-12 px-6 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                    className="h-12 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                   >
                     <Plus className="w-5 h-5 mr-2" />
                     Add
@@ -343,18 +343,18 @@ function EditPage() {
 
                 {formData.skills.length > 0 ? (
                   <div className="space-y-4">
-                    <h4 className="text-lg font-semibold text-gray-900">Your Skills ({formData.skills.length})</h4>
+                    <h4 className="text-lg font-semibold text-card-foreground">Your Skills ({formData.skills.length})</h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                       {formData.skills.map((skill, index) => (
                         <div
                           key={index}
-                          className="group bg-purple-50 border border-purple-200 rounded-xl p-3 flex items-center justify-between hover:bg-purple-100 transition-colors duration-200"
+                          className="group bg-secondary border border-secondary-foreground/20 rounded-xl p-3 flex items-center justify-between hover:bg-secondary/80 transition-colors duration-200"
                         >
-                          <span className="text-purple-700 font-medium text-sm truncate">{skill}</span>
+                          <span className="text-secondary-foreground font-medium text-sm truncate">{skill}</span>
                           <button
                             type="button"
                             onClick={() => removeSkill(skill)}
-                            className="ml-2 p-1 text-purple-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                            className="ml-2 p-1 text-secondary-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors duration-200 opacity-0 group-hover:opacity-100"
                           >
                             <X className="w-3 h-3" />
                           </button>
@@ -363,10 +363,10 @@ function EditPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-200">
-                    <Tag className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 text-lg font-medium">No skills added yet</p>
-                    <p className="text-gray-500 text-sm mt-2">Add your skills to showcase your expertise</p>
+                  <div className="bg-muted rounded-xl p-8 text-center border border-border">
+                    <Tag className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground text-lg font-medium">No skills added yet</p>
+                    <p className="text-muted-foreground text-sm mt-2">Add your skills to showcase your expertise</p>
                   </div>
                 )}
               </div>
@@ -374,19 +374,19 @@ function EditPage() {
           </div>
 
           {/* Contact Links Section */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div className="p-6 sm:p-8">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                    <LinkIcon className="w-5 h-5 text-green-600" />
+                <h2 className="text-2xl font-bold text-card-foreground flex items-center gap-3">
+                  <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center">
+                    <LinkIcon className="w-5 h-5 text-accent-foreground" />
                   </div>
                   Contact Links
                 </h2>
                 <Button
                   type="button"
                   onClick={addContactLink}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Link
@@ -397,28 +397,28 @@ function EditPage() {
                 {formData.contactLinks.map((link, index) => (
                   <div
                     key={index}
-                    className="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                    className="bg-muted border border-border rounded-xl p-4 hover:bg-accent hover:border-accent-foreground/20 transition-all duration-200"
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Label</label>
+                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Label</label>
                           <Input
                             type="text"
                             placeholder="e.g., LinkedIn, Portfolio, GitHub"
                             value={link.label}
                             onChange={(e) => updateContactLink(index, "label", e.target.value)}
-                            className="h-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                            className="h-10 border-border focus:border-primary focus:ring-primary bg-input"
                           />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">URL</label>
+                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">URL</label>
                           <Input
                             type="url"
                             placeholder="https://example.com/profile"
                             value={link.url}
                             onChange={(e) => updateContactLink(index, "url", e.target.value)}
-                            className="h-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                            className="h-10 border-border focus:border-primary focus:ring-primary bg-input"
                           />
                         </div>
                       </div>
@@ -427,7 +427,7 @@ function EditPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => removeContactLink(index)}
-                        className="mt-6 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 p-2"
+                        className="mt-6 border-destructive/20 text-destructive hover:bg-destructive/10 hover:border-destructive/40 p-2"
                       >
                         <X className="w-4 h-4" />
                       </Button>
@@ -436,10 +436,10 @@ function EditPage() {
                 ))}
 
                 {formData.contactLinks.length === 0 && (
-                  <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-200">
-                    <ExternalLink className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 text-lg font-medium">No contact links added yet</p>
-                    <p className="text-gray-500 text-sm mt-2">
+                  <div className="bg-muted rounded-xl p-8 text-center border border-border">
+                    <ExternalLink className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground text-lg font-medium">No contact links added yet</p>
+                    <p className="text-muted-foreground text-sm mt-2">
                       Add links to your portfolio, social media, or professional profiles
                     </p>
                   </div>
@@ -450,34 +450,34 @@ function EditPage() {
 
           {/* Status Messages */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-              <p className="text-red-700 font-medium">{error}</p>
+            <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0" />
+              <p className="text-destructive font-medium">{error}</p>
             </div>
           )}
 
           {successMessage && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-              <p className="text-green-700 font-medium">{successMessage}</p>
+            <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center gap-3">
+              <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
+              <p className="text-primary font-medium">{successMessage}</p>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8">
+          <div className="bg-card rounded-2xl shadow-lg border border-border p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row gap-4 justify-end">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
-                className="px-8 py-3 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-xl font-semibold"
+                className="px-8 py-3 border-border text-card-foreground hover:bg-muted hover:border-border rounded-xl font-semibold"
               >
                 Cancel Changes
               </Button>
               <Button
                 type="submit"
                 disabled={saving}
-                className="px-8 py-3 bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {saving ? (
                   <div className="flex items-center gap-3">

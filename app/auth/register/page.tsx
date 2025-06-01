@@ -150,28 +150,28 @@ export default function RegisterPage() {
     if (!rateLimitInfo.isLimited) return null
 
     return (
-      <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
+      <div className="mb-6 bg-secondary border border-accent rounded-xl p-4">
         <div className="flex items-start gap-3">
-          <ShieldAlert className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+          <ShieldAlert className="w-5 h-5 text-secondary-foreground mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <h4 className="font-semibold text-amber-800 mb-1">Registration Rate Limit Exceeded</h4>
-            <p className="text-amber-700 text-sm leading-relaxed">{rateLimitInfo.message}</p>
-            <div className="mt-2 text-xs text-amber-600">
+            <h4 className="font-semibold text-secondary-foreground mb-1">Registration Rate Limit Exceeded</h4>
+            <p className="text-secondary-foreground text-sm leading-relaxed">{rateLimitInfo.message}</p>
+            <div className="mt-2 text-xs text-muted-foreground">
               <strong>Tip:</strong> Wait for the cooldown period before attempting to register again.
             </div>
-            <div className="bg-amber-100/50 border border-amber-200 rounded-lg p-3 mt-3 text-xs">
+            <div className="bg-accent border border-accent rounded-lg p-3 mt-3 text-xs">
               <div className="space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-amber-700 font-medium">Status:</span>
-                  <span className="text-amber-800">Rate Limited</span>
+                  <span className="text-accent-foreground font-medium">Status:</span>
+                  <span className="text-accent-foreground">Rate Limited</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700 font-medium">Retry After:</span>
-                  <span className="text-amber-800">{rateLimitInfo.retryAfter || "Unknown"} seconds</span>
+                  <span className="text-accent-foreground font-medium">Retry After:</span>
+                  <span className="text-accent-foreground">{rateLimitInfo.retryAfter || "Unknown"} seconds</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700 font-medium">Time:</span>
-                  <span className="text-amber-800">{new Date(rateLimitInfo.timestamp).toLocaleTimeString()}</span>
+                  <span className="text-accent-foreground font-medium">Time:</span>
+                  <span className="text-accent-foreground">{new Date(rateLimitInfo.timestamp).toLocaleTimeString()}</span>
                 </div>
               </div>
             </div>
@@ -182,35 +182,35 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl bg-card rounded-3xl shadow-2xl overflow-hidden">
         <div className="flex min-h-[700px]">
           <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
             <div className="max-w-md w-full">
               <RateLimitBanner />
 
               <div className="mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl mb-6 shadow-lg">
-                  <CheckCircle className="h-8 w-8 text-white" />
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-6 shadow-lg">
+                  <CheckCircle className="h-8 w-8 text-primary-foreground" />
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Create Account ✨</h1>
-                <p className="text-gray-600 text-lg">Join thousands of freelancers and clients worldwide.</p>
+                <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Create Account ✨</h1>
+                <p className="text-muted-foreground text-lg">Join thousands of freelancers and clients worldwide.</p>
               </div>
 
               {error && (
                 <Alert
                   variant="destructive"
                   className={`mb-6 ${rateLimitInfo.isLimited
-                      ? "border-amber-200 bg-amber-50"
-                      : "border-red-200 bg-red-50"
+                      ? "border-accent bg-secondary"
+                      : "border-destructive bg-destructive/10"
                     } animate-in fade-in-50 duration-300 rounded-xl`}
                 >
                   {rateLimitInfo.isLimited ? (
-                    <ShieldAlert className="h-5 w-5 text-amber-600" />
+                    <ShieldAlert className="h-5 w-5 text-secondary-foreground" />
                   ) : (
-                    <AlertCircle className="h-5 w-5 text-red-600" />
+                    <AlertCircle className="h-5 w-5 text-destructive" />
                   )}
-                  <AlertDescription className={`${rateLimitInfo.isLimited ? "text-amber-800" : "text-red-800"
+                  <AlertDescription className={`${rateLimitInfo.isLimited ? "text-secondary-foreground" : "text-destructive"
                     } ml-2 font-medium`}>
                     {error}
                   </AlertDescription>
@@ -219,11 +219,11 @@ export default function RegisterPage() {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-semibold text-gray-700">
+                  <Label htmlFor="name" className="text-sm font-semibold text-foreground">
                     Full Name
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
                       id="name"
                       type="text"
@@ -233,19 +233,19 @@ export default function RegisterPage() {
                       disabled={isLoading || rateLimitInfo.isLimited}
                       placeholder="Enter your full name"
                       className={`pl-12 h-14 border-2 ${rateLimitInfo.isLimited
-                          ? "border-amber-200 bg-amber-50/30"
-                          : "border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                          ? "border-accent bg-secondary"
+                          : "border-border focus:border-primary focus:ring-primary"
                         } rounded-xl text-base font-medium transition-all duration-200`}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                  <Label htmlFor="email" className="text-sm font-semibold text-foreground">
                     Email Address
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
                       id="email"
                       type="email"
@@ -255,19 +255,19 @@ export default function RegisterPage() {
                       disabled={isLoading || rateLimitInfo.isLimited}
                       placeholder="Enter your email address"
                       className={`pl-12 h-14 border-2 ${rateLimitInfo.isLimited
-                          ? "border-amber-200 bg-amber-50/30"
-                          : "border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                          ? "border-accent bg-secondary"
+                          : "border-border focus:border-primary focus:ring-primary"
                         } rounded-xl text-base font-medium transition-all duration-200`}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+                  <Label htmlFor="password" className="text-sm font-semibold text-foreground">
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
@@ -277,33 +277,33 @@ export default function RegisterPage() {
                       disabled={isLoading || rateLimitInfo.isLimited}
                       placeholder="Create a strong password"
                       className={`pl-12 pr-12 h-14 border-2 ${rateLimitInfo.isLimited
-                          ? "border-amber-200 bg-amber-50/30"
-                          : "border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                          ? "border-accent bg-secondary"
+                          : "border-border focus:border-primary focus:ring-primary"
                         } rounded-xl text-base font-medium transition-all duration-200`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       disabled={rateLimitInfo.isLimited}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200 disabled:opacity-50"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors duration-200 disabled:opacity-50"
                     >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                  <p className="text-xs text-muted-foreground mt-1">Minimum 6 characters</p>
                 </div>
 
                 <Button
                   type="submit"
                   className={`w-full h-14 ${rateLimitInfo.isLimited
-                      ? "bg-amber-400 hover:bg-amber-400 cursor-not-allowed"
-                      : "bg-emerald-600 hover:bg-emerald-700 hover:shadow-xl transform hover:-translate-y-0.5"
-                    } text-white font-bold text-lg rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+                      ? "bg-secondary hover:bg-secondary cursor-not-allowed"
+                      : "bg-primary hover:bg-primary/90 hover:shadow-xl transform hover:-translate-y-0.5"
+                    } text-primary-foreground font-bold text-lg rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
                       Creating Account...
                     </div>
                   ) : rateLimitInfo.isLimited ? (
@@ -322,10 +322,10 @@ export default function RegisterPage() {
 
               <div className="relative my-8">
                 <div className="absolute inset-0 flex items-center">
-                  <Separator className="w-full border-gray-300" />
+                  <Separator className="w-full border-border" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white text-gray-500 font-medium">Or, Sign up with</span>
+                  <span className="px-4 bg-card text-muted-foreground font-medium">Or, Sign up with</span>
                 </div>
               </div>
 
@@ -334,9 +334,9 @@ export default function RegisterPage() {
                   onClick={handleGoogleSignIn}
                   variant="outline"
                   className={`h-14 border-2 ${rateLimitInfo.isLimited
-                      ? "border-amber-200 bg-amber-50/30 cursor-not-allowed"
-                      : "border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md"
-                    } rounded-xl font-semibold text-gray-700 transition-all duration-200 shadow-sm`}
+                      ? "border-accent bg-secondary cursor-not-allowed"
+                      : "border-border hover:border-primary hover:bg-accent hover:shadow-md"
+                    } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -363,9 +363,9 @@ export default function RegisterPage() {
                   onClick={handleGitHubSignIn}
                   variant="outline"
                   className={`h-14 border-2 ${rateLimitInfo.isLimited
-                      ? "border-amber-200 bg-amber-50/30 cursor-not-allowed"
-                      : "border-gray-200 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md"
-                    } rounded-xl font-semibold text-gray-700 transition-all duration-200 shadow-sm`}
+                      ? "border-accent bg-secondary cursor-not-allowed"
+                      : "border-border hover:border-muted hover:bg-muted hover:shadow-md"
+                    } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >
                   <Github className="mr-2 h-5 w-5" />
@@ -373,11 +373,11 @@ export default function RegisterPage() {
                 </Button>
               </div>
 
-              <p className="text-center text-gray-600">
+              <p className="text-center text-muted-foreground">
                 Already have an account?{" "}
                 <a
                   href="/auth/login"
-                  className="text-emerald-600 hover:text-emerald-700 font-semibold transition-colors duration-200"
+                  className="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
                 >
                   Log in here
                 </a>
@@ -386,22 +386,22 @@ export default function RegisterPage() {
           </div>
 
           <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-teal-600/30 to-blue-600/20 z-10"></div>
+            <div className="absolute inset-0 bg-primary/20 z-10"></div>
 
             <div className="h-full w-full bg-[url('https://images.pexels.com/photos/3153204/pexels-photo-3153204.jpeg?auto=compress&cs=tinysrgb&w=600')] bg-cover bg-center"></div>
 
-            <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-12 text-center z-20">
+            <div className="absolute inset-0 flex flex-col justify-center items-center text-primary-foreground p-12 text-center z-20">
               <div className="max-w-md">
-                <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center mx-auto mb-8 backdrop-blur-sm">
-                  <Users className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center mx-auto mb-8 backdrop-blur-sm">
+                  <Users className="w-10 h-10 text-primary-foreground" />
                 </div>
 
                 <h2 className="text-3xl font-bold mb-6 leading-tight">
                   Join Our Amazing
-                  <span className="text-emerald-300"> Community</span>
+                  <span className="text-accent-foreground"> Community</span>
                 </h2>
 
-                <p className="text-lg text-white/90 mb-8 leading-relaxed">
+                <p className="text-lg text-primary-foreground/90 mb-8 leading-relaxed">
                   Connect with talented freelancers and ambitious clients. Build your network, grow your business, and achieve your goals together.
                 </p>
               </div>

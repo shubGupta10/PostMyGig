@@ -177,22 +177,22 @@ function EditGig() {
   }
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-50 to-white min-h-screen py-8">
+    <div className="w-full bg-background min-h-screen py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-3 py-2">
+          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-3 py-2">
             Edit Your Gig
           </h1>
-          <p className="text-lg text-slate-600 font-medium">
+          <p className="text-lg text-muted-foreground font-medium">
             Update your gig information to attract the right candidates
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-200">
+        <div className="bg-card rounded-2xl shadow-xl p-6 sm:p-8 border border-border">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title Field */}
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-lg font-semibold text-slate-700">
+              <Label htmlFor="title" className="text-lg font-semibold text-card-foreground">
                 Gig Title
               </Label>
               <Input
@@ -202,14 +202,14 @@ function EditGig() {
                 placeholder="e.g., Full Stack Developer for E-commerce Website"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={`text-lg py-6 ${errors.title ? "border-red-500 focus:border-red-500" : ""}`}
+                className={`text-lg py-6 bg-input border-border text-foreground ${errors.title ? "border-destructive focus:border-destructive" : ""}`}
               />
-              {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
+              {errors.title && <p className="text-destructive text-sm">{errors.title}</p>}
             </div>
 
             {/* Description Field */}
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-lg font-semibold text-slate-700">
+              <Label htmlFor="description" className="text-lg font-semibold text-card-foreground">
                 Description
               </Label>
               <Textarea
@@ -219,20 +219,20 @@ function EditGig() {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={6}
-                className={`text-lg resize-none ${errors.description ? "border-red-500 focus:border-red-500" : ""}`}
+                className={`text-lg resize-none bg-input border-border text-foreground ${errors.description ? "border-destructive focus:border-destructive" : ""}`}
               />
-              {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+              {errors.description && <p className="text-destructive text-sm">{errors.description}</p>}
             </div>
 
 
             {/* Contact Information Fields */}
             <div className="space-y-4">
-              <Label className="text-lg font-semibold text-slate-700">Contact Information</Label>
-              <p className="text-sm text-slate-500">Your Contact Information will be visible on the gig page.</p>
+              <Label className="text-lg font-semibold text-card-foreground">Contact Information</Label>
+              <p className="text-sm text-muted-foreground">Your Contact Information will be visible on the gig page.</p>
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-base font-medium text-slate-600">
+                <Label htmlFor="email" className="text-base font-medium text-muted-foreground">
                   📧 Email
                 </Label>
                 <Input
@@ -241,13 +241,13 @@ function EditGig() {
                   placeholder="your.email@example.com"
                   value={formData.contact.email}
                   onChange={(e) => handleContactChange("email", e.target.value)}
-                  className="text-lg py-4"
+                  className="text-lg py-4 bg-input border-border text-foreground"
                 />
               </div>
 
               {/* WhatsApp */}
               <div className="space-y-2">
-                <Label htmlFor="whatsapp" className="text-base font-medium text-slate-600">
+                <Label htmlFor="whatsapp" className="text-base font-medium text-muted-foreground">
                   💬 WhatsApp
                 </Label>
                 <Input
@@ -256,13 +256,13 @@ function EditGig() {
                   placeholder="+1234567890"
                   value={formData.contact.whatsapp}
                   onChange={(e) => handleContactChange("whatsapp", e.target.value)}
-                  className="text-lg py-4"
+                  className="text-lg py-4 bg-input border-border text-foreground"
                 />
               </div>
 
               {/* X (Twitter) */}
               <div className="space-y-2">
-                <Label htmlFor="x" className="text-base font-medium text-slate-600">
+                <Label htmlFor="x" className="text-base font-medium text-muted-foreground">
                   🐦 X (Twitter)
                 </Label>
                 <Input
@@ -271,16 +271,16 @@ function EditGig() {
                   placeholder="@username"
                   value={formData.contact.x}
                   onChange={(e) => handleContactChange("x", e.target.value)}
-                  className="text-lg py-4"
+                  className="text-lg py-4 bg-input border-border text-foreground"
                 />
               </div>
 
-              {errors.contact && <p className="text-red-500 text-sm">{errors.contact}</p>}
+              {errors.contact && <p className="text-destructive text-sm">{errors.contact}</p>}
             </div>
 
             {/* Expires At Field */}
             <div className="space-y-2">
-              <Label htmlFor="expiresAt" className="text-lg font-semibold text-slate-700">
+              <Label htmlFor="expiresAt" className="text-lg font-semibold text-card-foreground">
                 Gig Deadline
               </Label>
               <Input
@@ -290,26 +290,26 @@ function EditGig() {
                 value={formData.expiresAt}
                 onChange={handleInputChange}
                 min={new Date().toISOString().split("T")[0]}
-                className={`text-lg py-6 ${errors.expiresAt ? "border-red-500 focus:border-red-500" : ""}`}
+                className={`text-lg py-6 bg-input border-border text-foreground ${errors.expiresAt ? "border-destructive focus:border-destructive" : ""}`}
               />
-              {errors.expiresAt && <p className="text-red-500 text-sm">{errors.expiresAt}</p>}
+              {errors.expiresAt && <p className="text-destructive text-sm">{errors.expiresAt}</p>}
             </div>
 
             {/* Budget Field with Currency Selector */}
             <div className="space-y-2">
-              <Label htmlFor="budget" className="text-lg font-semibold text-slate-700">
+              <Label htmlFor="budget" className="text-lg font-semibold text-card-foreground">
                 Budget
               </Label>
 
               {/* Currency Toggle */}
               <div className="flex items-center gap-3 mb-3">
-                <span className="text-sm font-medium text-slate-600">Currency:</span>
-                <div className="flex bg-slate-100 rounded-lg p-1">
+                <span className="text-sm font-medium text-muted-foreground">Currency:</span>
+                <div className="flex bg-muted rounded-lg p-1">
                   <button
                     type="button"
                     onClick={() => handleCurrencyChange("USD")}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      currency === "USD" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
+                      currency === "USD" ? "bg-card text-card-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     USD ($)
@@ -318,7 +318,7 @@ function EditGig() {
                     type="button"
                     onClick={() => handleCurrencyChange("INR")}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      currency === "INR" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"
+                      currency === "INR" ? "bg-card text-card-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     INR (₹)
@@ -328,7 +328,7 @@ function EditGig() {
 
               {/* Budget Input with Currency Symbol */}
               <div className="relative">
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-lg font-semibold text-slate-500 pointer-events-none">
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-lg font-semibold text-muted-foreground pointer-events-none">
                   {currency === "USD" ? "$" : "₹"}
                 </div>
                 <Input
@@ -338,19 +338,19 @@ function EditGig() {
                   placeholder={currency === "USD" ? "500" : "40000"}
                   value={budgetAmount}
                   onChange={handleBudgetChange}
-                  className={`text-lg py-6 pl-8 ${errors.budget ? "border-red-500 focus:border-red-500" : ""}`}
+                  className={`text-lg py-6 pl-8 bg-input border-border text-foreground ${errors.budget ? "border-destructive focus:border-destructive" : ""}`}
                 />
               </div>
 
               {/* Show formatted budget */}
               {formData.budget && (
-                <p className="text-sm text-slate-600 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                  Budget will be saved as: <span className="font-semibold text-slate-800">{formData.budget}</span>
+                <p className="text-sm text-muted-foreground flex items-center gap-2">
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
+                  Budget will be saved as: <span className="font-semibold text-foreground">{formData.budget}</span>
                 </p>
               )}
 
-              {errors.budget && <p className="text-red-500 text-sm">{errors.budget}</p>}
+              {errors.budget && <p className="text-destructive text-sm">{errors.budget}</p>}
             </div>
 
             {/* Submit Button */}
@@ -358,14 +358,14 @@ function EditGig() {
               <Button
                 type="button"
                 onClick={() => router.back()}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 px-8 py-6 text-lg font-semibold rounded-xl transition-all duration-300"
+                className="flex-1 bg-muted hover:bg-muted/80 text-muted-foreground px-8 py-6 text-lg font-semibold rounded-xl transition-all duration-300"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isLoading ? "Updating Gig..." : "Update Gig"}
               </Button>

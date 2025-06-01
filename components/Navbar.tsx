@@ -64,14 +64,14 @@ function Navbar() {
 
   if (!isClient || status === "loading") {
     return (
-      <nav className="w-full bg-white border-b border-gray-200 shadow-sm">
+      <nav className="w-full bg-background border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo Section Skeleton */}
             <div className="flex items-center flex-shrink-0">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-                <div className="hidden sm:block w-32 h-6 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-10 h-10 bg-muted rounded-lg animate-pulse"></div>
+                <div className="hidden sm:block w-32 h-6 bg-muted rounded animate-pulse"></div>
               </div>
             </div>
 
@@ -80,7 +80,7 @@ function Navbar() {
               <div className="flex items-center space-x-2">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="px-4 py-2 rounded-lg">
-                    <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="w-16 h-4 bg-muted rounded animate-pulse"></div>
                   </div>
                 ))}
               </div>
@@ -89,19 +89,19 @@ function Navbar() {
             {/* Desktop Auth Section Skeleton */}
             <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
               <div className="flex items-center space-x-3 p-2 rounded-lg">
-                <div className="w-9 h-9 bg-gray-200 rounded-full animate-pulse"></div>
+                <div className="w-9 h-9 bg-muted rounded-full animate-pulse"></div>
                 <div className="flex flex-col space-y-1">
-                  <div className="w-20 h-3 bg-gray-200 rounded animate-pulse"></div>
-                  <div className="w-24 h-2 bg-gray-200 rounded animate-pulse"></div>
+                  <div className="w-20 h-3 bg-muted rounded animate-pulse"></div>
+                  <div className="w-24 h-2 bg-muted rounded animate-pulse"></div>
                 </div>
-                <div className="w-4 h-4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-4 h-4 bg-muted rounded animate-pulse"></div>
               </div>
             </div>
 
             {/* Mobile Section Skeleton */}
             <div className="flex items-center space-x-3 lg:hidden">
-              <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
-              <div className="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-8 h-8 bg-muted rounded-full animate-pulse"></div>
+              <div className="w-6 h-6 bg-muted rounded animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -110,7 +110,7 @@ function Navbar() {
   }
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200 shadow-sm">
+    <nav className="w-full bg-background border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo Section */}
@@ -119,8 +119,8 @@ function Navbar() {
               <div className="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                 <Image src='/AppIcon.png' alt="App Icon" width={100} height={100} />
               </div>
-              <span className="text-xl font-bold group-hover:text-blue-600 transition-colors duration-200 text-blue-600">
-                PostMy<span className="text-emerald-600">Gig</span>
+              <span className="text-xl font-bold group-hover:text-primary transition-colors duration-200 text-primary">
+                PostMy<span className="text-accent-foreground">Gig</span>
               </span>
             </div>
           </div>
@@ -131,7 +131,7 @@ function Navbar() {
               <li>
                 <a
                   href="/"
-                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 flex items-center space-x-2"
+                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
                 >
                   <Home className="w-4 h-4" />
                   <span>Home</span>
@@ -140,7 +140,7 @@ function Navbar() {
               <li>
                 <a
                   href="/view-gigs"
-                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 flex items-center space-x-2"
+                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
                 >
                   <Briefcase className="w-4 h-4" />
                   <span>Gigs</span>
@@ -150,7 +150,7 @@ function Navbar() {
                 <li>
                   <a
                     href="/dashboard"
-                    className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 flex items-center space-x-2"
+                    className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
                   >
                     <LayoutDashboard className="w-4 h-4" />
                     <span>Dashboard</span>
@@ -162,7 +162,7 @@ function Navbar() {
                 <li>
                   <a
                     href="/user/admin/dashboard"
-                    className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 flex items-center space-x-2"
+                    className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
                   >
                     <Shield className="w-4 h-4" />
                     <span>Admin</span>
@@ -172,7 +172,7 @@ function Navbar() {
               <li>
                 <a
                   href="/user/feedback"
-                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 flex items-center space-x-2"
+                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>Feedback</span>
@@ -186,29 +186,29 @@ function Navbar() {
             {status === "authenticated" ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200 border border-transparent hover:border-gray-200">
+                  <button className="flex items-center space-x-3 hover:bg-muted p-2 rounded-lg transition-colors duration-200 border border-transparent hover:border-border">
                     {data?.user?.image ? (
                       <Image
                         src={data.user.image || "/placeholder.svg"}
                         height={36}
                         width={36}
                         alt="User Avatar"
-                        className="rounded-full border-2 border-blue-200"
+                        className="rounded-full border-2 border-primary/20"
                       />
                     ) : (
-                      <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">
+                      <div className="w-9 h-9 bg-gradient-to-r from-primary to-accent-foreground rounded-full flex items-center justify-center">
+                        <span className="text-primary-foreground text-sm font-medium">
                           {data?.user?.email?.charAt(0).toUpperCase()}
                         </span>
                       </div>
                     )}
                     <div className="flex flex-col items-start">
-                      <span className="text-sm text-gray-900 font-medium max-w-32 truncate">
+                      <span className="text-sm text-foreground font-medium max-w-32 truncate">
                         {data?.user?.name || "User"}
                       </span>
-                      <span className="text-xs text-gray-500 max-w-32 truncate">{data?.user?.email}</span>
+                      <span className="text-xs text-muted-foreground max-w-32 truncate">{data?.user?.email}</span>
                     </div>
-                    <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                    <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-64">
@@ -244,7 +244,7 @@ function Navbar() {
                   ) : null}
 
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </DropdownMenuItem>
@@ -255,7 +255,7 @@ function Navbar() {
                 <Button
                   variant="outline"
                   onClick={() => router.push("/auth/login")}
-                  className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 px-6 py-2 rounded-lg font-medium transition-all duration-200"
+                  className="border-border text-primary hover:bg-accent hover:border-primary px-6 py-2 rounded-lg font-medium transition-all duration-200"
                 >
                   Sign In
                 </Button>
@@ -269,18 +269,18 @@ function Navbar() {
             {status === "authenticated" && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center hover:bg-gray-50 p-1.5 rounded-lg transition-colors duration-200">
+                  <button className="flex items-center hover:bg-muted p-1.5 rounded-lg transition-colors duration-200">
                     {data?.user?.image ? (
                       <Image
                         src={data.user.image || "/placeholder.svg"}
                         height={32}
                         width={32}
                         alt="User Avatar"
-                        className="rounded-full border-2 border-blue-200"
+                        className="rounded-full border-2 border-primary/20"
                       />
                     ) : (
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-medium">
+                      <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent-foreground rounded-full flex items-center justify-center">
+                        <span className="text-primary-foreground text-xs font-medium">
                           {data?.user?.email?.charAt(0).toUpperCase()}
                         </span>
                       </div>
@@ -317,7 +317,7 @@ function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleMobileLogout}
-                    className="cursor-pointer text-red-600 focus:text-red-600"
+                    className="cursor-pointer text-destructive focus:text-destructive"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
@@ -328,7 +328,7 @@ function Navbar() {
 
             {/* Hamburger Menu Button */}
             <button
-              className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-colors duration-200"
+              className="text-foreground hover:text-primary hover:bg-accent p-2 rounded-lg transition-colors duration-200"
               onClick={toggleMobileMenu}
               aria-label="Toggle menu"
             >
@@ -342,11 +342,11 @@ function Navbar() {
           className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${isMobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
             }`}
         >
-          <div className="py-4 border-t border-gray-100">
+          <div className="py-4 border-t border-border">
             <ul className="flex flex-col space-y-1">
               <li>
                 <button
-                  className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                  className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                   onClick={() => handleNavigation("/")}
                 >
                   <Home className="w-5 h-5" />
@@ -355,7 +355,7 @@ function Navbar() {
               </li>
               <li>
                 <button
-                  className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                  className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                   onClick={() => handleNavigation("/view-gigs")}
                 >
                   <Briefcase className="w-5 h-5" />
@@ -366,7 +366,7 @@ function Navbar() {
                 <>
                   <li>
                     <button
-                      className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                       onClick={() => handleNavigation("/dashboard")}
                     >
                       <LayoutDashboard className="w-5 h-5" />
@@ -375,7 +375,7 @@ function Navbar() {
                   </li>
                   <li>
                     <button
-                      className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                       onClick={() => handleNavigation("/user-gigs")}
                     >
                       <User2Icon className="w-5 h-5" />
@@ -384,7 +384,7 @@ function Navbar() {
                   </li>
                   <li>
                     <button
-                      className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                       onClick={() => handleNavigation("/chat-history")}
                     >
                       <MessageCircleCodeIcon className="w-5 h-5" />
@@ -397,7 +397,7 @@ function Navbar() {
               {status === "authenticated" && data?.user?.role === 'admin' && (
                 <li>
                   <button
-                    className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                    className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                     onClick={() => handleNavigation("/user/admin/dashboard")}
                   >
                     <Shield className="w-5 h-5" />
@@ -407,7 +407,7 @@ function Navbar() {
               )}
               <li>
                 <button
-                  className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                  className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                   onClick={() => handleNavigation("/user/feedback")}
                 >
                   <MessageSquare className="w-5 h-5" />
@@ -421,13 +421,13 @@ function Navbar() {
               <div className="mt-6 px-4 space-y-3">
                 <Button
                   variant="outline"
-                  className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 hover:border-blue-300 py-3 rounded-lg font-medium transition-all duration-200"
+                  className="w-full border-border text-primary hover:bg-accent hover:border-primary py-3 rounded-lg font-medium transition-all duration-200"
                   onClick={() => handleNavigation("/auth/login")}
                 >
                   Sign In
                 </Button>
                 <Button
-                  className="w-full bg-gradient-to-r from-green-600 to-green-600 hover:from-green-700 hover:to-green-700 text-white py-3 rounded-lg font-medium transition-all duration-200 shadow-sm"
+                  className="w-full bg-gradient-to-r from-secondary-foreground to-secondary-foreground hover:from-secondary-foreground/90 hover:to-secondary-foreground/90 text-secondary py-3 rounded-lg font-medium transition-all duration-200 shadow-sm"
                   onClick={() => handleNavigation("/view-gigs")}
                 >
                   Get Started

@@ -125,24 +125,24 @@ function ViewApplication() {
   // Show unauthorized message if user is not authorized
   if (isAuthorized === false) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl border border-red-200 p-8 md:p-12 max-w-2xl w-full text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-            <Shield className="w-10 h-10 text-white" />
+      <div className="min-h-screen bg-gradient-to-br from-destructive/20 via-background to-secondary/30 flex items-center justify-center p-4">
+        <div className="bg-card rounded-2xl shadow-2xl border border-destructive/30 p-8 md:p-12 max-w-2xl w-full text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-destructive to-destructive/80 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <Shield className="w-10 h-10 text-destructive-foreground" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
+          <h1 className="text-3xl md:text-4xl font-bold text-card-foreground mb-4">Access Denied</h1>
+          <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
             You are not allowed to view this application. Only the poster of this gig can access the applications.
           </p>
-          <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-6 border border-red-200 mb-8">
-            <div className="flex items-center justify-center gap-3 text-red-700">
+          <div className="bg-gradient-to-br from-destructive/10 to-destructive/20 rounded-xl p-6 border border-destructive/30 mb-8">
+            <div className="flex items-center justify-center gap-3 text-destructive">
               <AlertTriangle className="w-6 h-6" />
               <span className="font-semibold text-lg">Unauthorized Access Attempt</span>
             </div>
           </div>
           <Button
             onClick={() => window.history.back()}
-            className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white px-8 py-3 text-lg font-medium shadow-lg"
+            className="bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground px-8 py-3 text-lg font-medium shadow-lg"
           >
             Go Back
           </Button>
@@ -154,12 +154,12 @@ function ViewApplication() {
   // Show loading state while checking authorization
   if (isAuthorized === null && applications.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/30 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <Users className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Users className="w-8 h-8 text-primary-foreground" />
           </div>
-          <p className="text-lg text-gray-600">Loading applications...</p>
+          <p className="text-lg text-muted-foreground">Loading applications...</p>
         </div>
       </div>
     )
@@ -169,17 +169,17 @@ function ViewApplication() {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: {
-        color: "bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 border-amber-200",
+        color: "bg-gradient-to-r from-secondary to-accent text-accent-foreground border-secondary",
         icon: Clock,
         text: "Pending",
       },
       accepted: {
-        color: "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-green-200",
+        color: "bg-gradient-to-r from-primary/20 to-primary/30 text-primary border-primary/30",
         icon: Check,
         text: "Accepted",
       },
       rejected: {
-        color: "bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200",
+        color: "bg-gradient-to-r from-destructive/20 to-destructive/30 text-destructive border-destructive/30",
         icon: XCircle,
         text: "Rejected",
       },
@@ -344,60 +344,60 @@ function ViewApplication() {
   const rejectedCount = applications.filter((app) => app.status?.toLowerCase() === "rejected").length
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Enhanced Header - Fully Responsive */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
+        <div className="bg-card rounded-2xl shadow-lg border border-border p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8">
           <div className="flex flex-col space-y-6">
             {/* Title Section */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-green-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                <Users className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-primary to-primary rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <Users className="w-6 h-6 sm:w-8 sm:h-8 text-primary-foreground" />
               </div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Application Management</h1>
-                <p className="text-gray-600 text-base sm:text-lg break-all sm:break-normal">
-                  Gig ID: <span className="font-semibold text-blue-600">{gigIdFromSearchParams}</span>
+                <h1 className="text-2xl sm:text-3xl font-bold text-card-foreground mb-2">Application Management</h1>
+                <p className="text-muted-foreground text-base sm:text-lg break-all sm:break-normal">
+                  Gig ID: <span className="font-semibold text-primary">{gigIdFromSearchParams}</span>
                 </p>
               </div>
             </div>
 
             {/* Stats Cards - Responsive Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-3 sm:p-4 border border-blue-200">
-                <div className="text-xl sm:text-2xl font-bold text-blue-700">{applications.length}</div>
-                <div className="text-xs sm:text-sm text-blue-600 font-medium">Total</div>
+              <div className="bg-gradient-to-br from-secondary/50 to-accent/50 rounded-xl p-3 sm:p-4 border border-border">
+                <div className="text-xl sm:text-2xl font-bold text-accent-foreground">{applications.length}</div>
+                <div className="text-xs sm:text-sm text-accent-foreground font-medium">Total</div>
               </div>
-              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-3 sm:p-4 border border-amber-200">
-                <div className="text-xl sm:text-2xl font-bold text-amber-700">{pendingCount}</div>
-                <div className="text-xs sm:text-sm text-amber-600 font-medium">Pending</div>
+              <div className="bg-gradient-to-br from-secondary to-accent rounded-xl p-3 sm:p-4 border border-border">
+                <div className="text-xl sm:text-2xl font-bold text-accent-foreground">{pendingCount}</div>
+                <div className="text-xs sm:text-sm text-accent-foreground font-medium">Pending</div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 sm:p-4 border border-green-200">
-                <div className="text-xl sm:text-2xl font-bold text-green-700">{acceptedCount}</div>
-                <div className="text-xs sm:text-sm text-green-600 font-medium">Accepted</div>
+              <div className="bg-gradient-to-br from-primary/20 to-primary/30 rounded-xl p-3 sm:p-4 border border-primary/30">
+                <div className="text-xl sm:text-2xl font-bold text-primary">{acceptedCount}</div>
+                <div className="text-xs sm:text-sm text-primary font-medium">Accepted</div>
               </div>
-              <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-3 sm:p-4 border border-red-200">
-                <div className="text-xl sm:text-2xl font-bold text-red-700">{rejectedCount}</div>
-                <div className="text-xs sm:text-sm text-red-600 font-medium">Rejected</div>
+              <div className="bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-xl p-3 sm:p-4 border border-destructive/30">
+                <div className="text-xl sm:text-2xl font-bold text-destructive">{rejectedCount}</div>
+                <div className="text-xs sm:text-sm text-destructive font-medium">Rejected</div>
               </div>
             </div>
 
             {/* Search and Filter Bar - Responsive */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 sm:w-5 sm:h-5" />
                 <input
                   type="text"
                   placeholder="Search applications..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                  className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm sm:text-base bg-background"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 sm:py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base bg-white min-w-0 sm:min-w-[140px]"
+                className="px-4 py-2 sm:py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-sm sm:text-base bg-background min-w-0 sm:min-w-[140px]"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -410,25 +410,25 @@ function ViewApplication() {
 
         {/* Applications List - Responsive */}
         {filteredApplications.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 sm:p-12 text-center">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-gray-100 to-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <Users className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400" />
+          <div className="bg-card rounded-2xl shadow-lg border border-border p-8 sm:p-12 text-center">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-muted to-muted/80 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Users className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground" />
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
+            <h3 className="text-xl sm:text-2xl font-bold text-card-foreground mb-3">
               {searchTerm || statusFilter !== "all" ? "No Matching Applications" : "No Applications Yet"}
             </h3>
-            <p className="text-gray-600 text-base sm:text-lg max-w-md mx-auto">
+            <p className="text-muted-foreground text-base sm:text-lg max-w-md mx-auto">
               {searchTerm || statusFilter !== "all"
                 ? "Try adjusting your search or filter criteria."
                 : "No one has applied for this project yet. Share your gig to attract talented applicants!"}
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+          <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
             {/* Desktop Table View - Hidden on Mobile */}
             <div className="hidden lg:block">
-              <div className="bg-gradient-to-r from-gray-50 to-slate-50 px-8 py-6 border-b border-gray-200">
-                <div className="grid grid-cols-12 gap-6 items-center text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              <div className="bg-gradient-to-r from-muted to-muted/80 px-8 py-6 border-b border-border">
+                <div className="grid grid-cols-12 gap-6 items-center text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                   <div className="col-span-4 flex items-center gap-2">
                     <User2 className="w-4 h-4" />
                     Applicant
@@ -445,7 +445,7 @@ function ViewApplication() {
                 </div>
               </div>
 
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-border">
                 {filteredApplications.map((applicant, index) => {
                   const isAccepted = applicant.status?.toLowerCase() === "accepted"
                   const isRejected = applicant.status?.toLowerCase() === "rejected"
@@ -453,13 +453,13 @@ function ViewApplication() {
                   return (
                     <div
                       key={applicant._id}
-                      className="px-8 py-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-green-50 transition-all duration-200 group"
+                      className="px-8 py-6 hover:bg-gradient-to-r hover:from-secondary/30 hover:to-accent/30 transition-all duration-200 group"
                     >
                       <div className="grid grid-cols-12 gap-6 items-center">
                         <div className="col-span-4">
                           <div className="flex items-center gap-4">
                             <div className="relative">
-                              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-green-500 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-200">
+                              <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden shadow-lg group-hover:scale-105 transition-transform duration-200">
                                 {applicant.applicant?.profilePhoto ? (
                                   <img
                                     src={applicant.applicant.profilePhoto || "/placeholder.svg"}
@@ -467,21 +467,21 @@ function ViewApplication() {
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (
-                                  <span className="text-white font-bold text-lg">
+                                  <span className="text-primary-foreground font-bold text-lg">
                                     {getApplicantInitials(applicant)}
                                   </span>
                                 )}
                               </div>
-                              <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                              <div className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-r from-primary to-primary rounded-full flex items-center justify-center text-primary-foreground text-xs font-bold shadow-lg">
                                 {index + 1}
                               </div>
                             </div>
                             <div className="min-w-0 flex-1">
-                              <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors duration-200">
+                              <h3 className="text-lg font-bold text-card-foreground truncate group-hover:text-primary transition-colors duration-200">
                                 {getApplicantDisplayName(applicant)}
                               </h3>
                               {applicant.applicant?.name && applicant.applicant?.email && (
-                                <p className="text-gray-600 truncate flex items-center gap-2 mt-1">
+                                <p className="text-muted-foreground truncate flex items-center gap-2 mt-1">
                                   <Mail className="w-4 h-4" />
                                   {applicant.applicant.email}
                                 </p>
@@ -492,8 +492,10 @@ function ViewApplication() {
 
                         <div className="col-span-2">
                           <div className="space-y-1">
-                            <p className="text-lg font-bold text-gray-900">{formatDateShort(applicant.createdAt)}</p>
-                            <p className="text-sm text-gray-500 flex items-center gap-1">
+                            <p className="text-lg font-bold text-card-foreground">
+                              {formatDateShort(applicant.createdAt)}
+                            </p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
                               <Calendar className="w-3 h-3" />
                               {formatDate(applicant.createdAt)}
                             </p>
@@ -508,30 +510,30 @@ function ViewApplication() {
                               size="sm"
                               variant="outline"
                               onClick={() => openDialog(applicant)}
-                              className="border-blue-200 text-green-600 hover:bg-blue-50 hover:border-blue-300 font-medium"
+                              className="border-border text-primary hover:bg-secondary hover:border-primary font-medium"
                             >
                               <Eye className="w-4 h-4 mr-1" />
                               View
                             </Button>
                             {applicant.status?.toLowerCase() === "accepted" && (
                               <>
-                              <Button
-                                size="sm"
-                                onClick={() => handleContactApplicant(applicant.applicant.email)}
-                                className="bg-gradient-to-r from-green-500 to-green-500 hover:from-green-600 hover:to-green-600 text-white font-medium shadow-lg"
-                              >
-                                <User2 className="w-4 h-4 mr-1" />
-                                Contact
-                              </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleContactApplicant(applicant.applicant.email)}
+                                  className="bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground font-medium shadow-lg"
+                                >
+                                  <User2 className="w-4 h-4 mr-1" />
+                                  Contact
+                                </Button>
 
-                              <Button
-                                size="sm"
-                                onClick={() => window.location.href=`/chat/?projectId=${applicant.projectId}`}
-                                className="bg-gradient-to-r from-green-500 to-green-500 hover:from-green-600 hover:to-green-600 text-white font-medium shadow-lg"
-                              >
-                                <Contact2 className="w-4 h-4 mr-1" />
-                                Chat With User
-                              </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => (window.location.href = `/chat/?projectId=${applicant.projectId}`)}
+                                  className="bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground font-medium shadow-lg"
+                                >
+                                  <Contact2 className="w-4 h-4 mr-1" />
+                                  Chat With User
+                                </Button>
                               </>
                             )}
                             <Button
@@ -540,8 +542,8 @@ function ViewApplication() {
                               disabled={isAccepted || isRejected || loading}
                               className={`font-medium shadow-lg ${
                                 isAccepted
-                                  ? "bg-green-100 text-green-800 cursor-not-allowed hover:bg-green-100"
-                                  : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                                  ? "bg-primary/20 text-primary cursor-not-allowed hover:bg-primary/20"
+                                  : "bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground"
                               }`}
                             >
                               {isAccepted ? (
@@ -566,18 +568,18 @@ function ViewApplication() {
             </div>
 
             {/* Mobile Card View - Visible on Mobile/Tablet */}
-            <div className="lg:hidden divide-y divide-gray-100">
+            <div className="lg:hidden divide-y divide-border">
               {filteredApplications.map((applicant, index) => {
                 const isAccepted = applicant.status?.toLowerCase() === "accepted"
                 const isRejected = applicant.status?.toLowerCase() === "rejected"
 
                 return (
-                  <div key={applicant._id} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-200">
+                  <div key={applicant._id} className="p-4 sm:p-6 hover:bg-muted/30 transition-colors duration-200">
                     <div className="space-y-4">
                       {/* Applicant Info */}
                       <div className="flex items-center gap-3 sm:gap-4">
                         <div className="relative">
-                          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-green-500 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden shadow-lg">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-primary to-primary rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden shadow-lg">
                             {applicant.applicant?.profilePhoto ? (
                               <img
                                 src={applicant.applicant.profilePhoto || "/placeholder.svg"}
@@ -585,21 +587,21 @@ function ViewApplication() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <span className="text-white font-bold text-sm sm:text-lg">
+                              <span className="text-primary-foreground font-bold text-sm sm:text-lg">
                                 {getApplicantInitials(applicant)}
                               </span>
                             )}
                           </div>
-                          <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-r from-blue-500 to-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                          <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-r from-primary to-primary rounded-full flex items-center justify-center text-primary-foreground text-xs font-bold shadow-lg">
                             {index + 1}
                           </div>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate">
+                          <h3 className="text-base sm:text-lg font-bold text-card-foreground truncate">
                             {getApplicantDisplayName(applicant)}
                           </h3>
                           {applicant.applicant?.name && applicant.applicant?.email && (
-                            <p className="text-gray-600 truncate flex items-center gap-2 mt-1 text-sm">
+                            <p className="text-muted-foreground truncate flex items-center gap-2 mt-1 text-sm">
                               <Mail className="w-3 h-3 sm:w-4 sm:h-4" />
                               {applicant.applicant.email}
                             </p>
@@ -611,7 +613,7 @@ function ViewApplication() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-4">
                           {getStatusBadge(applicant.status || "pending")}
-                          <div className="text-sm text-gray-500 flex items-center gap-1">
+                          <div className="text-sm text-muted-foreground flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {formatDateShort(applicant.createdAt)}
                           </div>
@@ -624,7 +626,7 @@ function ViewApplication() {
                           size="sm"
                           variant="outline"
                           onClick={() => openDialog(applicant)}
-                          className="border-blue-200 text-green-600 hover:bg-blue-50 hover:border-blue-300 font-medium flex-1 sm:flex-none"
+                          className="border-border text-primary hover:bg-secondary hover:border-primary font-medium flex-1 sm:flex-none"
                         >
                           <Eye className="w-4 h-4 mr-1" />
                           View
@@ -633,7 +635,7 @@ function ViewApplication() {
                           <Button
                             size="sm"
                             onClick={() => handleContactApplicant(applicant.applicant.email)}
-                            className="bg-gradient-to-r from-green-500 to-green-500 hover:from-green-600 hover:to-green-600 text-white font-medium shadow-lg flex-1 sm:flex-none"
+                            className="bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground font-medium shadow-lg flex-1 sm:flex-none"
                           >
                             <User2 className="w-4 h-4 mr-1" />
                             Contact
@@ -645,8 +647,8 @@ function ViewApplication() {
                           disabled={isAccepted || isRejected || loading}
                           className={`font-medium shadow-lg flex-1 sm:flex-none ${
                             isAccepted
-                              ? "bg-green-100 text-green-800 cursor-not-allowed hover:bg-green-100"
-                              : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                              ? "bg-primary/20 text-primary cursor-not-allowed hover:bg-primary/20"
+                              : "bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground"
                           }`}
                         >
                           {isAccepted ? (
@@ -673,11 +675,11 @@ function ViewApplication() {
         {/* Enhanced Modal Dialog - Responsive */}
         {selectedApplicant && (
           <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-200">
+            <div className="bg-card rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-border">
               {/* Enhanced Dialog Header - Responsive */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 lg:p-8 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-green-50 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 lg:p-8 border-b border-border bg-gradient-to-r from-secondary/50 to-accent/50 gap-4">
                 <div className="flex items-center gap-4 sm:gap-6 min-w-0 flex-1">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg flex-shrink-0">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-primary to-primary rounded-2xl flex items-center justify-center overflow-hidden shadow-lg flex-shrink-0">
                     {selectedApplicant.applicant?.profilePhoto ? (
                       <img
                         src={selectedApplicant.applicant.profilePhoto || "/placeholder.svg"}
@@ -685,26 +687,26 @@ function ViewApplication() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-white font-bold text-lg sm:text-xl">
+                      <span className="text-primary-foreground font-bold text-lg sm:text-xl">
                         {getApplicantInitials(selectedApplicant)}
                       </span>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
+                      <h2 className="text-xl sm:text-2xl font-bold text-card-foreground truncate">
                         {getApplicantDisplayName(selectedApplicant)}
                       </h2>
                       {getStatusBadge(selectedApplicant.status || "pending")}
                     </div>
                     <div className="space-y-1">
                       {selectedApplicant.applicant?.email && (
-                        <p className="text-gray-600 flex items-center gap-2 text-sm sm:text-base break-all sm:break-normal">
+                        <p className="text-muted-foreground flex items-center gap-2 text-sm sm:text-base break-all sm:break-normal">
                           <Mail className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                           {selectedApplicant.applicant.email}
                         </p>
                       )}
-                      <p className="text-gray-500 flex items-center gap-2 text-sm">
+                      <p className="text-muted-foreground flex items-center gap-2 text-sm">
                         <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                         Applied on {formatDate(selectedApplicant.createdAt)}
                       </p>
@@ -715,7 +717,7 @@ function ViewApplication() {
                   variant="outline"
                   size="sm"
                   onClick={closeDialog}
-                  className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex-shrink-0 self-start sm:self-center"
+                  className="h-10 w-10 p-0 border-border hover:bg-muted flex-shrink-0 self-start sm:self-center"
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -727,13 +729,13 @@ function ViewApplication() {
                   {/* Enhanced Message Section */}
                   <div>
                     <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center">
-                        <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-secondary to-accent rounded-xl flex items-center justify-center">
+                        <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-accent-foreground" />
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900">Application Message</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-card-foreground">Application Message</h3>
                     </div>
-                    <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-4 sm:p-6 border border-gray-200">
-                      <p className="text-gray-700 leading-relaxed text-base sm:text-lg whitespace-pre-wrap break-words">
+                    <div className="bg-gradient-to-br from-muted to-muted/80 rounded-xl p-4 sm:p-6 border border-border">
+                      <p className="text-card-foreground leading-relaxed text-base sm:text-lg whitespace-pre-wrap break-words">
                         {selectedApplicant.message}
                       </p>
                     </div>
@@ -743,31 +745,31 @@ function ViewApplication() {
                   {(selectedApplicant.bestWorkLink || selectedApplicant.bestWorkDescription) && (
                     <div>
                       <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
-                          <Star className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-secondary to-accent rounded-xl flex items-center justify-center">
+                          <Star className="w-4 h-4 sm:w-5 sm:h-5 text-accent-foreground" />
                         </div>
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-900">Portfolio & Previous Work</h3>
+                        <h3 className="text-lg sm:text-xl font-bold text-card-foreground">Portfolio & Previous Work</h3>
                       </div>
                       <div className="space-y-4 sm:space-y-6">
                         {selectedApplicant.bestWorkLink && (
                           <div>
-                            <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-                              <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+                            <h4 className="text-base sm:text-lg font-semibold text-card-foreground mb-3 sm:mb-4 flex items-center gap-2">
+                              <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                               Work Link
                             </h4>
-                            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 sm:p-6 border border-blue-200">
+                            <div className="bg-gradient-to-br from-secondary/50 to-accent/50 rounded-xl p-4 sm:p-6 border border-border">
                               {isValidUrl(selectedApplicant.bestWorkLink) ? (
                                 <a
                                   href={selectedApplicant.bestWorkLink}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-3 text-blue-600 hover:text-blue-700 text-base sm:text-lg font-semibold transition-colors bg-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl border border-blue-300 hover:border-blue-400 shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-200 break-all"
+                                  className="inline-flex items-center gap-3 text-primary hover:text-primary/90 text-base sm:text-lg font-semibold transition-colors bg-card px-4 sm:px-6 py-3 sm:py-4 rounded-xl border border-border hover:border-primary shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-200 break-all"
                                 >
                                   <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                                   View Portfolio
                                 </a>
                               ) : (
-                                <p className="text-gray-700 leading-relaxed text-base sm:text-lg break-words">
+                                <p className="text-card-foreground leading-relaxed text-base sm:text-lg break-words">
                                   {selectedApplicant.bestWorkLink}
                                 </p>
                               )}
@@ -777,12 +779,12 @@ function ViewApplication() {
 
                         {selectedApplicant.bestWorkDescription && (
                           <div>
-                            <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-                              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                            <h4 className="text-base sm:text-lg font-semibold text-card-foreground mb-3 sm:mb-4 flex items-center gap-2">
+                              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                               Work Description
                             </h4>
-                            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 sm:p-6 border border-green-200">
-                              <p className="text-gray-700 leading-relaxed text-base sm:text-lg whitespace-pre-wrap break-words">
+                            <div className="bg-gradient-to-br from-secondary/50 to-accent/50 rounded-xl p-4 sm:p-6 border border-border">
+                              <p className="text-card-foreground leading-relaxed text-base sm:text-lg whitespace-pre-wrap break-words">
                                 {selectedApplicant.bestWorkDescription}
                               </p>
                             </div>
@@ -795,7 +797,7 @@ function ViewApplication() {
               </div>
 
               {/* Enhanced Dialog Footer - Responsive */}
-              <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 p-4 sm:p-6 lg:p-8 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50">
+              <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 p-4 sm:p-6 lg:p-8 border-t border-border bg-gradient-to-r from-muted/50 to-muted/80">
                 <Button
                   variant="outline"
                   onClick={closeDialog}
@@ -807,7 +809,7 @@ function ViewApplication() {
                   onClick={handleDeleteApplication}
                   variant="outline"
                   disabled={loading}
-                  className="bg-red-500 hover:bg-red-600 text-white border-red-500 hover:border-red-600 px-6 sm:px-8 py-2 sm:py-3 font-medium disabled:opacity-50 order-2"
+                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-destructive hover:border-destructive px-6 sm:px-8 py-2 sm:py-3 font-medium disabled:opacity-50 order-2"
                 >
                   <XCircle className="w-4 h-4 mr-2" />
                   Reject Application
@@ -821,8 +823,8 @@ function ViewApplication() {
                   }
                   className={`px-6 sm:px-8 py-2 sm:py-3 font-medium order-1 sm:order-3 ${
                     selectedApplicant.status?.toLowerCase() === "accepted"
-                      ? "bg-green-100 text-green-800 cursor-not-allowed hover:bg-green-100"
-                      : "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
+                      ? "bg-primary/20 text-primary cursor-not-allowed hover:bg-primary/20"
+                      : "bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground"
                   }`}
                 >
                   {selectedApplicant.status?.toLowerCase() === "accepted" ? (
@@ -845,23 +847,23 @@ function ViewApplication() {
         {/* Enhanced Contact Dialog - Responsive */}
         {contactDialogOpen && contactData && (
           <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-gray-200">
+            <div className="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-border">
               {/* Enhanced Contact Dialog Header - Responsive */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 lg:p-8 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-6 lg:p-8 border-b border-border bg-gradient-to-r from-secondary/50 to-accent/50 gap-4">
                 <div className="flex items-center gap-4 min-w-0 flex-1">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                    <User2 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-primary to-primary rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                    <User2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Contact Information</h2>
-                    <p className="text-gray-600 text-sm sm:text-base">Connect with the accepted applicant</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-card-foreground">Contact Information</h2>
+                    <p className="text-muted-foreground text-sm sm:text-base">Connect with the accepted applicant</p>
                   </div>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setContactDialogOpen(false)}
-                  className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex-shrink-0 self-start sm:self-center"
+                  className="h-10 w-10 p-0 border-border hover:bg-muted flex-shrink-0 self-start sm:self-center"
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -873,20 +875,20 @@ function ViewApplication() {
                   {/* Enhanced Email Section */}
                   <div>
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center">
-                        <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-secondary to-accent rounded-xl flex items-center justify-center">
+                        <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-accent-foreground" />
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900">Email Address</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-card-foreground">Email Address</h3>
                     </div>
-                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 sm:p-6 border border-blue-200">
+                    <div className="bg-gradient-to-br from-secondary/50 to-accent/50 rounded-xl p-4 sm:p-6 border border-border">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <span className="text-base sm:text-lg text-gray-700 font-medium break-all">
+                        <span className="text-base sm:text-lg text-card-foreground font-medium break-all">
                           {contactData.email}
                         </span>
                         <Button
                           size="sm"
                           onClick={() => window.open(`mailto:${contactData.email}`, "_blank")}
-                          className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium shadow-lg flex-shrink-0"
+                          className="bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground font-medium shadow-lg flex-shrink-0"
                         >
                           <Mail className="w-4 h-4 mr-2" />
                           Send Email
@@ -899,26 +901,28 @@ function ViewApplication() {
                   {contactData.contactLinks && contactData.contactLinks.length > 0 && (
                     <div>
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
-                          <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-secondary to-accent rounded-xl flex items-center justify-center">
+                          <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-accent-foreground" />
                         </div>
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-900">Additional Contact Methods</h3>
+                        <h3 className="text-lg sm:text-xl font-bold text-card-foreground">
+                          Additional Contact Methods
+                        </h3>
                       </div>
                       <div className="space-y-4">
                         {contactData.contactLinks.map((link, index) => (
                           <div
                             key={index}
-                            className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 sm:p-6 border border-green-200"
+                            className="bg-gradient-to-br from-secondary/50 to-accent/50 rounded-xl p-4 sm:p-6 border border-border"
                           >
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                               <div className="min-w-0 flex-1">
-                                <p className="font-semibold text-gray-900 text-base sm:text-lg">{link.label}</p>
-                                <p className="text-gray-600 break-all mt-1 text-sm sm:text-base">{link.url}</p>
+                                <p className="font-semibold text-card-foreground text-base sm:text-lg">{link.label}</p>
+                                <p className="text-muted-foreground break-all mt-1 text-sm sm:text-base">{link.url}</p>
                               </div>
                               <Button
                                 size="sm"
                                 onClick={() => window.open(link.url, "_blank")}
-                                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium shadow-lg flex-shrink-0"
+                                className="bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground font-medium shadow-lg flex-shrink-0"
                               >
                                 <ExternalLink className="w-4 h-4 mr-2" />
                                 Visit
@@ -933,11 +937,13 @@ function ViewApplication() {
                   {/* Enhanced No Contact Links Message */}
                   {(!contactData.contactLinks || contactData.contactLinks.length === 0) && (
                     <div className="text-center py-8 sm:py-12">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-gray-100 to-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                        <ExternalLink className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-muted to-muted/80 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <ExternalLink className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">No Additional Contact Methods</h3>
-                      <p className="text-gray-600 text-base sm:text-lg">
+                      <h3 className="text-lg sm:text-xl font-bold text-card-foreground mb-3">
+                        No Additional Contact Methods
+                      </h3>
+                      <p className="text-muted-foreground text-base sm:text-lg">
                         The applicant hasn't provided any additional contact links. You can reach them via email.
                       </p>
                     </div>
@@ -946,7 +952,7 @@ function ViewApplication() {
               </div>
 
               {/* Enhanced Contact Dialog Footer - Responsive */}
-              <div className="flex justify-end gap-4 p-4 sm:p-6 lg:p-8 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50">
+              <div className="flex justify-end gap-4 p-4 sm:p-6 lg:p-8 border-t border-border bg-gradient-to-r from-muted/50 to-muted/80">
                 <Button
                   variant="outline"
                   onClick={() => setContactDialogOpen(false)}

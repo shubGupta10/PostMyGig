@@ -236,54 +236,54 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
     }
   }, [])
 
-const sendMessage = (): void => {
-  if (!socketIsConnected() || !message.trim() || !posterUserId || !applyerUserId) return
+  const sendMessage = (): void => {
+    if (!socketIsConnected() || !message.trim() || !posterUserId || !applyerUserId) return
 
-  const currentUserId = getCurrentUserId()
-  const targetUserId = currentUserId === posterUserId ? applyerUserId : posterUserId
+    const currentUserId = getCurrentUserId()
+    const targetUserId = currentUserId === posterUserId ? applyerUserId : posterUserId
 
-  // Determine sender and receiver data based on current user role
-  let senderName: string, senderEmail: string, receiverName: string, receiverEmail: string
+    // Determine sender and receiver data based on current user role
+    let senderName: string, senderEmail: string, receiverName: string, receiverEmail: string
 
-  if (currentUserRole === "poster") {
-    // Current user is poster, so they are sender
-    senderName = userData?.posterData.name as string
-    senderEmail = userData?.posterData.email as string
-    receiverName = userData?.applyerData.name as string
-    receiverEmail = userData?.applyerData.email as string
-  } else {
-    // Current user is applyer, so they are sender
-    senderName = userData?.applyerData.name as string
-    senderEmail = userData?.applyerData.email as string
-    receiverName = userData?.posterData.name as string
-    receiverEmail = userData?.posterData.email as string
+    if (currentUserRole === "poster") {
+      // Current user is poster, so they are sender
+      senderName = userData?.posterData.name as string
+      senderEmail = userData?.posterData.email as string
+      receiverName = userData?.applyerData.name as string
+      receiverEmail = userData?.applyerData.email as string
+    } else {
+      // Current user is applyer, so they are sender
+      senderName = userData?.applyerData.name as string
+      senderEmail = userData?.applyerData.email as string
+      receiverName = userData?.posterData.name as string
+      receiverEmail = userData?.posterData.email as string
+    }
+
+    const messageData: Message = {
+      message: message.trim(),
+      sender: currentUserId || "",
+      timestamp: new Date().toLocaleTimeString(),
+      isOwn: true,
+    }
+
+    setMessages((prev) => [...prev, messageData])
+
+    try {
+      sendPrivateMessage(
+        targetUserId,
+        message.trim(),
+        projectId,
+        senderName, // Current user's name
+        senderEmail, // Current user's email
+        receiverName, // Target user's name
+        receiverEmail, // Target user's email
+      )
+      setMessage("")
+    } catch (error) {
+      setError("Failed to send message")
+      toast.error("Failed to send message")
+    }
   }
-
-  const messageData: Message = {
-    message: message.trim(),
-    sender: currentUserId || "",
-    timestamp: new Date().toLocaleTimeString(),
-    isOwn: true,
-  }
-
-  setMessages((prev) => [...prev, messageData])
-
-  try {
-    sendPrivateMessage(
-      targetUserId, 
-      message.trim(), 
-      projectId, 
-      senderName,    // Current user's name
-      senderEmail,   // Current user's email
-      receiverName,  // Target user's name
-      receiverEmail  // Target user's email
-    )
-    setMessage("")
-  } catch (error) {
-    setError("Failed to send message")
-    toast.error("Failed to send message")
-  }
-}
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter") {
@@ -293,56 +293,56 @@ const sendMessage = (): void => {
   }
 
   const getConnectionStatus = (): { text: string; color: string } => {
-    if (isConnecting || isLoading) return { text: "Connecting...", color: "text-amber-600" }
-    if (error) return { text: "Error", color: "text-red-600" }
-    if (isConnected) return { text: "Connected", color: "text-emerald-600" }
-    return { text: "Disconnected", color: "text-red-600" }
+    if (isConnecting || isLoading) return { text: "Connecting...", color: "text-accent-foreground" }
+    if (error) return { text: "Error", color: "text-destructive" }
+    if (isConnected) return { text: "Connected", color: "text-primary" }
+    return { text: "Disconnected", color: "text-destructive" }
   }
 
   const getConnectionDot = (): string => {
-    if (isConnecting || isLoading) return "bg-amber-500"
-    if (error) return "bg-red-500"
-    if (isConnected) return "bg-emerald-500"
-    return "bg-red-500"
+    if (isConnecting || isLoading) return "bg-accent-foreground"
+    if (error) return "bg-destructive"
+    if (isConnected) return "bg-primary"
+    return "bg-destructive"
   }
 
   const getRoleColors = () => {
     return currentUserRole === "poster"
       ? {
-          bg: "bg-blue-500",
-          hover: "hover:bg-blue-600",
-          text: "text-blue-600",
-          light: "bg-blue-50",
-          border: "border-blue-200",
+          bg: "bg-primary",
+          hover: "hover:bg-primary/90",
+          text: "text-primary",
+          light: "bg-secondary",
+          border: "border-primary",
         }
       : {
-          bg: "bg-green-500",
-          hover: "hover:bg-green-600",
-          text: "text-green-600",
-          light: "bg-green-50",
-          border: "border-green-200",
+          bg: "bg-accent-foreground",
+          hover: "hover:bg-accent-foreground/90",
+          text: "text-accent-foreground",
+          light: "bg-accent",
+          border: "border-accent-foreground",
         }
   }
 
   const getPartnerColors = () => {
     return currentUserRole === "poster"
-      ? { bg: "bg-green-100", text: "text-green-800", border: "border-green-200" }
-      : { bg: "bg-blue-100", text: "text-blue-800", border: "border-blue-200" }
+      ? { bg: "bg-accent", text: "text-accent-foreground", border: "border-accent" }
+      : { bg: "bg-secondary", text: "text-secondary-foreground", border: "border-secondary" }
   }
 
   if (status === "loading" || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-10 border border-gray-200 text-center max-w-lg w-full">
-          <div className="w-20 h-20 bg-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <Loader className="w-10 h-10 animate-spin text-blue-600" />
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-card rounded-3xl shadow-2xl p-10 border border-border text-center max-w-lg w-full">
+          <div className="w-20 h-20 bg-secondary rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+            <Loader className="w-10 h-10 animate-spin text-primary" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">Initializing Chat</h2>
-          <p className="text-gray-600 text-lg leading-relaxed">Setting up your private conversation...</p>
+          <h2 className="text-2xl font-bold text-card-foreground mb-4 tracking-tight">Initializing Chat</h2>
+          <p className="text-muted-foreground text-lg leading-relaxed">Setting up your private conversation...</p>
           <div className="mt-6 flex justify-center space-x-1">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
           </div>
         </div>
       </div>
@@ -351,16 +351,18 @@ const sendMessage = (): void => {
 
   if (status === "unauthenticated" || !session?.user?.id) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-10 border border-red-200 text-center max-w-lg w-full">
-          <div className="w-20 h-20 bg-red-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <AlertCircle className="w-10 h-10 text-red-600" />
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-card rounded-3xl shadow-2xl p-10 border border-destructive/30 text-center max-w-lg w-full">
+          <div className="w-20 h-20 bg-destructive/20 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+            <AlertCircle className="w-10 h-10 text-destructive" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">Unauthorized Access</h2>
-          <p className="text-gray-600 mb-8 text-lg leading-relaxed">You need to be logged in to access this chat.</p>
+          <h2 className="text-2xl font-bold text-card-foreground mb-4 tracking-tight">Unauthorized Access</h2>
+          <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+            You need to be logged in to access this chat.
+          </p>
           <button
             onClick={() => router.push("/auth/login")}
-            className="px-8 py-4 bg-blue-500 text-white rounded-2xl hover:bg-blue-600 transition-all duration-200 font-bold text-lg shadow-lg hover:scale-105 active:scale-95"
+            className="px-8 py-4 bg-primary text-primary-foreground rounded-2xl hover:bg-primary/90 transition-all duration-200 font-bold text-lg shadow-lg hover:scale-105 active:scale-95"
           >
             Go to Login
           </button>
@@ -371,16 +373,16 @@ const sendMessage = (): void => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl p-10 border border-red-200 text-center max-w-lg w-full">
-          <div className="w-20 h-20 bg-red-100 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <AlertCircle className="w-10 h-10 text-red-600" />
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="bg-card rounded-3xl shadow-2xl p-10 border border-destructive/30 text-center max-w-lg w-full">
+          <div className="w-20 h-20 bg-destructive/20 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+            <AlertCircle className="w-10 h-10 text-destructive" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">Chat Error</h2>
-          <p className="text-gray-600 mb-8 text-lg leading-relaxed">{error}</p>
+          <h2 className="text-2xl font-bold text-card-foreground mb-4 tracking-tight">Chat Error</h2>
+          <p className="text-muted-foreground mb-8 text-lg leading-relaxed">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-8 py-4 bg-red-500 text-white rounded-2xl hover:bg-red-600 transition-all duration-200 font-bold text-lg shadow-lg hover:scale-105 active:scale-95"
+            className="px-8 py-4 bg-destructive text-destructive-foreground rounded-2xl hover:bg-destructive/90 transition-all duration-200 font-bold text-lg shadow-lg hover:scale-105 active:scale-95"
           >
             Retry Connection
           </button>
@@ -393,24 +395,24 @@ const sendMessage = (): void => {
   const partnerColors = getPartnerColors()
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-5xl mx-auto h-screen max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
+    <div className="min-h-screen bg-background p-4">
+      <div className="max-w-5xl mx-auto h-screen max-h-[calc(100vh-2rem)] flex flex-col bg-card rounded-3xl shadow-2xl overflow-hidden border border-border">
         {/* Enhanced Header */}
-        <div className={`bg-white border-b ${roleColors.border} p-6 backdrop-blur-sm`}>
+        <div className={`bg-card border-b ${roleColors.border} p-6 backdrop-blur-sm`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div
-                className={`w-14 h-14 ${roleColors.bg} rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-white`}
+                className={`w-14 h-14 ${roleColors.bg} rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-background`}
               >
-                <MessageCircle className="w-7 h-7 text-white" />
+                <MessageCircle className="w-7 h-7 text-primary-foreground" />
               </div>
               <div className="flex flex-col">
-                <h2 className="text-xl font-bold text-gray-900 tracking-tight">{chatPartnerName}</h2>
+                <h2 className="text-xl font-bold text-card-foreground tracking-tight">{chatPartnerName}</h2>
                 <div className="flex items-center gap-3 text-sm">
                   <div className={`w-3 h-3 rounded-full ${getConnectionDot()} animate-pulse`}></div>
                   <span className={`font-semibold ${getConnectionStatus().color}`}>{getConnectionStatus().text}</span>
-                  <div className="w-1 h-1 rounded-full bg-gray-300"></div>
-                  <span className={`font-medium ${roleColors.text} capitalize px-2 py-1 rounded-md bg-gray-100`}>
+                  <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
+                  <span className={`font-medium ${roleColors.text} capitalize px-2 py-1 rounded-md bg-muted`}>
                     {currentUserRole}
                   </span>
                 </div>
@@ -424,19 +426,19 @@ const sendMessage = (): void => {
 
         {/* Enhanced Messages Area */}
         <div
-          className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-gray-50 to-white relative"
+          className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-card relative"
           ref={messagesContainerRef}
         >
           <div className="space-y-4">
             {messages.length === 0 ? (
               <div className="text-center py-16">
-                <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                  <MessageCircle className="w-10 h-10 text-gray-400" />
+                <div className="w-20 h-20 bg-muted rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                  <MessageCircle className="w-10 h-10 text-muted-foreground" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-700 mb-3">
+                <h3 className="text-xl font-bold text-card-foreground mb-3">
                   {historyLoaded ? "No Messages Yet" : "Loading Chat History..."}
                 </h3>
-                <p className="text-gray-500 text-base max-w-md mx-auto leading-relaxed">
+                <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed">
                   {historyLoaded
                     ? `Begin discussing your project with ${chatPartnerName}`
                     : "Fetching your conversation history..."}
@@ -449,13 +451,17 @@ const sendMessage = (): void => {
                     <div
                       className={`px-5 py-4 rounded-3xl shadow-md transition-all duration-200 hover:shadow-lg ${
                         msg.isOwn
-                          ? `${roleColors.bg} text-white rounded-br-lg`
+                          ? `${roleColors.bg} text-primary-foreground rounded-br-lg`
                           : `${partnerColors.bg} ${partnerColors.text} border-2 ${partnerColors.border} rounded-bl-lg`
                       }`}
                     >
                       <div className="break-words leading-relaxed font-medium">{msg.message}</div>
                     </div>
-                    <div className={`text-xs mt-2 px-2 font-medium ${msg.isOwn ? "text-gray-500" : "text-gray-400"}`}>
+                    <div
+                      className={`text-xs mt-2 px-2 font-medium ${
+                        msg.isOwn ? "text-muted-foreground" : "text-muted-foreground"
+                      }`}
+                    >
                       {msg.timestamp}
                     </div>
                   </div>
@@ -469,7 +475,7 @@ const sendMessage = (): void => {
           {showScrollButton && (
             <button
               onClick={scrollToBottom}
-              className={`fixed bottom-32 right-8 w-14 h-14 ${roleColors.bg} ${roleColors.hover} text-white rounded-2xl shadow-xl flex items-center justify-center transition-all duration-300 z-10 hover:scale-110 ring-4 ring-white`}
+              className={`fixed bottom-32 right-8 w-14 h-14 ${roleColors.bg} ${roleColors.hover} text-primary-foreground rounded-2xl shadow-xl flex items-center justify-center transition-all duration-300 z-10 hover:scale-110 ring-4 ring-background`}
             >
               <ChevronDown className="w-6 h-6" />
             </button>
@@ -477,7 +483,7 @@ const sendMessage = (): void => {
         </div>
 
         {/* Enhanced Input Area */}
-        <div className={`bg-white border-t-2 ${roleColors.border} p-6 backdrop-blur-sm`}>
+        <div className={`bg-card border-t-2 ${roleColors.border} p-6 backdrop-blur-sm`}>
           <div className="flex gap-4 items-end">
             <div className="flex-1 relative">
               <input
@@ -487,7 +493,7 @@ const sendMessage = (): void => {
                 onKeyPress={handleKeyPress}
                 placeholder={`Message ${chatPartnerName}...`}
                 disabled={!isConnected || isConnecting || isLoading}
-                className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 disabled:opacity-50 disabled:bg-gray-50 text-gray-800 placeholder-gray-500 font-medium text-base transition-all duration-200 shadow-sm"
+                className="w-full px-6 py-4 border-2 border-border rounded-2xl focus:outline-none focus:ring-4 focus:ring-ring focus:border-primary disabled:opacity-50 disabled:bg-muted text-card-foreground placeholder-muted-foreground font-medium text-base transition-all duration-200 shadow-sm bg-background"
               />
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                 <div className={`w-2 h-2 rounded-full ${getConnectionDot()}`}></div>
@@ -496,7 +502,7 @@ const sendMessage = (): void => {
             <button
               onClick={sendMessage}
               disabled={!isConnected || !message.trim() || isConnecting || isLoading}
-              className={`px-6 py-4 ${roleColors.bg} ${roleColors.hover} text-white rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg font-bold text-base hover:scale-105 active:scale-95`}
+              className={`px-6 py-4 ${roleColors.bg} ${roleColors.hover} text-primary-foreground rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg font-bold text-base hover:scale-105 active:scale-95`}
             >
               <Send className="w-5 h-5" />
               <span className="hidden sm:inline">Send</span>

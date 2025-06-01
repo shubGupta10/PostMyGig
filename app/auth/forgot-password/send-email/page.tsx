@@ -65,20 +65,20 @@ function SendEmail() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <div className="bg-card rounded-2xl shadow-xl p-8 border border-border">
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <div className="mx-auto w-16 h-16 bg-gradient-to-r from-green-500 to-green-500 rounded-full flex items-center justify-center mb-4">
-                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-2xl font-bold text-foreground mb-2">
                             Reset Your Password
                         </h1>
-                        <p className="text-gray-600 text-sm leading-relaxed">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                             Enter your registered email address and we'll send you a link to reset your password.
                         </p>
                     </div>
@@ -86,7 +86,7 @@ function SendEmail() {
                     {/* Form */}
                     <div className="space-y-6">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
                                 Email Address
                             </label>
                             <Input
@@ -96,7 +96,7 @@ function SendEmail() {
                                 value={registeredEmail}
                                 onChange={(e) => setRegisteredEmail(e.target.value)}
                                 onKeyPress={handleKeyPress}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition-colors bg-input text-foreground"
                                 disabled={isLoading}
                             />
                         </div>
@@ -105,8 +105,8 @@ function SendEmail() {
                         {message && (
                             <div className={`p-4 rounded-lg border ${
                                 messageType === 'success' 
-                                    ? 'bg-green-50 border-green-200 text-green-800'
-                                    : 'bg-red-50 border-red-200 text-red-800'
+                                    ? 'bg-secondary border-secondary text-secondary-foreground'
+                                    : 'bg-destructive/10 border-destructive text-destructive'
                             }`}>
                                 <div className="flex items-center">
                                     {messageType === 'success' ? (
@@ -127,11 +127,11 @@ function SendEmail() {
                         <button
                             onClick={handleSubmitEmail}
                             disabled={isLoading || !registeredEmail}
-                            className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                            className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
                         >
                             {isLoading ? (
                                 <>
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
@@ -146,7 +146,7 @@ function SendEmail() {
                         <div className="text-center">
                             <button 
                                 onClick={() => window.history.back()}
-                                className="text-green-600 hover:text-green-700 text-sm font-medium transition-colors"
+                                className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
                             >
                                 ← Back to Login
                             </button>
@@ -156,7 +156,7 @@ function SendEmail() {
 
                 {/* Footer */}
                 <div className="text-center mt-6">
-                    <p className="text-gray-500 text-xs">
+                    <p className="text-muted-foreground text-xs">
                         Didn't receive an email? Check your spam folder or try again.
                     </p>
                 </div>
