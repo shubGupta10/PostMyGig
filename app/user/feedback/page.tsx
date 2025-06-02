@@ -86,7 +86,7 @@ export default function FeedbackPage() {
       id: "suggestion",
       label: "Suggestion",
       icon: Lightbulb,
-      color: "bg-secondary-foreground",
+      color: "bg-secondary",
       bgColor: "bg-secondary",
       borderColor: "border-secondary-foreground",
     },
@@ -110,7 +110,7 @@ export default function FeedbackPage() {
       id: "feature",
       label: "Feature",
       icon: Star,
-      color: "bg-secondary-foreground",
+      color: "bg-secondary",
       bgColor: "bg-secondary",
       borderColor: "border-secondary-foreground",
     },
@@ -118,7 +118,7 @@ export default function FeedbackPage() {
       id: "other",
       label: "Other",
       icon: Plus,
-      color: "bg-muted-foreground",
+      color: "bg-muted",
       bgColor: "bg-muted",
       borderColor: "border-muted-foreground",
     },
@@ -181,10 +181,6 @@ export default function FeedbackPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Enhanced Header */}
         <div className="text-center mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent rounded-full border border-accent-foreground mb-6">
-            <MessageSquare className="w-4 h-4 text-secondary-foreground" />
-            <span className="font-medium text-accent-foreground">Share Your Thoughts</span>
-          </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6">
             We Value Your <span className="text-primary">Feedback</span>
           </h1>
@@ -223,7 +219,7 @@ export default function FeedbackPage() {
             </Card>
 
             {/* Support Card */}
-            <Card className="border-primary shadow-lg bg-primary text-primary-foreground overflow-hidden">
+            <Card className="border-border shadow-lg text-primary-foreground overflow-hidden">
               <CardContent className="p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-12 h-12 bg-primary-foreground/20 rounded-xl flex items-center justify-center">

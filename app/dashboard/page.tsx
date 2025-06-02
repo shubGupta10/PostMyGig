@@ -521,7 +521,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       <CardFooter className="pt-4 border-t border-border">
         <Button
           onClick={() => router.push(`/open-gig/${project._id}`)}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+          className="w-full dark:bg-accent bg-accent-foreground  hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           <Eye className="mr-2 h-4 w-4" />
           View Details

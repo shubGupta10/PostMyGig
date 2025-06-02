@@ -209,14 +209,14 @@ function OpenGig() {
     switch (status.toLowerCase()) {
       case "active":
         return {
-          color: "bg-gradient-to-r from-secondary to-accent text-accent-foreground border-secondary",
+          color: "bg-auto border-transparent",
           dot: "bg-primary",
-          bgGradient: "from-secondary to-accent",
+          bgGradient: "bg-auto",
           icon: CheckCircle,
         }
       case "completed":
         return {
-          color: "bg-gradient-to-r from-secondary to-accent text-accent-foreground border-secondary",
+          color: "bg-auto border-transparent",
           dot: "bg-primary",
           bgGradient: "from-secondary to-accent",
           icon: Star,
@@ -382,7 +382,6 @@ function OpenGig() {
                   className={`${statusConfig.color} border font-bold text-sm px-4 py-2 flex items-center gap-2 shadow-sm`}
                 >
                   <div className={`w-2.5 h-2.5 rounded-full ${statusConfig.dot}`}></div>
-                  <StatusIcon className="w-4 h-4" />
                   {gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
                 </Badge>
                 {gig.isFlagged && (
@@ -535,7 +534,7 @@ function OpenGig() {
                   {gig.skillsRequired.map((skill, index) => (
                     <div
                       key={index}
-                      className="bg-gradient-to-r from-secondary/50 to-accent/50 border border-border rounded-xl p-4 text-center group hover:from-secondary hover:to-accent transition-all duration-200 cursor-pointer transform hover:-translate-y-1 hover:shadow-md"
+                      className="bg-accent border border-border rounded-xl p-4 text-center group hover:from-secondary hover:to-accent transition-all duration-200 cursor-pointer transform hover:-translate-y-1 hover:shadow-md"
                     >
                       <span className="text-accent-foreground font-semibold text-sm group-hover:scale-105 transition-transform duration-200 inline-block">
                         {skill.trim()}
@@ -572,7 +571,7 @@ function OpenGig() {
                       {/* Email and WhatsApp in a responsive grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {gig.contact.email && (
-                          <div className="bg-secondary/50 border border-border rounded-xl p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
+                          <div className="bg-auto border border-border rounded-xl p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
                             <div className="flex items-center gap-3 mb-3">
                               <Mail className="w-5 h-5 text-primary" />
                               <h4 className="font-semibold text-card-foreground">Email</h4>
@@ -669,7 +668,7 @@ function OpenGig() {
                         <span className="text-card-foreground font-medium">Budget</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-primary">{gig.budget}</span>
+                        <span className="text-2xl font-bold dark:text-accent text-chart-4">{gig.budget}</span>
                       </div>
                     </div>
                   )}

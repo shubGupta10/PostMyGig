@@ -37,7 +37,7 @@ function ViewGigs() {
             <div className="space-y-4">
               <h1 className="text-5xl sm:text-3xl lg:text-5xl font-bold text-foreground leading-tight">
                 Browse Freelance
-                <span className="block text-primary">Opportunities</span>
+                <span className="block dark:text-accent text-chart-4">Opportunities</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
                 Explore freelance projects or share your own listing to connect with others quickly.

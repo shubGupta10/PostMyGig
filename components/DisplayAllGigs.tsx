@@ -86,10 +86,8 @@ function DisplayAllGigs() {
       }
 
       const data = await response.json()
-      console.log("API Response:", data) // Debug log to see what's coming from API
 
       const fetchedGigs = data.gigs || []
-      console.log("Fetched gigs:", fetchedGigs) // Debug log to see the gigs array
 
       setGigs(fetchedGigs)
 
@@ -203,7 +201,6 @@ function DisplayAllGigs() {
     fetchAllGigs()
   }, [fetchAllGigs])
 
-  // Memoized components to prevent unnecessary re-renders
   const RateLimitBanner = useMemo(() => {
     if (!rateLimitInfo.isLimited) return null
 

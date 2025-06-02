@@ -106,7 +106,7 @@ function Profile() {
         }
       case "freelancer":
         return {
-          color: "bg-primary/10 text-primary border-primary/20",
+          color: "bg-destructive/10 text-destructive border-destructive/20",
           icon: User,
           bgGradient: "from-primary/5 to-primary/10",
         }
@@ -182,7 +182,7 @@ function Profile() {
         <div className="bg-card rounded-3xl shadow-xl overflow-hidden mb-8 border border-border">
           {/* Cover Background */}
           <div className={`h-32 sm:h-40 bg-gradient-to-r ${roleConfig.bgGradient} relative`}>
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 "></div>
             <div className="absolute top-4 right-4">
               <Badge variant="outline" className={`${roleConfig.color} border font-semibold`}>
                 <RoleIcon className="w-3 h-3 mr-1" />
@@ -236,7 +236,7 @@ function Profile() {
 
                 {/* Status Badges */}
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 font-medium">
+                  <Badge variant="outline" className="bg-auto dark:text-accent-foreground text-chart-4 border-transparent font-medium">
                     <Calendar className="w-3 h-3 mr-1" />
                     Joined {formatDate(userData?.createdAt || "")}
                   </Badge>
@@ -383,21 +383,21 @@ function Profile() {
                   Account Stats
                 </h3>
                 <div className="space-y-4">
-                  <div className="bg-primary/10 rounded-xl p-4 border border-primary/20">
+                  <div className="bg-auto rounded-xl p-4 border border-primary/20">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                           <Shield className="w-5 h-5 text-primary-foreground" />
                         </div>
                         <div>
-                          <p className="text-sm text-primary font-medium">Account Status</p>
-                          <p className="text-lg font-bold text-primary">{userData?.isBanned ? "Banned" : "Active"}</p>
+                          <p className="text-sm text-foreground font-medium">Account Status</p>
+                          <p className="text-lg font-bold dark:text-accent text-chart-4">{userData?.isBanned ? "Banned" : "Active"}</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-accent/50 rounded-xl p-4 border border-accent/30">
+                  <div className="bg-auto rounded-xl p-4 border border-accent/30">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">

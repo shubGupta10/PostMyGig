@@ -35,16 +35,16 @@ function Hero() {
             {/* Trust Signal */}
             <div className="inline-flex items-center space-x-2 bg-card/80 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 border border-primary/20">
               <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-              <span className="text-xs sm:text-sm font-medium text-primary">
+              <span className="text-xs sm:text-sm font-medium text-primary-foreground">
                 Built in India, trusted by early users
               </span>
             </div>
 
             {/* Main Headline */}
             <div className="space-y-4" >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-                Share & Find <span className="text-primary">Freelance Projects</span>,{" "}
-                <span className="text-primary">Free and Simple</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-accent-foreground leading-tight">
+                Share & Find <span className="dark:text-accent text-chart-4">Freelance Projects</span>,{" "}
+                <span className="dark:text-accent text-chart-4">Free and Simple</span>
               </h1>
 
               {/* Subheadline */}
@@ -64,7 +64,7 @@ function Hero() {
               </Link>
               <Link
                 href="/view-gigs"
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-primary bg-card hover:bg-accent border-2 border-primary rounded-lg transition-colors duration-200"
+                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-accent-foreground bg-card hover:bg-accent border-2 border-primary rounded-lg transition-colors duration-200"
                 aria-label="Browse available freelance projects"
               >
                 Explore Projects

@@ -15,10 +15,10 @@ export default function FinalCTA() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 leading-tight" style={{ fontFamily: "var(--font-serif)" }}>
+          <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold dark:text-accent-foreground text-primary-foreground mb-6 leading-tight" style={{ fontFamily: "var(--font-serif)" }}>
             Your Next Great Project
             <br />
-            <span className="text-primary-foreground">Starts Here</span>
+            <span className="dark:text-accent-foreground text-primary-foreground">Starts Here</span>
           </h3>
 
           <p className="text-xl text-primary-foreground/80 mb-8 leading-relaxed max-w-3xl mx-auto" style={{ fontFamily: "var(--font-sans)" }}>

@@ -325,9 +325,9 @@ function UserGigs() {
                     </div>
 
                     {project.AcceptedFreelancerEmail && (
-                      <div className="mb-4 p-3 dark:bg-muted-foreground bg-muted rounded-lg border border-primary/20">
-                        <p className="text-sm font-semibold dark:text-background text-foreground mb-1">Accepted Freelancer:</p>
-                        <p className="text-sm text-primary truncate font-medium">{project.AcceptedFreelancerEmail}</p>
+                      <div className="mb-4 p-3 bg-muted rounded-lg border border-primary/20">
+                        <p className="text-sm font-semibold dark:text-foreground text-foreground mb-1">Accepted Freelancer:</p>
+                        <p className="text-sm text-accent-foreground truncate font-medium">{project.AcceptedFreelancerEmail}</p>
                       </div>
                     )}
                   </div>
@@ -351,7 +351,7 @@ function UserGigs() {
 
                   <div className="flex gap-3">
                     <button
-                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card border border-primary/20"
+                      className="flex-1 dark:bg-accent bg-accent-foreground text-primary-foreground py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card border border-primary/20"
                       onClick={() => {
                         router.push(`/applications/view-applications?gigId=${project._id}`)
                       }}
@@ -361,7 +361,7 @@ function UserGigs() {
                     </button>
 
                     <button
-                      className={`bg-destructive hover:bg-destructive/90 text-destructive-foreground py-3 px-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card border border-destructive/20 ${
+                      className={`bg-primary hover:bg-destructive/90 text-destructive-foreground py-3 px-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card border border-destructive/20 ${
                         deletingId === project._id ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                       onClick={() => openDeleteDialog(project)}

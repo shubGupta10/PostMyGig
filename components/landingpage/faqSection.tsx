@@ -42,7 +42,7 @@ export default function FAQsTwo() {
                             className="text-4xl lg:text-5xl font-bold text-foreground mb-4"
                             style={{ fontFamily: "var(--font-serif)" }}
                         >
-                            Frequently <span className='text-primary'>Asked</span> <span className='text-secondary-foreground'>Questions</span>
+                            Frequently <span className='dark:text-accent text-chart-4'>Asked</span> <span className='text-secondary-foreground'>Questions</span>
                         </h2>
                         <div className="w-20 h-1 bg-primary rounded mx-auto"></div>
                     </div>
