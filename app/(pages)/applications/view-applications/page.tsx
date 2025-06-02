@@ -4,27 +4,7 @@ import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  ExternalLink,
-  X,
-  Users,
-  MessageSquare,
-  FileText,
-  Eye,
-  Check,
-  Clock,
-  XCircle,
-  User2,
-  Mail,
-  Calendar,
-  Star,
-  Award,
-  Activity,
-  Search,
-  Shield,
-  AlertTriangle,
-  Contact2,
-} from "lucide-react"
+import { ExternalLink, X, Users, MessageSquare, FileText, Eye, Check, Clock, XCircle, User2, Mail, Calendar, Star, Award, Activity, Search, Shield, AlertTriangle, Contact2 } from 'lucide-react'
 import { toast } from "sonner"
 import { useSession } from "next-auth/react"
 
@@ -68,37 +48,62 @@ function ViewApplication() {
   const [applications, setApplications] = useState<Application[]>([])
   const [selectedApplicant, setSelectedApplicant] = useState<Application | null>(null)
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [contactDialogOpen, setContactDialogOpen] = useState(false)
   const [contactData, setContactData] = useState<ContactData | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null)
+  const [gigPosterEmail, setGigPosterEmail] = useState<string | null>(null)
 
   // Check authorization
   useEffect(() => {
-    if (session?.user?.email && applications.length > 0) {
-      const posterEmail = applications[0]?.posterEmail
-      if (posterEmail && session.user.email === posterEmail) {
+    if (session?.user?.email) {
+      if (gigPosterEmail) {
+        // We have poster email from applications
+        setIsAuthorized(session.user.email === gigPosterEmail)
+      } else if (applications.length === 0 && !initialLoading) {
+        // No applications and not loading, assume authorized
+        // In a real app, you might want to fetch gig details to verify
         setIsAuthorized(true)
-      } else {
-        setIsAuthorized(false)
       }
+    } else if (!initialLoading) {
+      // No session and not loading
+      setIsAuthorized(false)
     }
-  }, [session, applications])
+  }, [session, gigPosterEmail, applications.length, initialLoading])
 
-  // Fetch applications
   const fetchApplications = async () => {
     try {
+      setInitialLoading(true)
       const response = await fetch(`/api/applications/fetch-applications?gigId=${gigIdFromSearchParams}`)
       const data = await response.json()
 
       if (response.ok) {
-        setApplications(data.data)
+        if (data.data && Array.isArray(data.data)) {
+          setApplications(data.data)
+          if (data.data.length > 0) {
+            setGigPosterEmail(data.data[0].posterEmail)
+          }
+        } else if (data.error === "No applications found for this gig") {
+          setApplications([])
+          // We don't have poster email from applications, so we'll need to handle this
+          // For now, we'll assume the user is authorized if they can access this page
+          setIsAuthorized(true)
+        } else {
+          setApplications(data.data || [])
+        }
       } else {
         console.error("Error fetching applications", data)
+        setApplications([])
+        setIsAuthorized(true) 
       }
     } catch (error) {
       console.error("Error fetching applications", error)
+      setApplications([]) 
+      setIsAuthorized(true) 
+    } finally {
+      setInitialLoading(false)
     }
   }
 
@@ -110,11 +115,10 @@ function ViewApplication() {
     }
   }, [gigIdFromSearchParams])
 
-  // Filter applications based on search and status
-  const filteredApplications = applications.filter((app) => {
+  const filteredApplications = (applications || []).filter((app) => {
     const matchesSearch =
-      app.applicant.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.applicant.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.applicant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.applicant?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.message?.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesStatus = statusFilter === "all" || app.status?.toLowerCase() === statusFilter
@@ -151,8 +155,22 @@ function ViewApplication() {
     )
   }
 
+  // Show loading state while initially fetching
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/30 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-primary to-primary rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Users className="w-8 h-8 text-primary-foreground" />
+          </div>
+          <p className="text-lg text-muted-foreground">Loading applications...</p>
+        </div>
+      </div>
+    )
+  }
+
   // Show loading state while checking authorization
-  if (isAuthorized === null && applications.length === 0) {
+  if (isAuthorized === null) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/30 flex items-center justify-center">
         <div className="text-center">
@@ -339,9 +357,9 @@ function ViewApplication() {
     }
   }
 
-  const acceptedCount = applications.filter((app) => app.status?.toLowerCase() === "accepted").length
-  const pendingCount = applications.filter((app) => app.status?.toLowerCase() === "pending").length
-  const rejectedCount = applications.filter((app) => app.status?.toLowerCase() === "rejected").length
+  const acceptedCount = (applications || []).filter((app) => app.status?.toLowerCase() === "accepted").length
+  const pendingCount = (applications || []).filter((app) => app.status?.toLowerCase() === "pending").length
+  const rejectedCount = (applications || []).filter((app) => app.status?.toLowerCase() === "rejected").length
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/30">

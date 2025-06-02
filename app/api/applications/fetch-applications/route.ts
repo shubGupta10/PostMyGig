@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const applications = await PingModel.find({ projectId: gigId });
 
     if (applications.length === 0) {
-      return NextResponse.json({ error: "No applications found for this gig" }, { status: 404 });
+      return NextResponse.json({ error: "No applications found for this gig" }, { status: 200 });
     }
 
     const applicationsWithUserData = await Promise.all(

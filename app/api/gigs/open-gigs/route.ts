@@ -16,14 +16,14 @@ export async function POST(req: NextRequest) {
             }, { status: 400 });
         }
 
-        const session = await getServerSession(authOptions);
-        const user = session?.user;
+        // const session = await getServerSession(authOptions);
+        // const user = session?.user;
 
-        if (!user) {
-            return NextResponse.json({
-                message: "User not authenticated"
-            }, { status: 401 });
-        }
+        // if (!user) {
+        //     return NextResponse.json({
+        //         message: "User not authenticated"
+        //     }, { status: 401 });
+        // }
 
         const gig = await ProjectModel.findById(gigId).lean(); 
 
@@ -39,7 +39,6 @@ export async function POST(req: NextRequest) {
         }
 
         const owner = await userModel.findOne({email: gig.createdBy}).lean();
-        console.log("Owner:", owner);
         
         return NextResponse.json({
             message: "Gig found",

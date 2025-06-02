@@ -439,7 +439,13 @@ function OpenGig() {
               {user?.email === gig.createdBy ? (
                 <button
                   className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                  onClick={() => router.push(`/applications/view-applications?gigId=${gig._id}`)}
+                  onClick={() => {
+                    if (!session) {
+                      router.push("/auth/login")
+                    } else {
+                      router.push(`/applications/view-applications?gigId=${gig._id}`)
+                    }
+                  }}
                 >
                   <Users className="w-5 h-5" />
                   View Applications
@@ -458,9 +464,13 @@ function OpenGig() {
                         </button>
                       ) : (
                         <button
-                          onClick={() =>
-                            router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
-                          }
+                          onClick={() => {
+                            if (!session) {
+                              router.push("/auth/login")
+                            } else {
+                              router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
+                            }
+                          }}
                           className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                         >
                           <CheckCircle className="w-5 h-5" />
@@ -715,11 +725,15 @@ function OpenGig() {
                             </button>
                           ) : (
                             <button
-                              onClick={() =>
-                                router.push(
-                                  `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`,
-                                )
-                              }
+                              onClick={() => {
+                                if (!session) {
+                                  router.push("/auth/login")
+                                } else {
+                                  router.push(
+                                    `/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`,
+                                  )
+                                }
+                              }}
                               className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                             >
                               <CheckCircle className="w-5 h-5" />

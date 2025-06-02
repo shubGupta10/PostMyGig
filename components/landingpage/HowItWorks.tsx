@@ -321,7 +321,7 @@ export default function HowItWorks() {
                             </div>
                             <div>
                               <div className="text-sm font-medium text-card-foreground">WhatsApp</div>
-                              <div className="text-xs text-muted-foreground">+91 98765 43210</div>
+                              <div className="text-xs text-muted-foreground">+91 9897635XXX</div>
                             </div>
                           </div>
                           <button className="bg-accent-foreground text-accent px-3 py-1 rounded text-xs font-medium hover:bg-accent-foreground/90 transition-colors">
