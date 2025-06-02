@@ -4,6 +4,7 @@ import ProjectModel from "@/models/ProjectModel";
 import PingModel from "@/models/PingSchema";
 import { ConnectoDatabase } from "@/lib/db";
 import ratelimiter from "@/lib/ratelimit";
+import FeedbackModel from "@/models/FeedbackModel";
 
 export async function POST(req: NextRequest) {
 
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
         //fetch all userslist
         const totalUsersData = await userModel.find({}).lean();
         const totalProjectsData = await ProjectModel.find({}).lean();
+        const fetchALLFeedbacks = await FeedbackModel.find({}).sort({ createdAt: -1 }).limit(50).lean();
 
         return NextResponse.json({
             message: "Fetch All data",
@@ -62,6 +64,7 @@ export async function POST(req: NextRequest) {
                 allData: {
                     totalUsersData,
                     totalProjectsData,
+                    fetchALLFeedbacks
                 }
             }
         }, { status: 200 })
