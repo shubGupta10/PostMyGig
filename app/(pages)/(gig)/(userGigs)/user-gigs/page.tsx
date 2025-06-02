@@ -325,9 +325,9 @@ function UserGigs() {
                     </div>
 
                     {project.AcceptedFreelancerEmail && (
-                      <div className="mb-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
-                        <p className="text-sm font-semibold text-primary mb-1">Accepted Freelancer:</p>
-                        <p className="text-sm text-primary/80 truncate font-medium">{project.AcceptedFreelancerEmail}</p>
+                      <div className="mb-4 p-3 dark:bg-muted-foreground bg-muted rounded-lg border border-primary/20">
+                        <p className="text-sm font-semibold dark:text-background text-foreground mb-1">Accepted Freelancer:</p>
+                        <p className="text-sm text-primary truncate font-medium">{project.AcceptedFreelancerEmail}</p>
                       </div>
                     )}
                   </div>

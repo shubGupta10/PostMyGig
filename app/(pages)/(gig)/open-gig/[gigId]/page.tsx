@@ -287,7 +287,7 @@ function OpenGig() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-secondary via-background to-accent">
+      <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
             <div className="relative mb-8">
@@ -354,9 +354,9 @@ function OpenGig() {
   const StatusIcon = statusConfig.icon
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary/30 via-background to-accent/30">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className={`bg-primary-foreground border-b border-border`}>
+      <div className={`bg-auto border-b border-border`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Navigation */}
           <div className="flex items-center justify-between mb-8">

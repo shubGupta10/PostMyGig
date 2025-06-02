@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,7 +72,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <Script
           src="https://cloud.umami.is/script.js"
@@ -83,11 +84,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProviderWrapper>
+          <ThemeProvider
+          attribute='class'
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          >
           <Navbar />
           <Analytics />
           <Suspense>{children}</Suspense>
           <Toaster />
           <Footer />
+          </ThemeProvider>
         </SessionProviderWrapper>
       </body>
     </html>

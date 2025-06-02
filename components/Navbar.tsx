@@ -29,6 +29,7 @@ import {
 } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
+import { DarkModeToggle } from "./DarkModeToggle"
 
 function Navbar() {
   const { data, status } = useSession()
@@ -127,7 +128,7 @@ function Navbar() {
               <li>
                 <a
                   href="/"
-                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
+                  className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                 >
                   <Home className="w-4 h-4" />
                   <span>Home</span>
@@ -136,7 +137,7 @@ function Navbar() {
               <li>
                 <a
                   href="/view-gigs"
-                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
+                  className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                 >
                   <Briefcase className="w-4 h-4" />
                   <span>Gigs</span>
@@ -146,7 +147,7 @@ function Navbar() {
                 <li>
                   <a
                     href="/dashboard"
-                    className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
+                    className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                   >
                     <LayoutDashboard className="w-4 h-4" />
                     <span>Dashboard</span>
@@ -158,7 +159,7 @@ function Navbar() {
                 <li>
                   <a
                     href="/user/admin/dashboard"
-                    className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
+                    className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                   >
                     <Shield className="w-4 h-4" />
                     <span>Admin</span>
@@ -168,7 +169,7 @@ function Navbar() {
               <li>
                 <a
                   href="/user/feedback"
-                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-accent flex items-center space-x-2"
+                  className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>Feedback</span>
@@ -179,6 +180,7 @@ function Navbar() {
 
           {/* Desktop Auth Section */}
           <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
+              <DarkModeToggle/>
             {status === "authenticated" ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -261,6 +263,7 @@ function Navbar() {
 
           {/* Mobile Auth & Menu Button */}
           <div className="flex items-center space-x-3 lg:hidden">
+            <DarkModeToggle/>
             {/* Mobile User Avatar (when authenticated) */}
             {status === "authenticated" && (
               <DropdownMenu>
