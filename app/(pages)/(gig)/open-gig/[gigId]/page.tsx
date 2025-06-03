@@ -668,7 +668,7 @@ function OpenGig() {
                         <span className="text-card-foreground font-medium">Budget</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold dark:text-accent text-chart-4">{gig.budget}</span>
+                        <span className="text-2xl font-bold text-primary">{gig.budget}</span>
                       </div>
                     </div>
                   )}

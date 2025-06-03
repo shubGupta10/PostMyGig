@@ -6,7 +6,7 @@ import Link from "next/link"
 
 export default function FinalCTA() {
   return (
-    <section className="py-20 bg-primary relative transition-colors duration-300">
+    <section className="py-20 bg-foreground relative transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Main Content */}
         <motion.div
@@ -15,10 +15,10 @@ export default function FinalCTA() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold dark:text-accent-foreground text-primary-foreground mb-6 leading-tight" style={{ fontFamily: "var(--font-serif)" }}>
+          <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-accent mb-6 leading-tight" style={{ fontFamily: "var(--font-serif)" }}>
             Your Next Great Project
             <br />
-            <span className="dark:text-accent-foreground text-primary-foreground">Starts Here</span>
+            <span className=" text-accent">Starts Here</span>
           </h3>
 
           <p className="text-xl text-primary-foreground/80 mb-8 leading-relaxed max-w-3xl mx-auto" style={{ fontFamily: "var(--font-sans)" }}>

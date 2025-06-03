@@ -15,7 +15,7 @@ export default function ProblemSolving() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" style={{ fontFamily: "var(--font-serif)" }}>
-            Solving the <span className="dark:text-accent text-chart-4">Work Sharing</span> Challenge
+            Solving the <span className="text-primary">Work Sharing</span> Challenge
           </h2>
           <div className="w-12 sm:w-16 h-1 bg-primary mx-auto rounded-full"></div>
         </motion.div>
@@ -137,7 +137,7 @@ export default function ProblemSolving() {
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           <div className="text-center mb-6 sm:mb-8">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold dark:text-accent text-chart-4  mb-2">The Transformation</h3>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2">The Transformation</h3>
             <p className="text-sm sm:text-base text-muted-foreground">See how PostMyGig changes the freelancing game</p>
           </div>
 

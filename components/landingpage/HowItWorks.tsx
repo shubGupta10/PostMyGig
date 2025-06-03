@@ -14,7 +14,7 @@ export default function HowItWorks() {
         {/* Section Title */}
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4" style={{ fontFamily: "var(--font-serif)" }}>
-            <span className="dark:text-accent text-chart-4">Post</span>,{" "}
+            <span className="text-primary">Post</span>,{" "}
             <span className="text-accent-foreground">Connect</span>, Work –{" "}
             <span className="text-foreground">In Minutes</span>
           </h2>

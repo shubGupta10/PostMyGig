@@ -236,7 +236,7 @@ function Profile() {
 
                 {/* Status Badges */}
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                  <Badge variant="outline" className="bg-auto dark:text-accent-foreground text-chart-4 border-transparent font-medium">
+                  <Badge variant="outline" className="bg-auto text-accent-foreground border-transparent font-medium">
                     <Calendar className="w-3 h-3 mr-1" />
                     Joined {formatDate(userData?.createdAt || "")}
                   </Badge>
@@ -391,7 +391,7 @@ function Profile() {
                         </div>
                         <div>
                           <p className="text-sm text-foreground font-medium">Account Status</p>
-                          <p className="text-lg font-bold dark:text-accent text-chart-4">{userData?.isBanned ? "Banned" : "Active"}</p>
+                          <p className="text-lg font-bold text-primary">{userData?.isBanned ? "Banned" : "Active"}</p>
                         </div>
                       </div>
                     </div>

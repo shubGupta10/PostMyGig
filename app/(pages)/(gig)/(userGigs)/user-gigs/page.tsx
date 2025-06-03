@@ -351,7 +351,7 @@ function UserGigs() {
 
                   <div className="flex gap-3">
                     <button
-                      className="flex-1 dark:bg-accent bg-accent-foreground text-primary-foreground py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card border border-primary/20"
+                      className="flex-1 bg-accent-foreground text-primary-foreground py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card border border-primary/20"
                       onClick={() => {
                         router.push(`/applications/view-applications?gigId=${project._id}`)
                       }}
@@ -361,7 +361,7 @@ function UserGigs() {
                     </button>
 
                     <button
-                      className={`bg-primary hover:bg-destructive/90 text-destructive-foreground py-3 px-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card border border-destructive/20 ${
+                      className={`bg-destructive hover:bg-destructive text-accent-foreground py-3 px-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-card border border-destructive/20 ${
                         deletingId === project._id ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                       onClick={() => openDeleteDialog(project)}

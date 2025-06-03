@@ -88,7 +88,7 @@ function EarlyUserFeedback() {
         {/* Section Title */}
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4" style={{ fontFamily: "var(--font-serif)" }}>
-            Why Users <span className="dark:text-accent text-chart-4">Love</span> <span className="text-secondary-foreground">PostMyGig</span>
+            Why Users <span className="text-primary">Love</span> <span className="text-secondary-foreground">PostMyGig</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto" style={{ fontFamily: "var(--font-sans)" }}>
             Real feedback from our early users who are already transforming their work sharing experience

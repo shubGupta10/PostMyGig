@@ -128,7 +128,7 @@ function Navbar() {
               <li>
                 <a
                   href="/"
-                  className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
+                  className="text-foreground dark:hover:text-background hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                 >
                   <Home className="w-4 h-4" />
                   <span>Home</span>
@@ -137,7 +137,7 @@ function Navbar() {
               <li>
                 <a
                   href="/view-gigs"
-                  className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
+                  className="text-foreground dark:hover:text-background hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                 >
                   <Briefcase className="w-4 h-4" />
                   <span>Gigs</span>
@@ -147,7 +147,7 @@ function Navbar() {
                 <li>
                   <a
                     href="/dashboard"
-                    className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
+                    className="text-foreground dark:hover:text-background hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                   >
                     <LayoutDashboard className="w-4 h-4" />
                     <span>Dashboard</span>
@@ -159,7 +159,7 @@ function Navbar() {
                 <li>
                   <a
                     href="/user/admin/dashboard"
-                    className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
+                    className="text-foreground dark:hover:text-background hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                   >
                     <Shield className="w-4 h-4" />
                     <span>Admin</span>
@@ -169,7 +169,7 @@ function Navbar() {
               <li>
                 <a
                   href="/user/feedback"
-                  className="text-foreground dark:hover:text-primary hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
+                  className="text-foreground dark:hover:text-background hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>Feedback</span>

@@ -43,8 +43,8 @@ function Hero() {
             {/* Main Headline */}
             <div className="space-y-4" >
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-accent-foreground leading-tight">
-                Share & Find <span className="dark:text-accent text-chart-4B">Freelance Projects</span>,{" "}
-                <span className="dark:text-accent text-chart-4">Free and Simple</span>
+                Share & Find <span className="text-primary">Freelance Projects</span>,{" "}
+                <span className="text-primary">Free and Simple</span>
               </h1>
 
               {/* Subheadline */}

@@ -11,7 +11,7 @@ export default function VideoDemo() {
               className="text-4xl lg:text-5xl font-bold text-foreground mb-3"
               style={{ fontFamily: "var(--font-serif)" }}
             >
-              See <span className="dark:text-accent text-chart-4">PostMyGig</span> in Action
+              See <span className="text-primary">PostMyGig</span> in Action
             </h2>
             <div className="w-20 h-1 bg-primary rounded mx-auto"></div>
           </div>

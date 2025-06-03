@@ -11,7 +11,7 @@ function FreelancerClient() {
         {/* Section Title */}
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4" style={{ fontFamily: "var(--font-serif)" }}>
-            Built for <span className="dark:text-accent text-chart-4">You</span>
+            Built for <span className="text-primary">You</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Whether you're sharing work or seeking talent, PostMyGig has you covered

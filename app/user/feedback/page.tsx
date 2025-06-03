@@ -78,7 +78,7 @@ export default function FeedbackPage() {
       id: "general",
       label: "General",
       icon: MessageSquare,
-      color: "bg-primary",
+      color: "bg-primary dark:bg-accent",
       bgColor: "bg-accent",
       borderColor: "border-accent-foreground",
     },
@@ -86,7 +86,7 @@ export default function FeedbackPage() {
       id: "suggestion",
       label: "Suggestion",
       icon: Lightbulb,
-      color: "bg-secondary",
+      color: "bg-primary dark:bg-accent",
       bgColor: "bg-secondary",
       borderColor: "border-secondary-foreground",
     },
@@ -102,7 +102,7 @@ export default function FeedbackPage() {
       id: "bug",
       label: "Bug",
       icon: Bug,
-      color: "bg-primary",
+      color: "bg-primary dark:bg-accent",
       bgColor: "bg-primary/10",
       borderColor: "border-primary",
     },
@@ -110,7 +110,7 @@ export default function FeedbackPage() {
       id: "feature",
       label: "Feature",
       icon: Star,
-      color: "bg-secondary",
+      color: "bg-primary dark:bg-accent",
       bgColor: "bg-secondary",
       borderColor: "border-secondary-foreground",
     },
@@ -118,8 +118,8 @@ export default function FeedbackPage() {
       id: "other",
       label: "Other",
       icon: Plus,
-      color: "bg-muted",
-      bgColor: "bg-muted",
+      color: "bg-primary dark:bg-accent",
+      bgColor: "bg-secondary",
       borderColor: "border-muted-foreground",
     },
   ]
@@ -219,20 +219,20 @@ export default function FeedbackPage() {
             </Card>
 
             {/* Support Card */}
-            <Card className="border-border shadow-lg text-primary-foreground overflow-hidden">
+            <Card className="border-border shadow-lg text-primary overflow-hidden">
               <CardContent className="p-6 sm:p-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-primary-foreground/20 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
                     <Shield className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <h4 className="text-xl font-bold">Need Immediate Help?</h4>
                 </div>
-                <p className="text-primary-foreground/80 leading-relaxed mb-6">
+                <p className="text-primary leading-relaxed mb-6">
                   For urgent issues or technical support, reach out to our team directly.
                 </p>
                 <Button
                   variant="outline"
-                  className="bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 hover:border-primary-foreground/50 transition-all duration-200"
+                  className="bg-gradient-to-r from-secondary-foreground via-secondary-foreground to-secondary-foreground hover:from-secondary-foreground/90 hover:via-secondary-foreground/90 hover:to-secondary-foreground/90 text-secondary"
                 >
                   Contact Support
                 </Button>
