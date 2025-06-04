@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.postmygig.xyz
+
+# Sitemaps
+Sitemap: https://www.postmygig.xyz/sitemap.xml

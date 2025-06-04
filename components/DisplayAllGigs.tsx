@@ -332,7 +332,7 @@ function DisplayAllGigs() {
               {/* Action Button */}
               <button
                 onClick={() => router.push(`/open-gig/${gig._id}`)}
-                className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl text-lg"
+                className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl text-lg cursor-pointer"
               >
                 <Eye className="w-5 h-5" />
                 <span>View Details</span>

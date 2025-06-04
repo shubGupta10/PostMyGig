@@ -362,7 +362,7 @@ function OpenGig() {
           <div className="flex items-center justify-between mb-8">
             <button
               onClick={() => router.back()}
-              className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium px-4 py-2 rounded-lg hover:bg-background/50"
+              className="inline-flex items-center gap-2 text-foreground hover:text-primary transition-colors font-medium px-4 py-2 rounded-lg hover:bg-background/50 cursor-pointer"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Gigs
@@ -437,7 +437,7 @@ function OpenGig() {
             <div className="flex flex-col gap-4 lg:w-auto w-full">
               {user?.email === gig.createdBy ? (
                 <button
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer"
                   onClick={() => {
                     if (!session) {
                       router.push("/auth/login")
@@ -470,7 +470,7 @@ function OpenGig() {
                               router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
                             }
                           }}
-                          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer"
                         >
                           <CheckCircle className="w-5 h-5" />
                           Apply Now
@@ -764,14 +764,14 @@ function OpenGig() {
                     <div className="space-y-3">
                       <button
                         onClick={() => router.push(`/edit-gig/${gig._id}`)}
-                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-card text-primary border-2 border-primary hover:bg-secondary rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-card text-primary border-2 border-primary hover:bg-secondary rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer"
                       >
                         <Pen className="w-5 h-5" />
                         Edit Gig
                       </button>
                       <button
                         onClick={handleDelete}
-                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-destructive hover:bg-destructive/90 text-destructive-foreground border-2 border-destructive rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-destructive hover:bg-destructive/90 text-destructive-foreground border-2 border-destructive rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer"
                       >
                         <Trash2 className="w-5 h-5" />
                         Delete Gig

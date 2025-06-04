@@ -48,7 +48,7 @@ function ViewGigs() {
           <div className="w-full lg:w-auto lg:flex-shrink-0">
             <Button
               onClick={handleAddGigs}
-              className="w-full lg:w-auto bg-gradient-to-r from-secondary-foreground via-secondary-foreground to-secondary-foreground hover:from-secondary-foreground/90 hover:via-secondary-foreground/90 hover:to-secondary-foreground/90 text-secondary px-8 py-5 text-lg font-semibold rounded-xl shadow-md transition-all duration-200"
+              className="w-full lg:w-auto bg-gradient-to-r from-secondary-foreground via-secondary-foreground to-secondary-foreground hover:from-secondary-foreground/90 hover:via-secondary-foreground/90 hover:to-secondary-foreground/90 text-secondary px-8 py-5 text-lg font-semibold rounded-xl shadow-md transition-all duration-200 cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <Plus className="w-5 h-5" />
