@@ -55,10 +55,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PostMyGig – Find & Share Freelance Gigs for Free",
+    title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut.",
-    images: ["https://www.postmygig.xyz/twitter-image.jpg"],
+    images: ["https://www.postmygig.xyz/twitter-image.png"],
     creator: "@postmygig",
   },
   icons: {

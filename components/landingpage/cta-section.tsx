@@ -36,7 +36,7 @@ export default function FinalCTA() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Link
-            href="/add-gigs"
+            href="/auth/login"
             className="group inline-flex items-center gap-3 px-10 py-5 bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-2xl font-bold text-lg shadow-2xl transform hover:-translate-y-2 transition-all duration-300"
             style={{ fontFamily: "var(--font-sans)" }}
           >
