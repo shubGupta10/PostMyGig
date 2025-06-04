@@ -4,6 +4,7 @@ import redis from "@/lib/redis";
 import { postMyGigResetPasswordTemplate } from "@/lib/email/templates";
 import { ConnectoDatabase } from "@/lib/db";
 import { EmailSender } from "@/lib/email/send";
+import resend from "@/lib/resend";
 
 export async function POST(req: NextRequest) {
     try {
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
                 message: "Email Id not found"
             }, { status: 400 })
         }
-        
+
 
         //fetch the user
         const foundUser = await userModel.findOne({ email: email });
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
                 { status: 404 }
             );
         }
-        
+
 
         //generate an uuid
         const token = crypto.randomUUID();
@@ -36,11 +37,22 @@ export async function POST(req: NextRequest) {
 
         const resetUrl = `${process.env.NEXT_PUBLIC_LIVE_URL}/auth/forgot-password/reset-password?token=${token}`;
 
-        await EmailSender({
+
+        //send email
+        const { error } = await resend.emails.send({
+            from: 'PostMyGig <hello@postmygig.xyz>',
             to: email,
             subject: "Reset Password",
             html: postMyGigResetPasswordTemplate(email, resetUrl)
         })
+
+        if (error) {
+            await EmailSender({
+                to: email,
+                subject: "Reset Password",
+                html: postMyGigResetPasswordTemplate(email, resetUrl)
+            })
+        }
 
         return NextResponse.json({
             message: "Password reset link sent to your email.",

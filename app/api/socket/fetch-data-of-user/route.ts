@@ -5,7 +5,8 @@ import PingModel from "@/models/PingSchema";
 import ProjectModel from "@/models/ProjectModel";
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigChatInvitationTemplate } from "@/lib/email/templates";
-import redis from "@/lib/redis"; 
+import redis from "@/lib/redis";
+import resend from "@/lib/resend";
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,7 +56,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Send email
-    await EmailSender({
+    const { error } = await resend.emails.send({
+      from: 'PostMyGig <hello@postmygig.xyz>',
       to: applyerData.email,
       subject: "You've been invited to chat about a project",
       html: postMyGigChatInvitationTemplate({
@@ -64,7 +66,20 @@ export async function POST(req: NextRequest) {
         projectId,
         projectName: projectData.title,
       }),
-    });
+    })
+
+    if (error) {
+      await EmailSender({
+        to: applyerData.email,
+        subject: "You've been invited to chat about a project",
+        html: postMyGigChatInvitationTemplate({
+          applyerName: applyerData.name,
+          posterName: posterData.name,
+          projectId,
+          projectName: projectData.title,
+        }),
+      });
+    }
 
     await redis.set(redisKey, "true", { ex: 600 });
 

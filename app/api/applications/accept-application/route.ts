@@ -5,12 +5,13 @@ import { ConnectoDatabase } from "@/lib/db";
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigApplicationAcceptedTemplate } from "@/lib/email/templates";
 import userModel from "@/models/UserModel";
+import resend from "@/lib/resend";
 
 //accept application
-export async function POST(req: NextRequest){
+export async function POST(req: NextRequest) {
     try {
         await ConnectoDatabase();
-        const {applicationId, gigId, applicantEmail} = await req.json();
+        const { applicationId, gigId, applicantEmail } = await req.json();
         if (!applicationId || !gigId || !applicantEmail) {
             return NextResponse.json({ error: "Application ID, Gig ID, and Applicant Email are required" }, { status: 400 });
         }
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest){
         }, { new: true });
 
         //find freelancerName
-        const freelancerWeSearchingFor = await userModel.findOne({email: applicantEmail});
+        const freelancerWeSearchingFor = await userModel.findOne({ email: applicantEmail });
         if (!freelancerWeSearchingFor) {
             return NextResponse.json({ error: "Freelancer not found" }, { status: 404 });
         }
@@ -44,14 +45,26 @@ export async function POST(req: NextRequest){
         const fetchGigTitle = await ProjectModel.findById(gigId);
 
         //send mail for application accepted
-        await EmailSender({
+        const { error } = await resend.emails.send({
+            from: 'PostMyGig <hello@postmygig.xyz>',
             to: applicantEmail,
-            subject: "You Application got selected",
+            subject: "You Application Got Selected",
             html: postMyGigApplicationAcceptedTemplate(
                 freelancerWeSearchingFor.name,
                 fetchGigTitle?.title as string,
             )
         })
+
+        if (error) {
+            await EmailSender({
+                to: applicantEmail,
+                subject: "You Application got selected",
+                html: postMyGigApplicationAcceptedTemplate(
+                    freelancerWeSearchingFor.name,
+                    fetchGigTitle?.title as string,
+                )
+            })
+        }
 
         return NextResponse.json({
             message: "Application accepted successfully",

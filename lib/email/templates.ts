@@ -19,7 +19,7 @@ export const postMyGigVerificationTemplate = (name: string, code: string) => {
           Enter this code in the signup form to verify your email address. This code will expire in 10 minutes.
         </p>
         <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
-          Didn’t request this code? You can safely ignore this email or contact us at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.
+          Didn’t request this code? You can safely ignore this email or contact us at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.
         </p>
       </div>
     </div>
@@ -78,7 +78,7 @@ export const postMyGigPingTemplate = ({
           Contacts are shared with consent, keeping privacy first. Join our beta community on X at <a href="https://x.com/i_m_shubham45" style="color: #2563eb;">@i_m_shubham45</a> for updates!
         </p>
         <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
-          Questions? Reach out at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.<br />
+          Questions? Reach out at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.<br />
           If you didn’t expect this email, please ignore it or contact us to opt out.
         </p>
       </div>
@@ -120,7 +120,7 @@ export const postMyGigResetPasswordTemplate = (name: string, resetUrl: string) =
           </p>
         </div>
         <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
-          Need help? Contact us at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.<br />
+          Need help? Contact us at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.<br />
           This is an automated email from PostMyGig. Please do not reply to this email.
         </p>
       </div>
@@ -158,10 +158,10 @@ export const postMyGigPingRejectionTemplate = (userName: string, gigTitle: strin
           </p>
         </div>
         <p style="margin-top: 24px; font-size: 14px; color: #475569; line-height: 1.6;">
-          As part of our beta community, your feedback helps us improve PostMyGig for India's freelancers. Follow us on X at <a href="https://x.com/i_m_shubham45" style="color: #2563eb;">@i_m_shubham45</a> for updates and tips!
+          As part of our beta community, your feedback helps us improve PostMyGig for India's freelancers. Follow us on X at <a href="https://x.com/postmygig" style="color: #2563eb;">@i_m_shubham45</a> for updates and tips!
         </p>
         <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
-          Questions or need support? We're here to help at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.<br />
+          Questions or need support? We're here to help at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.<br />
           This is an automated notification from PostMyGig.
         </p>
       </div>
@@ -223,7 +223,7 @@ export const postMyGigChatInvitationTemplate = ({
         </p>
 
         <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
-          Need help? Contact us at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.
+          Need help? Contact us at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.
         </p>
       </div>
     </div>
@@ -256,7 +256,7 @@ export const postMyGigApplicationAcceptedTemplate = (
           Keep an eye on your inbox for updates and next steps. Thank you for being part of <strong>PostMyGig</strong> – India’s freelance revolution!
         </p>
         <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
-          Have questions or need help? Reach us at <a href="mailto:support@postmygig.com" style="color: #2563eb;">support@postmygig.com</a>.
+          Have questions or need help? Reach us at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.
         </p>
       </div>
     </div>

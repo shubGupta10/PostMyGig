@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/options"
 import { EmailSender } from "@/lib/email/send"
 import { postMyGigPingTemplate } from "@/lib/email/templates"
 import ProjectModel from "@/models/ProjectModel"
+import resend from "@/lib/resend"
 
 export async function POST(req: NextRequest) {
   try {
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     //fetch Project details
     const fetchedProject = await ProjectModel.findById(projectId);
-    if(!fetchedProject) {
+    if (!fetchedProject) {
       return NextResponse.json({
         message: "Project not found",
       }, { status: 404 })
@@ -97,15 +98,21 @@ export async function POST(req: NextRequest) {
     })
 
     //send email
-    const emailResult = await EmailSender({
+    const { error } = await resend.emails.send({
+      from: 'PostMyGig <hello@postmygig.xyz>',
       to: posterEmail,
       subject: `New Application for Your Project: ${ping.projectId}`,
-      html: emailData,
+      html: emailData
     })
 
-    if (!emailResult.success) {
-      console.error("Failed to send ping notification email:", emailResult.error);
+    if (error) {
+      await EmailSender({
+        to: posterEmail,
+        subject: `New Application for Your Project: ${ping.projectId}`,
+        html: emailData,
+      })
     }
+
 
     return NextResponse.json(
       {

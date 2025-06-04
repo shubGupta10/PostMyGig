@@ -6,7 +6,8 @@ import ratelimiter from "@/lib/ratelimit";
 import { postMyGigVerificationTemplate } from "@/lib/email/templates";
 import { EmailSender } from "@/lib/email/send";
 import redis from "@/lib/redis";
-import { v4 as uuidv4 } from "uuid"; 
+import { v4 as uuidv4 } from "uuid";
+import resend from "@/lib/resend";
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") || "anonymous";
@@ -50,16 +51,28 @@ export async function POST(req: NextRequest) {
     const userId = uuidv4();
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // ✅ Upstash Redis syntax: value + options object with `ex`
     await redis.set(`verify:${userId}`, JSON.stringify({ code: verificationCode, user }), {
       ex: 600, // 10 minutes
     });
 
-    await EmailSender({
+    //send email
+    const { error } = await resend.emails.send({
+      from: 'PostMyGig <hello@postmygig.xyz>',
       to: email,
-      subject: "Verify your PostMyGig account",
-      html: postMyGigVerificationTemplate(name, verificationCode),
+      subject: 'Verify your PostMyGig account',
+      html: postMyGigVerificationTemplate(name, verificationCode)
     });
+
+    // Fallback to Nodemailer if Resend fails
+    if (error) {
+      console.warn('[Resend Failed] Falling back to Nodemailer:', error);
+
+      await EmailSender({
+        to: email,
+        subject: 'Verify your PostMyGig account',
+        html: postMyGigVerificationTemplate(name, verificationCode)
+      });
+    }
 
     return NextResponse.json({
       message: "Verification code sent to your email",

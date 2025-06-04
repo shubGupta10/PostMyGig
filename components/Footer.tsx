@@ -3,6 +3,9 @@ import { Mail, Twitter, Linkedin, Github, Instagram } from "lucide-react"
 import Image from "next/image"
 
 function Footer() {
+
+  const currentData = new Date();
+
   return (
     <footer className="bg-card border-t border-border">
       {/* Main Footer Content */}
@@ -73,7 +76,7 @@ function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-muted-foreground">
-              <span>© 2025 PostMyGig. Securely built with Next.js.</span>
+              <span>© {currentData.getFullYear()} PostMyGig</span>
             </div>
 
             {/* Social Links */}
@@ -96,16 +99,6 @@ function Footer() {
                 aria-label="Follow PostMyGig on LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
-              </a>
-
-              <a
-                href="https://github.com/postmygig"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-accent-foreground transition-colors duration-200"
-                aria-label="View PostMyGig on GitHub"
-              >
-                <Github className="w-5 h-5" />
               </a>
 
               <a
