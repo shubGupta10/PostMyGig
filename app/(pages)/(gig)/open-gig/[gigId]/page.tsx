@@ -5,6 +5,16 @@ import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
   Calendar,
   Clock,
   User,
@@ -27,6 +37,7 @@ import {
   ExternalLink,
 } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
+import {toast} from 'sonner'
 
 interface Gig {
   _id: string
@@ -61,6 +72,7 @@ function OpenGig() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isPinged, setIsPinged] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const router = useRouter()
 
   const params = useParams()
@@ -125,9 +137,6 @@ function OpenGig() {
   const handleDelete = async () => {
     if (!gig) return
 
-    const confirmed = confirm("Are you sure you want to delete this gig?")
-    if (!confirmed) return
-
     try {
       const response = await fetch(`/api/gigs/open-gigs`, {
         method: "DELETE",
@@ -138,15 +147,17 @@ function OpenGig() {
       })
 
       if (response.ok) {
-        alert("Gig deleted successfully!")
+        toast.success("Gig deleted successfully!")
         router.push("/view-gigs")
       } else {
         const data = await response.json()
-        alert(data.message || "Failed to delete gig")
+        toast.error(data.message || "Failed to delete gig")
       }
     } catch (error) {
       console.error("Error deleting gig:", error)
       alert("An error occurred while deleting the gig")
+    } finally {
+      setShowDeleteDialog(false)
     }
   }
 
@@ -355,6 +366,28 @@ function OpenGig() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your gig and remove all associated data from
+              our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Gig
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Hero Section */}
       <div className={`bg-auto border-b border-border`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -770,7 +803,7 @@ function OpenGig() {
                         Edit Gig
                       </button>
                       <button
-                        onClick={handleDelete}
+                        onClick={() => setShowDeleteDialog(true)}
                         className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-destructive hover:bg-destructive/90 text-destructive-foreground border-2 border-destructive rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer"
                       >
                         <Trash2 className="w-5 h-5" />
