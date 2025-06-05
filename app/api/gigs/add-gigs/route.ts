@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/options"
 import ProjectModel from "@/models/ProjectModel"
 import { ConnectoDatabase } from "@/lib/db"
 import redis from "@/lib/redis"
+import Activity from "@/models/ActivityModel"
 
 interface ContactInfo {
   email?: string
@@ -98,7 +99,6 @@ export async function POST(req: NextRequest) {
       } else {
         // If no cache exists, create a new cache with just this gig
         await redis.set(cacheKey, JSON.stringify([newGig.toObject()]), { ex: 300 })
-        console.log("New Redis cache created with gig")
       }
     } catch (redisError) {
       // If updating the cache fails, delete the cache so the next GET request will fetch fresh data
@@ -109,6 +109,21 @@ export async function POST(req: NextRequest) {
       } catch (deleteError) {
         console.warn("Failed to invalidate Redis cache:", deleteError)
       }
+    }
+
+
+    //save activity
+    if (session.user.activityPublic === true) {
+      await Activity.create({
+        userId: session.user.id,
+        gigId: newGig.id,
+        type: 'posted',
+        metadata: {
+          FullName: session.user.name,
+          gigTitle: newGig.title,
+        }
+      })
+      await redis.del("real-time-activity-data");
     }
 
     return NextResponse.json({ message: "Gig created successfully", gig: newGig }, { status: 201 })

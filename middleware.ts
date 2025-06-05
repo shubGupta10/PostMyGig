@@ -16,7 +16,8 @@ export default withAuth(
                     "/auth/register",
                     "/view-gigs",
                     "/api/gigs/fetch-gigs",
-                    "/auth/verify-code/[userId]"
+                    "/auth/verify-code/[userId]",
+                    "/activity"
                 ];
 
                 if (publicRoutes.some(route => pathname.startsWith(route))) {

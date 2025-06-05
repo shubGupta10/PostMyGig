@@ -9,6 +9,7 @@ declare module "next-auth" {
       provider: string;
       role: string;
       profilePhoto: string; 
+      activityPublic: boolean;
     } & DefaultSession["user"];
   }
 

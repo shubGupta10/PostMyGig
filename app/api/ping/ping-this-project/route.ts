@@ -8,6 +8,8 @@ import { EmailSender } from "@/lib/email/send"
 import { postMyGigPingTemplate } from "@/lib/email/templates"
 import ProjectModel from "@/models/ProjectModel"
 import resend from "@/lib/resend"
+import Activity from "@/models/ActivityModel"
+import redis from "@/lib/redis"
 
 export async function POST(req: NextRequest) {
   try {
@@ -111,6 +113,23 @@ export async function POST(req: NextRequest) {
         subject: `New Application for Your Project: ${ping.projectId}`,
         html: emailData,
       })
+    }
+    console.log(session);
+
+
+
+    //save activity
+    if (session.user.activityPublic === true) {
+      await Activity.create({
+        userId: session.user.id,
+        gigId: fetchedProject.id,
+        type: 'pings',
+        metadata: {
+          FullName: session.user.name,
+          gigTitle: fetchedProject.title
+        }
+      })
+      await redis.del("real-time-activity-data");
     }
 
 

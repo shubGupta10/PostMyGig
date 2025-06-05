@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       role,
       password: hashedPassword,
       provider: "credentials",
+      activityPublic: true,
     };
 
     const userId = uuidv4();

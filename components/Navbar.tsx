@@ -26,6 +26,9 @@ import {
   Shield,
   User2Icon,
   MessageCircleCodeIcon,
+  TrendingUp,
+  Activity,
+  ActivityIcon,
 } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
@@ -33,7 +36,7 @@ import { DarkModeToggle } from "./DarkModeToggle"
 
 function Navbar() {
   const { data, status } = useSession()
-  
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { handleLogout } = useAuthStore()
   const router = useRouter()
@@ -168,11 +171,11 @@ function Navbar() {
               )}
               <li>
                 <a
-                  href="/user/feedback"
+                  href="/activity"
                   className="text-foreground dark:hover:text-background hover:text-background transition-colors duration-200 font-medium px-4 py-2 rounded-lg hover:bg-popover-foreground flex items-center space-x-2"
                 >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Feedback</span>
+                  <Activity className="w-4 h-4" />
+                  <span>Activity</span>
                 </a>
               </li>
             </ul>
@@ -180,7 +183,7 @@ function Navbar() {
 
           {/* Desktop Auth Section */}
           <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
-              <DarkModeToggle/>
+            <DarkModeToggle />
             {status === "authenticated" ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -222,14 +225,19 @@ function Navbar() {
                     Profile
                   </DropdownMenuItem>
 
-                   <DropdownMenuItem onClick={() => router.push("/user-gigs")} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push("/user-gigs")} className="cursor-pointer">
                     <User2Icon className="mr-2 h-4 w-4" />
                     Your Gigs
                   </DropdownMenuItem>
 
-                     <DropdownMenuItem onClick={() => router.push("/chat-history")} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push("/chat-history")} className="cursor-pointer">
                     <MessageCircleCodeIcon className="mr-2 h-4 w-4" />
                     Your Chats
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={() => router.push("/user/feedback")} className="cursor-pointer">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Feedback
                   </DropdownMenuItem>
 
                   {data?.user?.role === 'admin' ? (
@@ -263,7 +271,7 @@ function Navbar() {
 
           {/* Mobile Auth & Menu Button */}
           <div className="flex items-center space-x-3 lg:hidden">
-            <DarkModeToggle/>
+            <DarkModeToggle />
             {/* Mobile User Avatar (when authenticated) */}
             {status === "authenticated" && (
               <DropdownMenu>
@@ -305,6 +313,10 @@ function Navbar() {
                   <DropdownMenuItem onClick={() => handleNavigation("/chat-history")} className="cursor-pointer">
                     <MessageCircleCodeIcon className="mr-2 h-4 w-4" />
                     Your Chats
+                  </DropdownMenuItem>
+                   <DropdownMenuItem onClick={() => handleNavigation("/activity")} className="cursor-pointer">
+                    <Activity className="mr-2 h-4 w-4" />
+                    Activity
                   </DropdownMenuItem>
                   {/* Add Admin Dashboard to mobile dropdown */}
                   {data?.user?.role === 'admin' && (

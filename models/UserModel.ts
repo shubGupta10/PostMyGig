@@ -17,6 +17,7 @@ interface User extends Document {
   location?: string;
   contactLinks?: ContactLinks[];
   reportCount?: number;
+  activityPublic?: boolean;
   isBanned?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -78,6 +79,10 @@ const userSchema = new Schema<User>({
   isBanned: {
     type: Boolean,
     default: false
+  },
+  activityPublic: {
+    type: Boolean,
+    default: true,
   },
   createdAt: {
     type: String,

@@ -51,6 +51,8 @@ const chatSchema: Schema<IChat> = new mongoose.Schema({
   },
 });
 
-// 3. Export the model
+// documents older than 20 days will be deleted automatically
+chatSchema.index({ timeStamp: 1 }, { expireAfterSeconds: 20 * 24 * 60 * 60 });
+
 const Chat: Model<IChat> = mongoose.models.Chat || mongoose.model<IChat>("Chat", chatSchema);
 export default Chat;

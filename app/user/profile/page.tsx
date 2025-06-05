@@ -21,10 +21,13 @@ import {
   UserCheck,
   Settings,
   Loader2,
+  CheckCircle,
+  XCircle,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 
 interface ContactLinks {
   label: string
@@ -46,6 +49,7 @@ interface UserData {
   reportCount: number
   role: "freelancer" | "client" | "admin"
   skills: string[]
+  activityPublic?: boolean // Added this field
 }
 
 function Profile() {
@@ -53,6 +57,9 @@ function Profile() {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [toggleActivity, setToggleActivity] = useState(false)
+  const [isUpdatingActivity, setIsUpdatingActivity] = useState(false)
+  const [activityUpdateStatus, setActivityUpdateStatus] = useState<'success' | 'error' | null>(null)
   const router = useRouter()
 
   const fetchUserData = async () => {
@@ -69,6 +76,11 @@ function Profile() {
 
       if (res.status === 200) {
         setUserData(data.user)
+        // Only set toggle state if activityPublic exists in the response
+        if (data.user.activityPublic !== undefined) {
+          setToggleActivity(data.user.activityPublic)
+        }
+        // If activityPublic doesn't exist, keep the default false state
         console.log("User data fetched successfully:", data)
       } else {
         setError(data.message || "Failed to fetch user data")
@@ -127,6 +139,50 @@ function Profile() {
 
   const handleLogout = () => {
     signOut({ callbackUrl: "/" })
+  }
+
+  const toggleSwitchActivity = async (newValue: boolean) => {
+    setIsUpdatingActivity(true)
+    setActivityUpdateStatus(null)
+
+    try {
+      const response = await fetch("/api/user/toggleActivityPublic", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ activityPublic: newValue })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setToggleActivity(newValue)
+        setActivityUpdateStatus('success')
+        if (userData) {
+          setUserData({
+            ...userData,
+            activityPublic: newValue
+          })
+        }
+        console.log("Activity visibility updated successfully:", data)
+      } else {
+        setActivityUpdateStatus('error')
+        console.error("Failed to update activity visibility:", data.message || "Unknown error")
+        setToggleActivity(!newValue)
+      }
+    } catch (error) {
+      setActivityUpdateStatus('error')
+      console.error("Error updating activity visibility:", error)
+      // Revert the toggle state on error
+      setToggleActivity(!newValue)
+    } finally {
+      setIsUpdatingActivity(false)
+      // Clear status after 3 seconds
+      setTimeout(() => {
+        setActivityUpdateStatus(null)
+      }, 3000)
+    }
   }
 
   if (session.status === "loading" || loading) {
@@ -409,6 +465,55 @@ function Profile() {
                         </div>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Activity Toggle Section */}
+                  <div className="bg-auto rounded-xl p-4 border border-accent/30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-accent rounded-lg flex items-center justify-center">
+                          <Activity className="w-5 h-5 text-accent-foreground" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-accent-foreground font-medium">Public Activity</p>
+                              <p className="text-xs text-muted-foreground">
+                                Make your activity visible to others
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {/* Status indicators */}
+                              {activityUpdateStatus === 'success' && (
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                              )}
+                              {activityUpdateStatus === 'error' && (
+                                <XCircle className="w-4 h-4 text-red-500" />
+                              )}
+                              {isUpdatingActivity && (
+                                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                              )}
+                              <Switch
+                                checked={toggleActivity}
+                                onCheckedChange={toggleSwitchActivity}
+                                disabled={isUpdatingActivity}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Status message */}
+                    {activityUpdateStatus === 'success' && (
+                      <div className="mt-2 text-xs text-green-600 bg-green-50 rounded-md px-2 py-1">
+                        Activity visibility updated successfully
+                      </div>
+                    )}
+                    {activityUpdateStatus === 'error' && (
+                      <div className="mt-2 text-xs text-red-600 bg-red-50 rounded-md px-2 py-1">
+                        Failed to update activity visibility. Please try again.
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
