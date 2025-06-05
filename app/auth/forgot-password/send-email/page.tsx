@@ -2,12 +2,50 @@
 
 import { Input } from '@/components/ui/input';
 import React, { useState } from 'react';
+import { Clock, ShieldAlert, AlertCircle, CheckCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+interface EmailCooldownInfo {
+    isActive: boolean;
+    remainingTime: number;
+    email: string;
+}
 
 function SendEmail() {
     const [registeredEmail, setRegisteredEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState(''); 
+    const [emailCooldown, setEmailCooldown] = useState<EmailCooldownInfo>({
+        isActive: false,
+        remainingTime: 0,
+        email: ""
+    });
+
+    const handleEmailCooldown = (email: string, cooldownSeconds: number = 90) => {
+        setEmailCooldown({
+            isActive: true,
+            remainingTime: cooldownSeconds,
+            email: email
+        });
+
+        // Start countdown
+        const interval = setInterval(() => {
+            setEmailCooldown(prev => {
+                if (prev.remainingTime <= 1) {
+                    clearInterval(interval);
+                    setMessage('Email cooldown expired. You can now request another reset email.');
+                    setMessageType('success');
+                    return { isActive: false, remainingTime: 0, email: "" };
+                }
+                return { ...prev, remainingTime: prev.remainingTime - 1 };
+            });
+        }, 1000);
+
+        const cooldownMessage = `Please wait ${Math.floor(cooldownSeconds / 60)}:${(cooldownSeconds % 60).toString().padStart(2, '0')} before requesting another password reset email.`;
+        setMessage(cooldownMessage);
+        setMessageType('warning');
+    };
 
     const handleSubmitEmail = async () => {
         if (!registeredEmail) {
@@ -19,6 +57,16 @@ function SendEmail() {
         if (!isValidEmail(registeredEmail)) {
             setMessage('Please enter a valid email address');
             setMessageType('error');
+            return;
+        }
+
+        if (emailCooldown.isActive && emailCooldown.email === registeredEmail) {
+            const minutes = Math.floor(emailCooldown.remainingTime / 60);
+            const seconds = emailCooldown.remainingTime % 60;
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            const message = `Email cooldown active. Please wait ${timeString} before trying again.`;
+            setMessage(message);
+            setMessageType('warning');
             return;
         }
 
@@ -39,10 +87,25 @@ function SendEmail() {
             if (response.ok) {
                 setMessage('Password reset email sent successfully! Check your inbox.');
                 setMessageType('success');
+                // Start cooldown after successful email send
+                handleEmailCooldown(registeredEmail);
                 setRegisteredEmail('');
             } else {
-                setMessage(data.message || 'Failed to send email. Please try again.');
-                setMessageType('error');
+                if (response.status === 429) {
+                    // Check if it's email cooldown
+                    if (data.message?.toLowerCase().includes("cooldown") || 
+                        data.message?.toLowerCase().includes("wait")) {
+                        handleEmailCooldown(registeredEmail);
+                        setMessage(data.message);
+                        setMessageType('warning');
+                    } else {
+                        setMessage(data.message || 'Too many requests. Please try again later.');
+                        setMessageType('error');
+                    }
+                } else {
+                    setMessage(data.message || 'Failed to send email. Please try again.');
+                    setMessageType('error');
+                }
             }
         } catch (error) {
             console.error("Failed to send email:", error);
@@ -64,10 +127,74 @@ function SendEmail() {
         }
     };
 
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setRegisteredEmail(value);
+        
+        // Clear message when email changes
+        if (message) {
+            setMessage('');
+            setMessageType('');
+        }
+        
+        // Clear email cooldown if email changes
+        if (emailCooldown.isActive && emailCooldown.email !== value) {
+            setEmailCooldown({ isActive: false, remainingTime: 0, email: "" });
+        }
+    };
+
+    const EmailCooldownBanner = () => {
+        if (!emailCooldown.isActive) return null;
+
+        const minutes = Math.floor(emailCooldown.remainingTime / 60);
+        const seconds = emailCooldown.remainingTime % 60;
+        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        return (
+            <div className="mb-6 bg-orange-50 border border-orange-200 rounded-xl p-4 dark:bg-orange-950/20 dark:border-orange-800/50">
+                <div className="flex items-start gap-3">
+                    <Clock className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                        <h4 className="font-semibold text-orange-800 dark:text-orange-200 mb-1">Email Cooldown Active</h4>
+                        <p className="text-orange-700 dark:text-orange-300 text-sm leading-relaxed">
+                            To prevent spam, there's a cooldown period between password reset email requests for the same email address.
+                        </p>
+                        <div className="mt-2 text-xs text-orange-600 dark:text-orange-400">
+                            <strong>Email:</strong> {emailCooldown.email}
+                        </div>
+                        <div className="bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3 mt-3 text-xs">
+                            <div className="space-y-1">
+                                <div className="flex justify-between">
+                                    <span className="text-orange-800 dark:text-orange-200 font-medium">Status:</span>
+                                    <span className="text-orange-800 dark:text-orange-200">Email Cooldown Active</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-orange-800 dark:text-orange-200 font-medium">Time Remaining:</span>
+                                    <span className="text-orange-800 dark:text-orange-200 font-mono text-sm">{timeString}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-orange-800 dark:text-orange-200 font-medium">Next Attempt:</span>
+                                    <span className="text-orange-800 dark:text-orange-200">
+                                        {new Date(Date.now() + emailCooldown.remainingTime * 1000).toLocaleTimeString()}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const isFormDisabled = isLoading || (emailCooldown.isActive && emailCooldown.email === registeredEmail);
+
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 <div className="bg-card rounded-2xl shadow-xl p-8 border border-border">
+                    {/* Email Cooldown Banner */}
+                    <EmailCooldownBanner />
+
                     {/* Header */}
                     <div className="text-center mb-8">
                         <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
@@ -94,40 +221,67 @@ function SendEmail() {
                                 type="email"
                                 placeholder="Enter your registered email"
                                 value={registeredEmail}
-                                onChange={(e) => setRegisteredEmail(e.target.value)}
+                                onChange={handleEmailChange}
                                 onKeyPress={handleKeyPress}
-                                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition-colors bg-input text-foreground"
-                                disabled={isLoading}
+                                className={`w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition-colors bg-input text-foreground ${
+                                    isFormDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
+                                disabled={isFormDisabled}
                             />
+                            {emailCooldown.isActive && emailCooldown.email === registeredEmail && (
+                                <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    Email cooldown active - try again in {Math.floor(emailCooldown.remainingTime / 60)}:{(emailCooldown.remainingTime % 60).toString().padStart(2, '0')}
+                                </p>
+                            )}
                         </div>
 
                         {/* Message Display */}
                         {message && (
-                            <div className={`p-4 rounded-lg border ${
-                                messageType === 'success' 
-                                    ? 'bg-secondary border-secondary text-secondary-foreground'
-                                    : 'bg-destructive/10 border-destructive text-destructive'
-                            }`}>
-                                <div className="flex items-center">
-                                    {messageType === 'success' ? (
-                                        <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
-                                    ) : (
-                                        <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                        </svg>
-                                    )}
-                                    <span className="text-sm font-medium">{message}</span>
-                                </div>
-                            </div>
+                            <Alert
+                                variant={messageType === 'error' ? 'destructive' : 'default'}
+                                className={`${
+                                    messageType === 'success' 
+                                        ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800/50'
+                                        : messageType === 'warning'
+                                        ? 'bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-800/50'
+                                        : 'bg-destructive/10 border-destructive'
+                                } animate-in fade-in-50 duration-300 rounded-xl`}
+                            >
+                                {messageType === 'success' ? (
+                                    <CheckCircle className={`h-5 w-5 ${
+                                        messageType === 'success' 
+                                            ? 'text-green-600 dark:text-green-400'
+                                            : messageType === 'warning'
+                                            ? 'text-orange-600 dark:text-orange-400'
+                                            : 'text-destructive'
+                                    }`} />
+                                ) : messageType === 'warning' ? (
+                                    <Clock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                ) : (
+                                    <AlertCircle className="h-5 w-5 text-destructive" />
+                                )}
+                                <AlertDescription className={`ml-2 font-medium ${
+                                    messageType === 'success' 
+                                        ? 'text-green-800 dark:text-green-200'
+                                        : messageType === 'warning'
+                                        ? 'text-orange-700 dark:text-orange-300'
+                                        : 'text-destructive'
+                                }`}>
+                                    {message}
+                                </AlertDescription>
+                            </Alert>
                         )}
 
                         {/* Submit Button */}
                         <button
                             onClick={handleSubmitEmail}
-                            disabled={isLoading || !registeredEmail}
-                            className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:cursor-not-allowed text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                            disabled={isFormDisabled || !registeredEmail}
+                            className={`w-full font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center ${
+                                isFormDisabled || !registeredEmail
+                                    ? 'bg-muted cursor-not-allowed text-muted-foreground'
+                                    : 'bg-primary hover:bg-primary/90 text-primary-foreground'
+                            }`}
                         >
                             {isLoading ? (
                                 <>
@@ -137,6 +291,11 @@ function SendEmail() {
                                     </svg>
                                     Sending...
                                 </>
+                            ) : emailCooldown.isActive && emailCooldown.email === registeredEmail ? (
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-5 h-5" />
+                                    Email Cooldown Active
+                                </div>
                             ) : (
                                 'Send Reset Email'
                             )}
@@ -157,7 +316,7 @@ function SendEmail() {
                 {/* Footer */}
                 <div className="text-center mt-6">
                     <p className="text-muted-foreground text-xs">
-                        Didn't receive an email? Check your spam folder or try again.
+                        Didn't receive an email? Check your spam folder or try again after the cooldown period.
                     </p>
                 </div>
             </div>

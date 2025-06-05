@@ -38,6 +38,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Email already registered" }, { status: 400 });
     }
 
+    //  Check Redis cooldown
+    const cooldownKey = `email:cooldown:${email}`;
+    const cooldownExists = await redis.exists(cooldownKey);
+    if (cooldownExists) {
+      return NextResponse.json({
+        message: "Please wait before requesting another verification email.",
+      }, { status: 429 });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = {
@@ -55,7 +64,10 @@ export async function POST(req: NextRequest) {
       ex: 600, // 10 minutes
     });
 
-    //send email
+    // Set email cooldown (e.g., 2 minutes)
+    await redis.set(cooldownKey, "1", { ex: 120 });
+
+    //  Send verification email
     const { error } = await resend.emails.send({
       from: 'PostMyGig <hello@postmygig.xyz>',
       to: email,
@@ -63,7 +75,6 @@ export async function POST(req: NextRequest) {
       html: postMyGigVerificationTemplate(name, verificationCode)
     });
 
-    // Fallback to Nodemailer if Resend fails
     if (error) {
       console.warn('[Resend Failed] Falling back to Nodemailer:', error);
 
@@ -83,3 +94,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Something went wrong" }, { status: 500 });
   }
 }
+
