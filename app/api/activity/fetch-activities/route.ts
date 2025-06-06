@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Fetch from MongoDB
-        const dbData = await Activity.find({}).lean();
+       const dbData = await Activity.find({}).sort({ createdAt: -1 }).lean();
         if (!dbData || dbData.length === 0) {
             return NextResponse.json({
                 message: "No activity data found",

@@ -425,6 +425,16 @@ function Navbar() {
                   <span>Feedback</span>
                 </button>
               </li>
+
+              <li>
+                <button
+                  className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                  onClick={() => handleNavigation("/activity")}
+                >
+                  <Activity className="w-5 h-5" />
+                  <span>Activity</span>
+                </button>
+              </li>
             </ul>
 
             {/* Mobile Auth Buttons (when not authenticated) */}
