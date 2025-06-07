@@ -76,7 +76,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <title>PostMyGig – Find & Share Freelance Gigs for Free</title>
         <meta
           name="description"
           content="Share freelance gigs you can't take, or find new projects to work on. Easy, free, and direct connections via chat. No middlemen."
@@ -87,6 +86,8 @@ export default function RootLayout({
         />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <meta property="og:title" content="PostMyGig – Find & Share Freelance Gigs for Free" />
         <meta property="og:description" content="Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays." />
         <meta property="og:image" content="https://postmygig.xyz/og-image.png" />
@@ -97,6 +98,17 @@ export default function RootLayout({
         <meta name="twitter:description" content="List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut." />
         <meta name="twitter:image" content="https://postmygig.xyz/twitter-image.png" />
         <meta name="twitter:creator" content="@postmygig" />
+
+        <script type="application/ld+json" dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "PostMyGig",
+            "url": "https://www.postmygig.xyz",
+            "logo": "https://www.postmygig.xyz/favicon.ico"
+          })
+        }} />
+
         <Script
           src="https://cloud.umami.is/script.js"
           data-website-id="ba1af766-a1bd-4d64-8c20-66cddf7ac5e5"
