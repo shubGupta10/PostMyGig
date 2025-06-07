@@ -33,6 +33,7 @@ import {
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
 import { DarkModeToggle } from "./DarkModeToggle"
+import { useUserData } from "@/store/userDataStore"
 
 function Navbar() {
   const { data, status } = useSession()
@@ -220,7 +221,7 @@ function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push("/user/profile")} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => router.push(`/user/profile/${data.user.id}`)} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
@@ -302,7 +303,7 @@ function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleNavigation("/user/profile")} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => handleNavigation(`/user/profile/${data.user.id}`)} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>

@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { useUserStore, useUserData, useUserLoading, useUserError } from "@/store/userDataStore"
 
 interface ContactLinks {
   label: string
@@ -38,10 +39,17 @@ function EditPage() {
   const { data } = useSession()
   const user = data?.user
   const userId = searchParams.get("userId")
+  
+  // Zustand store hooks
+  const userData = useUserData()
+  const userLoading = useUserLoading()
+  const userError = useUserError()
+  const { fetchUserData, updateUserData } = useUserStore()
 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [dataLoaded, setDataLoaded] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -55,16 +63,47 @@ function EditPage() {
 
   const [newSkill, setNewSkill] = useState("")
 
-  // Initialize form with session data
+  // Fetch user data when component mounts
   useEffect(() => {
-    if (user) {
+    const loadUserData = async () => {
+      if (userId && !userData && !userLoading) {
+        try {
+          await fetchUserData(userId)
+        } catch (error) {
+          console.error("Error fetching user data:", error)
+          setError("Failed to load user data")
+        }
+      }
+    }
+
+    loadUserData()
+  }, [userId, userData, userLoading, fetchUserData])
+
+  // Populate form with userData when available
+  useEffect(() => {
+    if (userData && !dataLoaded) {
+      setFormData({
+        name: userData.name || "",
+        email: userData.email || "",
+        bio: userData.bio || "",
+        location: userData.location || "",
+        contactLinks: userData.contactLinks || [],
+        skills: userData.skills || [],
+      })
+      setDataLoaded(true)
+    }
+  }, [userData, dataLoaded])
+
+  // Fallback to session data if userData is not available
+  useEffect(() => {
+    if (user && !userData && !dataLoaded) {
       setFormData((prev) => ({
         ...prev,
         name: user.name || "",
         email: user.email || "",
       }))
     }
-  }, [user])
+  }, [user, userData, dataLoaded])
 
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -146,9 +185,16 @@ function EditPage() {
       const data = await res.json()
 
       if (res.status === 200) {
+        if (userData) {
+          updateUserData({
+            ...formData,
+            updatedAt: new Date().toISOString(),
+          })
+        }
+        
         setSuccessMessage("Profile updated successfully!")
         setTimeout(() => {
-          router.push("/user/profile")
+          router.push(`/user/profile/${user?.id}`)
         }, 1500)
       } else {
         setError(data.error || "Failed to update profile")
@@ -161,7 +207,8 @@ function EditPage() {
     }
   }
 
-  if (!user) {
+  // Show loading state while fetching user data
+  if (userLoading || (!userData && !user)) {
     return (
       <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center min-h-screen">
@@ -173,8 +220,32 @@ function EditPage() {
                 style={{ animationDelay: "0.3s", animationDuration: "1.5s" }}
               ></div>
             </div>
-            <h3 className="text-2xl font-bold text-foreground mb-3">Loading Editor</h3>
-            <p className="text-muted-foreground text-lg">Please wait while we prepare your profile editor...</p>
+            <h3 className="text-2xl font-bold text-foreground mb-3">Loading Profile Data</h3>
+            <p className="text-muted-foreground text-lg">Please wait while we load your profile information...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state if user data failed to load
+  if (userError && !userData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="max-w-md mx-auto text-center p-6">
+            <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-foreground mb-3">Failed to Load Profile</h3>
+            <p className="text-muted-foreground text-lg mb-6">{userError}</p>
+            <Button onClick={() => router.back()} className="mr-4">
+              Go Back
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => userId && fetchUserData(userId)}
+            >
+              Try Again
+            </Button>
           </div>
         </div>
       </div>
@@ -202,6 +273,11 @@ function EditPage() {
               <div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-card-foreground">Edit Profile</h1>
                 <p className="text-muted-foreground text-lg mt-2">Update your personal information and preferences</p>
+                {userData && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Last updated: {new Date(userData.updatedAt).toLocaleDateString()}
+                  </p>
+                )}
               </div>
             </div>
 

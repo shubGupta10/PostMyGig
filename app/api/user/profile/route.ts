@@ -1,12 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
 import userModel from "@/models/UserModel";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/options";
 import ratelimiter from "@/lib/ratelimit";
 import redis from "@/lib/redis";
 import { ConnectoDatabase } from "@/lib/db";
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
     
   const ip = req.headers.get("x-forwarded-for") || "anonymous";
   const { success, limit, reset, remaining } = await ratelimiter.limit(ip);
@@ -22,13 +20,12 @@ export async function GET(req: NextRequest) {
 
   try {
     await ConnectoDatabase();
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const {userId} = await req.json();
 
-    const user = session.user;
-    const cacheKey = `fetch-user-profile:${user.email}`;
+    const fetchSessionUser = await userModel.findById(userId);
+
+    const user = fetchSessionUser;
+    const cacheKey = `fetch-user-profile:${user?.email}`;
     const cachedUser = await redis.get(cacheKey);
 
     if (typeof cachedUser === "string") {
@@ -48,7 +45,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const foundUser = await userModel.findOne({ email: user.email }).select("-password -__v");
+    const foundUser = await userModel.findOne({ email: user?.email }).select("-password -__v");
     if (!foundUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }

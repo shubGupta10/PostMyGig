@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { useUserStore } from "@/store/userDataStore"
 
 interface ContactLinks {
   label: string
@@ -49,7 +50,7 @@ interface UserData {
   reportCount: number
   role: "freelancer" | "client" | "admin"
   skills: string[]
-  activityPublic?: boolean // Added this field
+  activityPublic?: boolean
 }
 
 function Profile() {
@@ -61,27 +62,24 @@ function Profile() {
   const [isUpdatingActivity, setIsUpdatingActivity] = useState(false)
   const [activityUpdateStatus, setActivityUpdateStatus] = useState<'success' | 'error' | null>(null)
   const router = useRouter()
+  const {setUserData: StoreUserDataIntoStore} = useUserStore()
 
   const fetchUserData = async () => {
     try {
       setLoading(true)
       const res = await fetch("/api/user/profile", {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({userId: session.data?.user.id})
       })
 
       const data = await res.json()
+      StoreUserDataIntoStore(data.user)
 
       if (res.status === 200) {
         setUserData(data.user)
-        // Only set toggle state if activityPublic exists in the response
-        if (data.user.activityPublic !== undefined) {
-          setToggleActivity(data.user.activityPublic)
-        }
-        // If activityPublic doesn't exist, keep the default false state
-        console.log("User data fetched successfully:", data)
       } else {
         setError(data.message || "Failed to fetch user data")
       }
@@ -92,6 +90,13 @@ function Profile() {
       setLoading(false)
     }
   }
+
+  // Initialize toggle activity state when userData is loaded
+  useEffect(() => {
+    if (userData) {
+      setToggleActivity(userData.activityPublic ?? false)
+    }
+  }, [userData])
 
   useEffect(() => {
     if (session.data?.user?.id) {
@@ -165,7 +170,6 @@ function Profile() {
             activityPublic: newValue
           })
         }
-        console.log("Activity visibility updated successfully:", data)
       } else {
         setActivityUpdateStatus('error')
         console.error("Failed to update activity visibility:", data.message || "Unknown error")
@@ -174,11 +178,9 @@ function Profile() {
     } catch (error) {
       setActivityUpdateStatus('error')
       console.error("Error updating activity visibility:", error)
-      // Revert the toggle state on error
       setToggleActivity(!newValue)
     } finally {
       setIsUpdatingActivity(false)
-      // Clear status after 3 seconds
       setTimeout(() => {
         setActivityUpdateStatus(null)
       }, 3000)
@@ -483,16 +485,6 @@ function Profile() {
                               </p>
                             </div>
                             <div className="flex items-center gap-2">
-                              {/* Status indicators */}
-                              {activityUpdateStatus === 'success' && (
-                                <CheckCircle className="w-4 h-4 text-green-500" />
-                              )}
-                              {activityUpdateStatus === 'error' && (
-                                <XCircle className="w-4 h-4 text-red-500" />
-                              )}
-                              {isUpdatingActivity && (
-                                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                              )}
                               <Switch
                                 checked={toggleActivity}
                                 onCheckedChange={toggleSwitchActivity}
