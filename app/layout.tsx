@@ -76,27 +76,49 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <title>PostMyGig – Find & Share Freelance Gigs for Free</title>
+        <meta
+          name="description"
+          content="Share freelance gigs you can't take, or find new projects to work on. Easy, free, and direct connections via chat. No middlemen."
+        />
+        <meta
+          name="keywords"
+          content="freelance gigs, share freelance work, post freelance projects, find freelance opportunities, gig board for freelancers, collaborate on freelance tasks"
+        />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <meta property="og:title" content="PostMyGig – Find & Share Freelance Gigs for Free" />
+        <meta property="og:description" content="Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays." />
+        <meta property="og:image" content="https://www.postmygig.xyz/og-image.png" />
+        <meta property="og:url" content="https://www.postmygig.xyz" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="PostMyGig – Find & Share Freelance Gigs" />
+        <meta name="twitter:description" content="List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut." />
+        <meta name="twitter:image" content="https://www.postmygig.xyz/twitter-image.png" />
+        <meta name="twitter:creator" content="@postmygig" />
         <Script
           src="https://cloud.umami.is/script.js"
           data-website-id="ba1af766-a1bd-4d64-8c20-66cddf7ac5e5"
           strategy="lazyOnload"
         />
       </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProviderWrapper>
           <ThemeProvider
-          attribute='class'
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+            attribute='class'
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
           >
-          <Navbar />
-          <Analytics />
-          <Suspense>{children}</Suspense>
-          <Toaster />
-          <Footer />
+            <Navbar />
+            <Analytics />
+            <Suspense>{children}</Suspense>
+            <Toaster />
+            <Footer />
           </ThemeProvider>
         </SessionProviderWrapper>
       </body>

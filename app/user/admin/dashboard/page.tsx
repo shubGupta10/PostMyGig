@@ -376,7 +376,7 @@ function AdminDashboard() {
               <Send className="h-4 w-4 text-chart-2" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-chart-2">{dashboardData?.counts?.totalPingSends || 0}</div>
+              <div className="text-2xl font-bold text-primary">{dashboardData?.counts?.totalPingSends || 0}</div>
               <p className="text-xs text-muted-foreground mt-1">Total ping notifications sent</p>
             </CardContent>
           </Card>
@@ -387,7 +387,7 @@ function AdminDashboard() {
               <MessageSquare className="h-4 w-4 text-chart-3" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-chart-3">{feedbackStats.total}</div>
+              <div className="text-2xl font-bold text-primary">{feedbackStats.total}</div>
               <p className="text-xs text-muted-foreground mt-1">User feedback submissions</p>
             </CardContent>
           </Card>
