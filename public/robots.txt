@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://www.postmygig.xyz
+Host: https://postmygig.xyz
 
 # Sitemaps
-Sitemap: https://www.postmygig.xyz/sitemap.xml
+Sitemap: https://postmygig.xyz/sitemap.xml
