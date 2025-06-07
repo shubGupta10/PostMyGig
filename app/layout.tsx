@@ -37,14 +37,14 @@ export const metadata: Metadata = {
     { name: "Shubham Kumar Gupta", url: "https://x.com/i_m_shubham45" },
   ],
   openGraph: {
-    title: "PostMyGig – Find & Share Freelance Gigs for Free",
+    title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays.",
-    url: "https://www.postmygig.xyz",
+    url: "https://postmygig.xyz",
     siteName: "PostMyGig",
     images: [
       {
-        url: "https://www.postmygig.xyz/og-image.png",
+        url: "https://postmygig.xyz/og-image.png",
         width: 1200,
         height: 630,
         alt: "PostMyGig – Freelance Gig Sharing Platform",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut.",
-    images: ["https://www.postmygig.xyz/twitter-image.png"],
+    images: ["https://postmygig.xyz/twitter-image.png"],
     creator: "@postmygig",
   },
   icons: {
@@ -89,13 +89,13 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-icon.png" />
         <meta property="og:title" content="PostMyGig – Find & Share Freelance Gigs for Free" />
         <meta property="og:description" content="Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays." />
-        <meta property="og:image" content="https://www.postmygig.xyz/og-image.png" />
-        <meta property="og:url" content="https://www.postmygig.xyz" />
+        <meta property="og:image" content="https://postmygig.xyz/og-image.png" />
+        <meta property="og:url" content="https://postmygig.xyz" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="PostMyGig – Find & Share Freelance Gigs" />
         <meta name="twitter:description" content="List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut." />
-        <meta name="twitter:image" content="https://www.postmygig.xyz/twitter-image.png" />
+        <meta name="twitter:image" content="https://postmygig.xyz/twitter-image.png" />
         <meta name="twitter:creator" content="@postmygig" />
         <Script
           src="https://cloud.umami.is/script.js"
