@@ -45,15 +45,14 @@ export default function ProblemSolving() {
                 <div className="text-center space-y-2 sm:space-y-3 md:space-y-4">
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-card-foreground">The Problem</h3>
                   <p className="text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed px-2">
-                    Freelancers juggle too many projects or struggle to find the right person to share the work. Clients
-                    need talent fast, but connections are messy.
+                    Freelancers often get overloaded with projects but can’t easily find the right person to share them with. Clients need skilled talent quickly, but finding reliable connections is slow.
                   </p>
                 </div>
 
                 {/* Problem Points */}
                 <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                   {[
-                    { color: "red", text: "Overloaded with excess projects", icon: "🔥" },
+                    { color: "red", text: "Overwhelmed with too many projects", icon: "🔥" },
                     { color: "orange", text: "Sharing gigs on X & WhatsApp is inefficient", icon: "📱" },
                     { color: "yellow", text: "Hard to find the right person to share work", icon: "🔍" },
                   ].map((point, index) => (
@@ -98,17 +97,16 @@ export default function ProblemSolving() {
                 <div className="text-center space-y-2 sm:space-y-3 md:space-y-4">
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-card-foreground">The Solution</h3>
                   <p className="text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed px-2">
-                    PostMyGig lets you list work, share tasks, or find gigs. Contact others directly using chat, email,
-                    WhatsApp, or any contact method the freelancer has added.
+                    PostMyGig makes it simple to list your gigs, share extra work, or find new projects. Connect instantly via chat, email, WhatsApp, or any contact method freelancers choose.
                   </p>
                 </div>
 
                 {/* Solution Points */}
                 <div className="space-y-2 sm:space-y-3 lg:space-y-4">
                   {[
-                    { text: "Effortless project listing & sharing", icon: "✨" },
-                    { text: "Built-in chat & email connections", icon: "💬" },
-                    { text: "Privacy protected, secure platform", icon: "🔒" },
+                    { text: "Easy project listing and seamless sharing", icon: "✨" },
+                    { text: "Connect instantly via built-in chat and email", icon: "💬" },
+                    { text: "Privacy-first and secure by design", icon: "🔒" },
                   ].map((point, index) => (
                     <motion.div
                       key={index}

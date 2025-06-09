@@ -36,20 +36,20 @@ function Hero() {
             <div className="inline-flex items-center space-x-2 bg-card/80 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 border border-primary/20">
               <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
               <span className="text-xs sm:text-sm font-medium  text-accent-foreground">
-                Built in India, trusted by early users
+               Built for Freelancers, Trusted by Early Users
               </span>
             </div>
 
             {/* Main Headline */}
             <div className="space-y-4" >
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-accent-foreground leading-tight">
-                Share & Find <span className="text-primary">Freelance Projects</span>,{" "}
-                <span className="text-primary">Free and Simple</span>
+                Share Gigs <span className="text-primary">You Can’t Take</span>,{" "}
+                <span className="text-primary"> Find Work You Love</span>
               </h1>
 
               {/* Subheadline */}
               <p className="text-xl sm:text-2xl text-muted-foreground leading-relaxed max-w-2xl">
-                Post projects, share extra work, or find gigs. Connect safely via WhatsApp or email in minutes.
+               Too busy? Quickly post your extra gigs. Need work? Find one fast. Connect instantly via chat or email.
               </p>
             </div>
 
@@ -60,14 +60,14 @@ function Hero() {
                 className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
                 aria-label="Sign up for PostMyGig with Google or X authentication"
               >
-                Get Started Free
+                Start Posting Gigs
               </Link>
               <Link
                 href="/view-gigs"
                 className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-accent-foreground bg-card hover:bg-accent border-2 border-primary rounded-lg transition-colors duration-200"
                 aria-label="Browse available freelance projects"
               >
-                Explore Projects
+                Find Gigs Now
               </Link>
             </div>
 
