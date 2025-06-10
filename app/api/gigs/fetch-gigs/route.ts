@@ -6,9 +6,15 @@ import ratelimiter from "@/lib/ratelimit"
 
 export async function GET(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "anonymous"
+  
+  // Get page and limit from URL
+  const { searchParams } = new URL(req.url)
+  const page = parseInt(searchParams.get("page") || "1")
+  const limit = parseInt(searchParams.get("limit") || "10")
+  const skip = (page - 1) * limit
 
   try {
-    const { success, limit, reset, remaining } = await ratelimiter.limit(ip)
+    const { success, limit: rateLimit, reset, remaining } = await ratelimiter.limit(ip)
 
     if (!success) {
       return NextResponse.json(
@@ -20,7 +26,7 @@ export async function GET(req: NextRequest) {
           status: 429,
           headers: {
             "Retry-After": Math.ceil((reset - Date.now()) / 1000).toString(),
-            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Limit": rateLimit.toString(),
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": reset.toString(),
           },
@@ -28,32 +34,24 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const cacheKey = "fetch-gigs:all"
+    const cacheKey = `fetch-gigs:page:${page}:limit:${limit}`
 
     try {
       const cachedGigs = await redis.get(cacheKey)
 
       if (cachedGigs) {
-        const gigs = typeof cachedGigs === "string" ? JSON.parse(cachedGigs) : cachedGigs
+        const data = typeof cachedGigs === "string" ? JSON.parse(cachedGigs) : cachedGigs
 
-        console.log("Returning cached gigs:", gigs.length)
 
-        return NextResponse.json(
-          {
-            gigs,
-            fromCache: true,
-            count: gigs.length,
+        return NextResponse.json(data, {
+          status: 200,
+          headers: {
+            "X-RateLimit-Limit": rateLimit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": reset.toString(),
+            "Cache-Control": "no-cache",
           },
-          {
-            status: 200,
-            headers: {
-              "X-RateLimit-Limit": limit.toString(),
-              "X-RateLimit-Remaining": remaining.toString(),
-              "X-RateLimit-Reset": reset.toString(),
-              "Cache-Control": "no-cache",
-            },
-          },
-        )
+        })
       }
     } catch (redisError) {
       console.warn("Redis cache read failed:", redisError)
@@ -61,10 +59,14 @@ export async function GET(req: NextRequest) {
 
     await ConnectoDatabase()
 
-    console.log("Fetching gigs from database...")
 
-    // First, let's get ALL gigs to see what's in the database
-    const allGigs = await ProjectModel.find({})
+    const currentDate = new Date()
+
+    // Get paginated gigs
+    const gigs = await ProjectModel.find({
+      expiresAt: { $gt: currentDate },
+      status: { $nin: ["accepted", "completed"] }
+    })
       .select({
         title: 1,
         description: 1,
@@ -77,108 +79,44 @@ export async function GET(req: NextRequest) {
         reportCount: 1,
       })
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean()
 
-    console.log("Total gigs in database:", allGigs.length)
-    console.log(
-      "All gigs statuses:",
-      allGigs.map((g) => ({ id: g._id, status: g.status, expiresAt: g.expiresAt })),
-    )
-
-    // Now filter for active gigs
-    const currentDate = new Date()
-    console.log("Current date:", currentDate)
-
-    const activeGigs = allGigs.filter((gig) => {
-      const isNotExpired = gig.expiresAt ? new Date(gig.expiresAt) > currentDate : false
-      const isActiveStatus = !["accepted", "completed"].includes(gig.status?.toLowerCase())
-
-      console.log(
-        `Gig ${gig._id}: expires ${gig.expiresAt}, status: ${gig.status}, notExpired: ${isNotExpired}, activeStatus: ${isActiveStatus}`,
-      )
-
-      return isNotExpired && isActiveStatus
+    // Get total count
+    const totalCount = await ProjectModel.countDocuments({
+      expiresAt: { $gt: currentDate },
+      status: { $nin: ["accepted", "completed"] }
     })
 
-    console.log("Filtered active gigs:", activeGigs.length)
+    const totalPages = Math.ceil(totalCount / limit)
 
-    // If no active gigs, let's also try a more lenient query
-    if (activeGigs.length === 0) {
-      console.log("No active gigs found, trying lenient query...")
-
-      const lenientGigs = await ProjectModel.find({
-        status: "active",
-      })
-        .select({
-          title: 1,
-          description: 1,
-          skillsRequired: 1,
-          status: 1,
-          createdAt: 1,
-          expiresAt: 1,
-          createdBy: 1,
-          isFlagged: 1,
-          reportCount: 1,
-        })
-        .sort({ createdAt: -1 })
-        .limit(100)
-        .lean()
-
-      console.log("Lenient query results:", lenientGigs.length)
-
-      if (lenientGigs.length > 0) {
-        try {
-          await redis.set(cacheKey, JSON.stringify(lenientGigs), { ex: 300 })
-        } catch (redisError) {
-          console.warn("Redis cache write failed:", redisError)
-        }
-
-        return NextResponse.json(
-          {
-            gigs: lenientGigs,
-            fromCache: false,
-            count: lenientGigs.length,
-            fetchedAt: new Date().toISOString(),
-            queryType: "lenient",
-          },
-          {
-            status: 200,
-            headers: {
-              "X-RateLimit-Limit": limit.toString(),
-              "X-RateLimit-Remaining": remaining.toString(),
-              "X-RateLimit-Reset": reset.toString(),
-              "Cache-Control": "no-cache",
-            },
-          },
-        )
-      }
+    const responseData = {
+      gigs,
+      page,
+      limit,
+      totalCount,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+      fromCache: false,
     }
 
     try {
-      await redis.set(cacheKey, JSON.stringify(activeGigs), { ex: 300 })
+      await redis.set(cacheKey, JSON.stringify(responseData), { ex: 300 })
     } catch (redisError) {
       console.warn("Redis cache write failed:", redisError)
     }
 
-    return NextResponse.json(
-      {
-        gigs: activeGigs,
-        fromCache: false,
-        count: activeGigs.length,
-        fetchedAt: new Date().toISOString(),
-        totalInDb: allGigs.length,
-        queryType: "filtered",
+    return NextResponse.json(responseData, {
+      status: 200,
+      headers: {
+        "X-RateLimit-Limit": rateLimit.toString(),
+        "X-RateLimit-Remaining": remaining.toString(),
+        "X-RateLimit-Reset": reset.toString(),
+        "Cache-Control": "no-cache",
       },
-      {
-        status: 200,
-        headers: {
-          "X-RateLimit-Limit": limit.toString(),
-          "X-RateLimit-Remaining": remaining.toString(),
-          "X-RateLimit-Reset": reset.toString(),
-          "Cache-Control": "no-cache",
-        },
-      },
-    )
+    })
   } catch (error: any) {
     console.error("Error fetching gigs:", error)
 

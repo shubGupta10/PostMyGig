@@ -1,5 +1,6 @@
 "use client"
 
+import { User2Icon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link"
 
@@ -193,14 +194,7 @@ function FreelancerClient() {
               <div className="p-8">
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-12 h-12 bg-accent-foreground rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"
-                      />
-                    </svg>
+                    <User2Icon className="text-accent font-bold"/>
                   </div>
                   <h3 className="text-2xl font-bold text-card-foreground">For Clients</h3>
                 </div>

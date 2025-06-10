@@ -17,6 +17,15 @@ import {
   Eye,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 interface Gig {
   _id: string
@@ -29,6 +38,15 @@ interface Gig {
   createdBy: string
   isFlagged: boolean
   reportCount: number
+}
+
+interface PaginationData {
+  page: number
+  limit: number
+  totalCount: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPrevPage: boolean
 }
 
 interface RateLimitInfo {
@@ -48,21 +66,27 @@ function DisplayAllGigs() {
     message: "",
     timestamp: 0,
   })
+  const [pagination, setPagination] = useState<PaginationData>({
+    page: 1,
+    limit: 6, 
+    totalCount: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+  })
   const router = useRouter()
 
-  const fetchAllGigs = useCallback(async () => {
+  const fetchGigs = useCallback(async (page = 1, limit = 6) => {
     try {
       setLoading(true)
       setError(null)
       setRateLimitInfo((prev) => ({ ...prev, isLimited: false, message: "" }))
 
-      const response = await fetch("/api/gigs/fetch-gigs", {
+      const response = await fetch(`/api/gigs/fetch-gigs?page=${page}&limit=${limit}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        // Disable caching to ensure fresh data
-        cache: "no-store",
       })
 
       if (response.status === 429) {
@@ -90,6 +114,14 @@ function DisplayAllGigs() {
       const fetchedGigs = data.gigs || []
 
       setGigs(fetchedGigs)
+      setPagination({
+        page: data.page,
+        limit: data.limit,
+        totalCount: data.totalCount,
+        totalPages: data.totalPages,
+        hasNextPage: data.hasNextPage,
+        hasPrevPage: data.hasPrevPage,
+      })
 
       setRateLimitInfo({
         isLimited: false,
@@ -144,7 +176,7 @@ function DisplayAllGigs() {
         case "active":
           return {
             color: "bg-accent text-accent-foreground border-accent",
-            dot: "bg-primary",
+            dot: "bg-green-500",
             icon: Zap,
             borderColor: "border-primary",
           }
@@ -189,17 +221,25 @@ function DisplayAllGigs() {
       }))
       return
     }
-    fetchAllGigs()
-  }, [rateLimitInfo.isLimited, fetchAllGigs])
+    fetchGigs(pagination.page, pagination.limit)
+  }, [rateLimitInfo.isLimited, fetchGigs, pagination.page, pagination.limit])
 
   const handleRefreshClick = useCallback(() => {
-    fetchAllGigs()
-  }, [fetchAllGigs])
+    fetchGigs(pagination.page, pagination.limit)
+  }, [fetchGigs, pagination.page, pagination.limit])
+
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      if (newPage < 1 || newPage > pagination.totalPages) return
+      fetchGigs(newPage, pagination.limit)
+    },
+    [fetchGigs, pagination.totalPages, pagination.limit],
+  )
 
   // Load data on mount
   useEffect(() => {
-    fetchAllGigs()
-  }, [fetchAllGigs])
+    fetchGigs()
+  }, [fetchGigs])
 
   const RateLimitBanner = useMemo(() => {
     if (!rateLimitInfo.isLimited) return null
@@ -221,6 +261,64 @@ function DisplayAllGigs() {
       </div>
     )
   }, [rateLimitInfo])
+
+  // Generate pagination items
+  const renderPaginationItems = useCallback(() => {
+    const { page, totalPages } = pagination
+    const items = []
+
+    // Always show first page
+    items.push(
+      <PaginationItem key="first">
+        <PaginationLink onClick={() => handlePageChange(1)} isActive={page === 1}>
+          1
+        </PaginationLink>
+      </PaginationItem>,
+    )
+
+    // Show ellipsis if needed
+    if (page > 3) {
+      items.push(
+        <PaginationItem key="ellipsis-start">
+          <PaginationEllipsis />
+        </PaginationItem>,
+      )
+    }
+
+    // Show current page and surrounding pages
+    for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
+      if (i === 1 || i === totalPages) continue // Skip first and last page as they're always shown
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink onClick={() => handlePageChange(i)} isActive={page === i}>
+            {i}
+          </PaginationLink>
+        </PaginationItem>,
+      )
+    }
+
+    // Show ellipsis if needed
+    if (page < totalPages - 2) {
+      items.push(
+        <PaginationItem key="ellipsis-end">
+          <PaginationEllipsis />
+        </PaginationItem>,
+      )
+    }
+
+    // Always show last page if there's more than one page
+    if (totalPages > 1) {
+      items.push(
+        <PaginationItem key="last">
+          <PaginationLink onClick={() => handlePageChange(totalPages)} isActive={page === totalPages}>
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>,
+      )
+    }
+
+    return items
+  }, [pagination, handlePageChange])
 
   // Memoized gig cards
   const gigCards = useMemo(() => {
@@ -359,7 +457,7 @@ function DisplayAllGigs() {
 
           {/* Cards Skeleton Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+            {[1, 2, 3].map((i) => (
               <div
                 key={i}
                 className="bg-card rounded-3xl border border-border p-8 animate-pulse shadow-lg"
@@ -392,6 +490,11 @@ function DisplayAllGigs() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Pagination Skeleton */}
+          <div className="mt-10 flex justify-center">
+            <div className="h-10 bg-muted rounded-lg w-64 animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -492,7 +595,8 @@ function DisplayAllGigs() {
             {/* Header with Refresh and Debug Info */}
             <div className="flex justify-between items-center">
               <div className="text-sm text-muted-foreground">
-                Showing {gigs.length} gig{gigs.length !== 1 ? "s" : ""}
+                Showing {gigs.length} gig{gigs.length !== 1 ? "s" : ""} of {pagination.totalCount} total
+                {pagination.totalPages > 0 && ` • Page ${pagination.page} of ${pagination.totalPages}`}
               </div>
               <button
                 onClick={handleRefreshClick}
@@ -506,6 +610,31 @@ function DisplayAllGigs() {
 
             {/* Gigs Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">{gigCards}</div>
+
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+              <div className="mt-10">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => handlePageChange(pagination.page - 1)}
+                        className={!pagination.hasPrevPage ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+
+                    {renderPaginationItems()}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => handlePageChange(pagination.page + 1)}
+                        className={!pagination.hasNextPage ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
         )}
       </div>

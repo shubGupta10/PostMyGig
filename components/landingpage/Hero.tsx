@@ -41,7 +41,7 @@ function Hero() {
             </div>
 
             {/* Main Headline */}
-            <div className="space-y-4" >
+            <div className="space-y-4" style={{ fontFamily: "var(--font-serif)" }}>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-accent-foreground leading-tight">
                 Share Gigs <span className="text-primary">You Can’t Take</span>,{" "}
                 <span className="text-primary"> Find Work You Love</span>
@@ -154,7 +154,7 @@ function Hero() {
                       </p>
                     </div>
                     <div className="flex items-center space-x-1 sm:space-x-2 bg-card rounded-full px-2 sm:px-3 py-1 border border-border flex-shrink-0">
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full"></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full"></div>
                       <span className="text-xs sm:text-sm font-medium text-card-foreground">Active</span>
                     </div>
                   </div>
