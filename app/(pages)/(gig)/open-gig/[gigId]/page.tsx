@@ -38,6 +38,7 @@ import {
 } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import {toast} from 'sonner'
+import { useGigStore } from "@/store/gigStore"
 
 interface Gig {
   _id: string
@@ -74,6 +75,7 @@ function OpenGig() {
   const [isPinged, setIsPinged] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const router = useRouter()
+  const {setGigData} = useGigStore();
 
   const params = useParams()
   const gigId = params.gigId
@@ -94,10 +96,11 @@ function OpenGig() {
       })
 
       const data = await response.json()
-
+      
       if (response.ok && data.gig) {
         setGig(data.gig)
         setOwner(data.owner)
+        setGigData(data.gig)
       } else {
         console.log("Error in response:", data)
         setError(data.message || data.error || "Failed to fetch gig")

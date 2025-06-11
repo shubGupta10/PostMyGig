@@ -4,48 +4,99 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import {toast} from 'sonner'
+import { toast } from 'sonner'
+import { useGigStore } from "@/store/gigStore"
 
 interface FormData {
   title: string
   description: string
-  skillsRequired: string
-  contact: {
-    email: string
-    whatsapp: string
-    x: string
-  }
   expiresAt: string
   budget: string
+  status: string
 }
 
 interface FormErrors {
   [key: string]: string
 }
 
+const formatDateForInput = (dateString: string): string => {
+  if (!dateString) return ""
+  try {
+    const date = new Date(dateString)
+    if (isNaN(date.getTime())) return ""
+    return date.toISOString().split('T')[0]
+  } catch {
+    return ""
+  }
+}
+
+const parseBudget = (budgetString: string): { currency: string; amount: string } => {
+  if (!budgetString) return { currency: "USD", amount: "" }
+  
+  if (budgetString.startsWith("$")) {
+    return {
+      currency: "USD",
+      amount: budgetString.slice(1)
+    }
+  } else if (budgetString.startsWith("₹")) {
+    return {
+      currency: "INR", 
+      amount: budgetString.slice(1)
+    }
+  }
+  
+  return { currency: "USD", amount: budgetString }
+}
+
 function EditGig() {
+  const { gigData } = useGigStore()
+  
   const params = useParams()
   const gigId = params.gigId
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  
+  const parsedBudget = parseBudget(gigData?.budget || "")
+  
   const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
-    skillsRequired: "",
-    contact: {
-      email: "",
-      whatsapp: "",
-      x: "",
-    },
     expiresAt: "",
     budget: "",
+    status: "",
   })
-  const [currency, setCurrency] = useState("USD")
-  const [budgetAmount, setBudgetAmount] = useState("")
+  
+  const [currency, setCurrency] = useState(parsedBudget.currency)
+  const [budgetAmount, setBudgetAmount] = useState(parsedBudget.amount)
   const [errors, setErrors] = useState<FormErrors>({})
+
+  useEffect(() => {
+    if (gigData) {
+      const parsedBudget = parseBudget(gigData.budget || "")
+      
+      const newFormData = {
+        title: gigData.title || "",
+        description: gigData.description || "",
+        expiresAt: formatDateForInput(gigData.expiresAt || ""),
+        budget: gigData.budget || "",
+        status: gigData.status || "",
+      }
+      
+      setFormData(newFormData)
+      setCurrency(parsedBudget.currency)
+      setBudgetAmount(parsedBudget.amount)
+    }
+  }, [gigData])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -61,19 +112,15 @@ function EditGig() {
     }
   }
 
-  const handleContactChange = (type: "email" | "whatsapp" | "x", value: string) => {
+  const handleStatusChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
-      contact: {
-        ...prev.contact,
-        [type]: value,
-      },
+      status: value,
     }))
-
-    if (errors.contact) {
+    if (errors.status) {
       setErrors((prev) => ({
         ...prev,
-        contact: "",
+        status: "",
       }))
     }
   }
@@ -119,14 +166,24 @@ function EditGig() {
       newErrors.description = "Description is required"
     }
 
-
     if (!formData.expiresAt) {
       newErrors.expiresAt = "Deadline is required"
+    } else {
+      const selectedDate = new Date(formData.expiresAt)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      
+      if (selectedDate < today) {
+        newErrors.expiresAt = "Deadline must be in the future"
+      }
     }
 
-    if (!formData.budget) {
+    if (!formData.budget || !budgetAmount) {
       newErrors.budget = "Budget is required"
+    } else if (parseFloat(budgetAmount) <= 0) {
+      newErrors.budget = "Budget must be greater than 0"
     }
+
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -136,6 +193,7 @@ function EditGig() {
     e.preventDefault()
 
     if (!validateForm()) {
+      toast.error("Please fix the errors before submitting")
       return
     }
 
@@ -151,9 +209,9 @@ function EditGig() {
           gigId,
           title: formData.title.trim(),
           description: formData.description.trim(),
-          contact: formData.contact,
           expiresAt: formData.expiresAt,
           budget: formData.budget,
+          status: formData.status,
         }),
       })
 
@@ -176,6 +234,17 @@ function EditGig() {
     }
   }
 
+  if (!gigData) {
+    return (
+      <div className="w-full bg-background min-h-screen py-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading gig data...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="w-full bg-background min-h-screen py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -190,10 +259,9 @@ function EditGig() {
 
         <div className="bg-card rounded-2xl shadow-xl p-6 sm:p-8 border border-border">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title Field */}
             <div className="space-y-2">
               <Label htmlFor="title" className="text-lg font-semibold text-card-foreground">
-                Gig Title
+                Gig Title *
               </Label>
               <Input
                 id="title"
@@ -207,10 +275,9 @@ function EditGig() {
               {errors.title && <p className="text-destructive text-sm">{errors.title}</p>}
             </div>
 
-            {/* Description Field */}
             <div className="space-y-2">
               <Label htmlFor="description" className="text-lg font-semibold text-card-foreground">
-                Description
+                Description *
               </Label>
               <Textarea
                 id="description"
@@ -224,64 +291,9 @@ function EditGig() {
               {errors.description && <p className="text-destructive text-sm">{errors.description}</p>}
             </div>
 
-
-            {/* Contact Information Fields */}
-            <div className="space-y-4">
-              <Label className="text-lg font-semibold text-card-foreground">Contact Information</Label>
-              <p className="text-sm text-muted-foreground">Your Contact Information will be visible on the gig page.</p>
-
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-base font-medium text-muted-foreground">
-                  📧 Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  value={formData.contact.email}
-                  onChange={(e) => handleContactChange("email", e.target.value)}
-                  className="text-lg py-4 bg-input border-border text-foreground"
-                />
-              </div>
-
-              {/* WhatsApp */}
-              <div className="space-y-2">
-                <Label htmlFor="whatsapp" className="text-base font-medium text-muted-foreground">
-                  💬 WhatsApp
-                </Label>
-                <Input
-                  id="whatsapp"
-                  type="text"
-                  placeholder="+1234567890"
-                  value={formData.contact.whatsapp}
-                  onChange={(e) => handleContactChange("whatsapp", e.target.value)}
-                  className="text-lg py-4 bg-input border-border text-foreground"
-                />
-              </div>
-
-              {/* X (Twitter) */}
-              <div className="space-y-2">
-                <Label htmlFor="x" className="text-base font-medium text-muted-foreground">
-                  🐦 X (Twitter)
-                </Label>
-                <Input
-                  id="x"
-                  type="text"
-                  placeholder="@username"
-                  value={formData.contact.x}
-                  onChange={(e) => handleContactChange("x", e.target.value)}
-                  className="text-lg py-4 bg-input border-border text-foreground"
-                />
-              </div>
-
-              {errors.contact && <p className="text-destructive text-sm">{errors.contact}</p>}
-            </div>
-
-            {/* Expires At Field */}
             <div className="space-y-2">
               <Label htmlFor="expiresAt" className="text-lg font-semibold text-card-foreground">
-                Gig Deadline
+                Gig Deadline *
               </Label>
               <Input
                 id="expiresAt"
@@ -295,13 +307,11 @@ function EditGig() {
               {errors.expiresAt && <p className="text-destructive text-sm">{errors.expiresAt}</p>}
             </div>
 
-            {/* Budget Field with Currency Selector */}
             <div className="space-y-2">
               <Label htmlFor="budget" className="text-lg font-semibold text-card-foreground">
-                Budget
+                Budget *
               </Label>
 
-              {/* Currency Toggle */}
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-sm font-medium text-muted-foreground">Currency:</span>
                 <div className="flex bg-muted rounded-lg p-1">
@@ -326,7 +336,6 @@ function EditGig() {
                 </div>
               </div>
 
-              {/* Budget Input with Currency Symbol */}
               <div className="relative">
                 <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-lg font-semibold text-muted-foreground pointer-events-none">
                   {currency === "USD" ? "$" : "₹"}
@@ -335,6 +344,8 @@ function EditGig() {
                   id="budget"
                   name="budgetAmount"
                   type="number"
+                  min="1"
+                  step="0.01"
                   placeholder={currency === "USD" ? "500" : "40000"}
                   value={budgetAmount}
                   onChange={handleBudgetChange}
@@ -342,7 +353,6 @@ function EditGig() {
                 />
               </div>
 
-              {/* Show formatted budget */}
               {formData.budget && (
                 <p className="text-sm text-muted-foreground flex items-center gap-2">
                   <span className="w-2 h-2 bg-primary rounded-full"></span>
@@ -353,7 +363,32 @@ function EditGig() {
               {errors.budget && <p className="text-destructive text-sm">{errors.budget}</p>}
             </div>
 
-            {/* Submit Button */}
+            <div className="space-y-2">
+              <Label htmlFor="status" className="text-lg font-semibold text-card-foreground">
+                Gig Status *
+              </Label>
+              <Select value={formData.status} onValueChange={handleStatusChange}>
+                <SelectTrigger className={`text-lg py-6 bg-input border-border text-foreground ${errors.status ? "border-destructive focus:border-destructive" : ""}`}>
+                  <SelectValue placeholder="Select gig status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="completed" className="text-lg py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Completed
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="expired" className="text-lg py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      Expired
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.status && <p className="text-destructive text-sm">{errors.status}</p>}
+            </div>
+
             <div className="pt-6 flex gap-4">
               <Button
                 type="button"

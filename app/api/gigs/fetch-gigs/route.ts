@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
     }
 
     const cacheKey = `fetch-gigs:page:${page}:limit:${limit}`
+    await redis.sadd("gig-cache-keys-for-deletion", cacheKey);
 
     try {
       const cachedGigs = await redis.get(cacheKey)
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
     // Get paginated gigs
     const gigs = await ProjectModel.find({
       expiresAt: { $gt: currentDate },
-      status: { $nin: ["accepted", "completed"] }
+      status: { $nin: ["accepted", "completed", "expired"] }
     })
       .select({
         title: 1,

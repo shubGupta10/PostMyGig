@@ -10,6 +10,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import { AlertCircle, ArrowLeft, Send, LinkIcon, FileText, Loader2 } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { toast } from "sonner"
 
 function PingProject() {
   const { data } = useSession()
@@ -73,11 +74,10 @@ function PingProject() {
         bestWorkLink: "",
         bestWorkDescription: "",
       }))
-
-      setTimeout(() => {
-        router.push("/view-gigs")
-      }, 1000)
+      router.push("/application-submitted")
+      toast.success("Application Submitted")
     } catch (error: any) {
+      toast.error("Application failed to submit")
       console.error(error)
       setError(error.message || "An error occurred while submitting your application")
     } finally {

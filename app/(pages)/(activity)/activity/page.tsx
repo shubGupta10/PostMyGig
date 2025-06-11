@@ -186,7 +186,7 @@ const Activity: FC = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 cursor-pointer" onClick={() => window.location.href=`/open-gig/${activity.gigId}`}>
                       <div className="flex items-center gap-2 mb-1">
                         <div className="flex items-center gap-1 text-muted-foreground text-sm">
                           <Clock className="w-3 h-3" />
