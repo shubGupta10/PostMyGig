@@ -22,14 +22,13 @@ function SendEmail() {
         email: ""
     });
 
-    const handleEmailCooldown = (email: string, cooldownSeconds: number = 90) => {
+    const handleEmailCooldown = (email: string, cooldownSeconds: number) => {
         setEmailCooldown({
             isActive: true,
             remainingTime: cooldownSeconds,
             email: email
         });
 
-        // Start countdown
         const interval = setInterval(() => {
             setEmailCooldown(prev => {
                 if (prev.remainingTime <= 1) {
@@ -42,7 +41,9 @@ function SendEmail() {
             });
         }, 1000);
 
-        const cooldownMessage = `Please wait ${Math.floor(cooldownSeconds / 60)}:${(cooldownSeconds % 60).toString().padStart(2, '0')} before requesting another password reset email.`;
+        const minutes = Math.floor(cooldownSeconds / 60);
+        const seconds = cooldownSeconds % 60;
+        const cooldownMessage = `Please wait ${minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`} before requesting another password reset email.`;
         setMessage(cooldownMessage);
         setMessageType('warning');
     };
@@ -63,7 +64,7 @@ function SendEmail() {
         if (emailCooldown.isActive && emailCooldown.email === registeredEmail) {
             const minutes = Math.floor(emailCooldown.remainingTime / 60);
             const seconds = emailCooldown.remainingTime % 60;
-            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            const timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
             const message = `Email cooldown active. Please wait ${timeString} before trying again.`;
             setMessage(message);
             setMessageType('warning');
@@ -87,28 +88,24 @@ function SendEmail() {
             if (response.ok) {
                 setMessage('Password reset email sent successfully! Check your inbox.');
                 setMessageType('success');
-                // Start cooldown after successful email send
-                handleEmailCooldown(registeredEmail);
                 setRegisteredEmail('');
+
+                if (data.cooldownActive && data.remainingTime) {
+                    handleEmailCooldown(registeredEmail, data.remainingTime);
+                }
             } else {
                 if (response.status === 429) {
-                    // Check if it's email cooldown
-                    if (data.message?.toLowerCase().includes("cooldown") || 
-                        data.message?.toLowerCase().includes("wait")) {
-                        handleEmailCooldown(registeredEmail);
-                        setMessage(data.message);
-                        setMessageType('warning');
-                    } else {
-                        setMessage(data.message || 'Too many requests. Please try again later.');
-                        setMessageType('error');
+                    if (data.cooldownActive && data.remainingTime) {
+                        handleEmailCooldown(registeredEmail, data.remainingTime);
                     }
+                    setMessage(data.message || 'Too many requests. Please try again later.');
+                    setMessageType('warning');
                 } else {
                     setMessage(data.message || 'Failed to send email. Please try again.');
                     setMessageType('error');
                 }
             }
         } catch (error) {
-            console.error("Failed to send email:", error);
             setMessage('Network error. Please check your connection and try again.');
             setMessageType('error');
         } finally {
@@ -131,13 +128,11 @@ function SendEmail() {
         const value = e.target.value;
         setRegisteredEmail(value);
         
-        // Clear message when email changes
         if (message) {
             setMessage('');
             setMessageType('');
         }
         
-        // Clear email cooldown if email changes
         if (emailCooldown.isActive && emailCooldown.email !== value) {
             setEmailCooldown({ isActive: false, remainingTime: 0, email: "" });
         }
@@ -148,7 +143,7 @@ function SendEmail() {
 
         const minutes = Math.floor(emailCooldown.remainingTime / 60);
         const seconds = emailCooldown.remainingTime % 60;
-        const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        const timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 
         return (
             <div className="mb-6 bg-orange-50 border border-orange-200 rounded-xl p-4 dark:bg-orange-950/20 dark:border-orange-800/50">
@@ -192,10 +187,8 @@ function SendEmail() {
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 <div className="bg-card rounded-2xl shadow-xl p-8 border border-border">
-                    {/* Email Cooldown Banner */}
                     <EmailCooldownBanner />
 
-                    {/* Header */}
                     <div className="text-center mb-8">
                         <div className="mx-auto w-16 h-16 bg-primary rounded-full flex items-center justify-center mb-4">
                             <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +203,6 @@ function SendEmail() {
                         </p>
                     </div>
 
-                    {/* Form */}
                     <div className="space-y-6">
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
@@ -231,12 +223,11 @@ function SendEmail() {
                             {emailCooldown.isActive && emailCooldown.email === registeredEmail && (
                                 <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 flex items-center gap-1">
                                     <Clock className="w-3 h-3" />
-                                    Email cooldown active - try again in {Math.floor(emailCooldown.remainingTime / 60)}:{(emailCooldown.remainingTime % 60).toString().padStart(2, '0')}
+                                    Email cooldown active - try again in {Math.floor(emailCooldown.remainingTime / 60) > 0 ? `${Math.floor(emailCooldown.remainingTime / 60)}m ${emailCooldown.remainingTime % 60}s` : `${emailCooldown.remainingTime % 60}s`}
                                 </p>
                             )}
                         </div>
 
-                        {/* Message Display */}
                         {message && (
                             <Alert
                                 variant={messageType === 'error' ? 'destructive' : 'default'}
@@ -273,7 +264,6 @@ function SendEmail() {
                             </Alert>
                         )}
 
-                        {/* Submit Button */}
                         <button
                             onClick={handleSubmitEmail}
                             disabled={isFormDisabled || !registeredEmail}
@@ -301,7 +291,6 @@ function SendEmail() {
                             )}
                         </button>
 
-                        {/* Back to Login Link */}
                         <div className="text-center">
                             <button 
                                 onClick={() => window.history.back()}
@@ -313,7 +302,6 @@ function SendEmail() {
                     </div>
                 </div>
 
-                {/* Footer */}
                 <div className="text-center mt-6">
                     <p className="text-muted-foreground text-xs">
                         Didn't receive an email? Check your spam folder or try again after the cooldown period.
