@@ -407,7 +407,7 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
                 <MessageCircle className="w-7 h-7 text-primary-foreground" />
               </div>
               <div className="flex flex-col">
-                <h2 className="text-xl font-bold text-card-foreground tracking-tight">{chatPartnerName}</h2>
+                <h2 className="text-xl font-bold text-card-foreground tracking-tight">{session.user.name}</h2>
                 <div className="flex items-center gap-3 text-sm">
                   <div className={`w-3 h-3 rounded-full ${getConnectionDot()} animate-pulse`}></div>
                   <span className={`font-semibold ${getConnectionStatus().color}`}>{getConnectionStatus().text}</span>

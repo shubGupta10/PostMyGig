@@ -26,6 +26,17 @@ export async function POST(req: NextRequest) {
         application.status = "accepted";
         await application.save();
 
+        //delete the rest freelancers pings upon selecting one application 
+        const resultDelete = await PingModel.deleteMany({
+            userEmail: { $ne: applicantEmail }, // delete pings where userEmail is NOT the selected freelancer's email
+            projectId: gigId 
+        });
+        console.log("Email", applicantEmail);
+        console.log("Gig", gigId);
+        
+        console.log("Here is result delete", resultDelete);
+
+
         //update freelancer email in ProjectModel
         await ProjectModel.findByIdAndUpdate(gigId, {
             AcceptedFreelancerEmail: applicantEmail
@@ -36,11 +47,14 @@ export async function POST(req: NextRequest) {
             status: "completed"
         }, { new: true });
 
+
         //find freelancerName
         const freelancerWeSearchingFor = await userModel.findOne({ email: applicantEmail });
         if (!freelancerWeSearchingFor) {
             return NextResponse.json({ error: "Freelancer not found" }, { status: 404 });
         }
+
+
         //fetch gigTitle
         const fetchGigTitle = await ProjectModel.findById(gigId);
 

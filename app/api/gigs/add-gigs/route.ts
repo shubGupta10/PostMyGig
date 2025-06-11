@@ -111,6 +111,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    await redis.del("fetch-gigs:all")
+
 
     //save activity
     if (session.user.activityPublic === true) {

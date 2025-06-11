@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    await redis.set(redisKey, "true", { ex: 600 });
+    await redis.set(redisKey, "true", { ex: 172800  }); //48 hours
 
     return NextResponse.json({
       message: "Invitation sent successfully",
