@@ -96,12 +96,12 @@ function ViewApplication() {
       } else {
         console.error("Error fetching applications", data)
         setApplications([])
-        setIsAuthorized(true) 
+        setIsAuthorized(true)
       }
     } catch (error) {
       console.error("Error fetching applications", error)
-      setApplications([]) 
-      setIsAuthorized(true) 
+      setApplications([])
+      setIsAuthorized(true)
     } finally {
       setInitialLoading(false)
     }
@@ -116,10 +116,15 @@ function ViewApplication() {
   }, [gigIdFromSearchParams])
 
   const filteredApplications = (applications || []).filter((app) => {
+    // Add null checks for applicant and its properties
+    const applicantName = app.applicant?.name || ""
+    const applicantEmail = app.applicant?.email || ""
+    const message = app.message || ""
+
     const matchesSearch =
-      app.applicant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.applicant?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.message?.toLowerCase().includes(searchTerm.toLowerCase())
+      applicantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      applicantEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      message.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesStatus = statusFilter === "all" || app.status?.toLowerCase() === statusFilter
 
@@ -245,14 +250,15 @@ function ViewApplication() {
   }
 
   const getApplicantInitials = (applicant: Application) => {
-    if (applicant.applicant.name) {
+    // Add null checks for applicant and its properties
+    if (applicant?.applicant?.name) {
       const nameParts = applicant.applicant.name.trim().split(" ")
       if (nameParts.length >= 2) {
         return (nameParts[0][0] + nameParts[1][0]).toUpperCase()
       }
       return applicant.applicant.name.substring(0, 2).toUpperCase()
     }
-    if (applicant.applicant?.email) {
+    if (applicant?.applicant?.email) {
       const name = applicant.applicant.email.split("@")[0]
       return name.substring(0, 2).toUpperCase()
     }
@@ -260,7 +266,8 @@ function ViewApplication() {
   }
 
   const getApplicantDisplayName = (applicant: Application) => {
-    return applicant.applicant.name || applicant.applicant.email || "Unknown User"
+    // Add null checks for applicant and its properties
+    return applicant?.applicant?.name || applicant?.applicant?.email || "Unknown User"
   }
 
   // Modal handlers
@@ -537,7 +544,7 @@ function ViewApplication() {
                               <>
                                 <Button
                                   size="sm"
-                                  onClick={() => handleContactApplicant(applicant.applicant.email)}
+                                  onClick={() => handleContactApplicant(applicant.applicant?.email || "")}
                                   className="bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground font-medium shadow-lg"
                                 >
                                   <User2 className="w-4 h-4 mr-1" />
@@ -555,14 +562,13 @@ function ViewApplication() {
                               </>
                             )}
                             <Button
-                              onClick={() => handleAccept(applicant._id, applicant.applicant.email)}
+                              onClick={() => handleAccept(applicant._id, applicant.applicant?.email || "")}
                               size="sm"
                               disabled={isAccepted || isRejected || loading}
-                              className={`font-medium shadow-lg ${
-                                isAccepted
+                              className={`font-medium shadow-lg ${isAccepted
                                   ? "bg-primary/20 text-primary cursor-not-allowed hover:bg-primary/20"
                                   : "bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground"
-                              }`}
+                                }`}
                             >
                               {isAccepted ? (
                                 <>
@@ -663,11 +669,10 @@ function ViewApplication() {
                           onClick={() => handleAccept(applicant._id, applicant.applicant.email)}
                           size="sm"
                           disabled={isAccepted || isRejected || loading}
-                          className={`font-medium shadow-lg flex-1 sm:flex-none ${
-                            isAccepted
+                          className={`font-medium shadow-lg flex-1 sm:flex-none ${isAccepted
                               ? "bg-primary/20 text-primary cursor-not-allowed hover:bg-primary/20"
                               : "bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground"
-                          }`}
+                            }`}
                         >
                           {isAccepted ? (
                             <>
@@ -839,11 +844,10 @@ function ViewApplication() {
                     selectedApplicant.status?.toLowerCase() === "rejected" ||
                     loading
                   }
-                  className={`px-6 sm:px-8 py-2 sm:py-3 font-medium order-1 sm:order-3 ${
-                    selectedApplicant.status?.toLowerCase() === "accepted"
+                  className={`px-6 sm:px-8 py-2 sm:py-3 font-medium order-1 sm:order-3 ${selectedApplicant.status?.toLowerCase() === "accepted"
                       ? "bg-primary/20 text-primary cursor-not-allowed hover:bg-primary/20"
                       : "bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground"
-                  }`}
+                    }`}
                 >
                   {selectedApplicant.status?.toLowerCase() === "accepted" ? (
                     <>
