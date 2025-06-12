@@ -40,9 +40,11 @@ import {
   MessageCircle,
   Clock,
   Filter,
+  MailIcon,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import SendMail from "./sendMail"
 
 interface UserType {
   _id: string
@@ -690,6 +692,7 @@ function AdminDashboard() {
                                   </div>
                                 </div>
                               </div>
+                              <SendMail to={feedback.email} userName={feedback.name} />
                             </div>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>

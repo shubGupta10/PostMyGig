@@ -262,3 +262,51 @@ export const postMyGigApplicationAcceptedTemplate = (
     </div>
   `;
 };
+
+export const postMyGigAccountDeletedTemplate = (name: string) => {
+  return `
+    <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1 style="font-size: 24px; font-weight: 600; color: #0f172a;">
+          👋 Goodbye, ${name}
+        </h1>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
+          Your account on <strong>PostMyGig</strong> has been permanently deleted as per your request.
+        </p>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155;">
+          All your profile details, applications, and any other personal data linked to your account have been securely removed from our system. This action cannot be reversed.
+        </p>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155;">
+          If you wish to return, you are always welcome to create a new account anytime.
+        </p>
+        <p style="margin-top: 24px; font-size: 14px; color: #475569;">
+          Thank you for being part of <strong>PostMyGig</strong>. We hope to see you again in the future.
+        </p>
+        <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
+          For any concerns, you can still reach us at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.
+        </p>
+      </div>
+    </div>
+  `;
+};
+
+export const postMyGigGenericTemplate = (userName: string, content: string) => {
+  return `
+    <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1 style="font-size: 24px; font-weight: 600; color: #0f172a;">
+          Hello ${userName},
+        </h1>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
+          ${content}
+        </p>
+        <p style="margin-top: 24px; font-size: 14px; color: #475569;">
+          Thank you for being a part of <strong>PostMyGig</strong>.
+        </p>
+        <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
+          If you have any questions, feel free to reach us at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.
+        </p>
+      </div>
+    </div>
+  `;
+};

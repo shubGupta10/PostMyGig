@@ -1,6 +1,6 @@
 "use client"
 
-import { useSession, signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import {
   User,
@@ -21,14 +21,25 @@ import {
   UserCheck,
   Settings,
   Loader2,
-  CheckCircle,
-  XCircle,
+  Trash2,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { useUserStore } from "@/store/userDataStore"
+import { useAuthStore } from "@/store/useAuthStore"
 
 interface ContactLinks {
   label: string
@@ -60,9 +71,13 @@ function Profile() {
   const [error, setError] = useState<string | null>(null)
   const [toggleActivity, setToggleActivity] = useState(false)
   const [isUpdatingActivity, setIsUpdatingActivity] = useState(false)
-  const [activityUpdateStatus, setActivityUpdateStatus] = useState<'success' | 'error' | null>(null)
+  const [activityUpdateStatus, setActivityUpdateStatus] = useState<"success" | "error" | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const router = useRouter()
-  const {setUserData: StoreUserDataIntoStore} = useUserStore()
+  const { handleLogout } = useAuthStore()
+  const { setUserData: StoreUserDataIntoStore } = useUserStore()
 
   const fetchUserData = async () => {
     try {
@@ -72,7 +87,7 @@ function Profile() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({userId: session.data?.user.id})
+        body: JSON.stringify({ userId: session.data?.user.id }),
       })
 
       const data = await res.json()
@@ -142,10 +157,6 @@ function Profile() {
     }
   }
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: "/" })
-  }
-
   const toggleSwitchActivity = async (newValue: boolean) => {
     setIsUpdatingActivity(true)
     setActivityUpdateStatus(null)
@@ -154,29 +165,29 @@ function Profile() {
       const response = await fetch("/api/user/toggleActivityPublic", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ activityPublic: newValue })
+        body: JSON.stringify({ activityPublic: newValue }),
       })
 
       const data = await response.json()
 
       if (response.ok) {
         setToggleActivity(newValue)
-        setActivityUpdateStatus('success')
+        setActivityUpdateStatus("success")
         if (userData) {
           setUserData({
             ...userData,
-            activityPublic: newValue
+            activityPublic: newValue,
           })
         }
       } else {
-        setActivityUpdateStatus('error')
+        setActivityUpdateStatus("error")
         console.error("Failed to update activity visibility:", data.message || "Unknown error")
         setToggleActivity(!newValue)
       }
     } catch (error) {
-      setActivityUpdateStatus('error')
+      setActivityUpdateStatus("error")
       console.error("Error updating activity visibility:", error)
       setToggleActivity(!newValue)
     } finally {
@@ -184,6 +195,35 @@ function Profile() {
       setTimeout(() => {
         setActivityUpdateStatus(null)
       }, 3000)
+    }
+  }
+
+  const deleteUserAccount = async () => {
+    setIsDeleting(true)
+    setDeleteError(null)
+
+    try {
+      const response = await fetch("/api/user/delete-account", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userEmail: session.data?.user.email }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        handleLogout()
+      } else {
+        setDeleteError(data.message || "Failed to delete account. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error deleting account:", error)
+      setDeleteError("Network error occurred. Please try again.")
+    } finally {
+      setIsDeleting(false)
+      setShowDeleteDialog(false)
     }
   }
 
@@ -424,7 +464,9 @@ function Profile() {
                   <div className="bg-muted rounded-xl p-8 text-center border border-border">
                     <LinkIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-foreground text-lg font-medium">No contact links available</p>
-                    <p className="text-muted-foreground text-sm mt-2">Add links to your portfolio, social media, or website</p>
+                    <p className="text-muted-foreground text-sm mt-2">
+                      Add links to your portfolio, social media, or website
+                    </p>
                   </div>
                 )}
               </div>
@@ -480,9 +522,7 @@ function Profile() {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-accent-foreground font-medium">Public Activity</p>
-                              <p className="text-xs text-muted-foreground">
-                                Make your activity visible to others
-                              </p>
+                              <p className="text-xs text-muted-foreground">Make your activity visible to others</p>
                             </div>
                             <div className="flex items-center gap-2">
                               <Switch
@@ -496,12 +536,12 @@ function Profile() {
                       </div>
                     </div>
                     {/* Status message */}
-                    {activityUpdateStatus === 'success' && (
+                    {activityUpdateStatus === "success" && (
                       <div className="mt-2 text-xs text-green-600 bg-green-50 rounded-md px-2 py-1">
                         Activity visibility updated successfully
                       </div>
                     )}
-                    {activityUpdateStatus === 'error' && (
+                    {activityUpdateStatus === "error" && (
                       <div className="mt-2 text-xs text-red-600 bg-red-50 rounded-md px-2 py-1">
                         Failed to update activity visibility. Please try again.
                       </div>
@@ -520,12 +560,18 @@ function Profile() {
                 </h3>
                 <div className="space-y-4">
                   <div className="border-b border-border pb-4">
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Provider</label>
-                    <p className="text-foreground font-medium mt-1 capitalize">{userData?.provider || "Not available"}</p>
+                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                      Provider
+                    </label>
+                    <p className="text-foreground font-medium mt-1 capitalize">
+                      {userData?.provider || "Not available"}
+                    </p>
                   </div>
 
                   <div className="border-b border-border pb-4">
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Member Since</label>
+                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                      Member Since
+                    </label>
                     <div className="flex items-center gap-2 mt-1">
                       <Calendar className="w-4 h-4 text-primary" />
                       <p className="text-foreground font-medium">{formatDate(userData?.createdAt || "")}</p>
@@ -533,7 +579,9 @@ function Profile() {
                   </div>
 
                   <div className="border-b border-border pb-4">
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Last Updated</label>
+                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                      Last Updated
+                    </label>
                     <div className="flex items-center gap-2 mt-1">
                       <Clock className="w-4 h-4 text-accent-foreground" />
                       <p className="text-foreground font-medium">{formatDate(userData?.updatedAt || "")}</p>
@@ -541,7 +589,9 @@ function Profile() {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">User ID</label>
+                    <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                      User ID
+                    </label>
                     <p className="text-foreground font-mono text-sm mt-1 bg-muted rounded-lg px-3 py-2 border border-border">
                       {userData?._id || "Not available"}
                     </p>
@@ -571,6 +621,84 @@ function Profile() {
                     <Activity className="w-5 h-5 mr-2" />
                     View Dashboard
                   </Button>
+
+                  {/* Delete Account Alert Dialog */}
+                  <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full border-destructive/20 text-destructive hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive py-3 rounded-xl font-semibold"
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Deleting...
+                          </>
+                        ) : (
+                          <>
+                            <Trash2 className="w-5 h-5 mr-2" />
+                            Delete Account
+                          </>
+                        )}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="sm:max-w-[500px]">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-3 text-destructive">
+                          <AlertTriangle className="w-6 h-6" />
+                          Delete Account Permanently?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription asChild>
+                          <div className="space-y-3 text-base leading-relaxed">
+                            <div>
+                              <strong>This action cannot be undone.</strong> This will permanently delete your account
+                              and remove all your data from our servers.
+                            </div>
+                            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                              <div className="font-semibold text-destructive mb-2">What will be deleted:</div>
+                              <ul className="text-sm space-y-1 text-muted-foreground">
+                                <li>• Your profile information and account details</li>
+                                <li>• All your gigs and service listings</li>
+                                <li>• All your pings and notifications</li>
+                              </ul>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              If you're sure you want to proceed, click "Delete Account" below. You will be logged out
+                              immediately.
+                            </div>
+                          </div>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      {deleteError && (
+                        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
+                          <p className="text-destructive text-sm font-medium">{deleteError}</p>
+                        </div>
+                      )}
+                      <AlertDialogFooter className="gap-3">
+                        <AlertDialogCancel disabled={isDeleting} className="px-6">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={deleteUserAccount}
+                          disabled={isDeleting}
+                          className="bg-destructive hover:bg-destructive/90 text-destructive-foreground px-6"
+                        >
+                          {isDeleting ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Deleting...
+                            </>
+                          ) : (
+                            <>
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Delete Account
+                            </>
+                          )}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
 
                   <Button
                     variant="outline"
