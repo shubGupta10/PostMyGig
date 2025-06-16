@@ -22,7 +22,8 @@ import {
   Clock,
   Shield,
 } from "lucide-react"
-import {toast} from 'sonner'
+import { toast } from 'sonner'
+import FeedbackDialog from "@/components/FeedbackDialog"
 
 interface FormData {
   title: string
@@ -44,6 +45,7 @@ interface FormErrors {
 
 function AddGigs() {
   const router = useRouter()
+  const [showFeedbackDailog, setShowFeedbackDailog] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     title: "",
@@ -207,7 +209,8 @@ function AddGigs() {
         })
         setBudgetAmount("")
         setCurrency("USD")
-        router.push("/view-gigs")
+        setShowFeedbackDailog(true)
+
       } else if (response.status === 401) {
         toast.error("Please login to create a gig")
         router.push("/auth/login")
@@ -257,9 +260,8 @@ function AddGigs() {
                 placeholder="e.g., Full Stack Developer for E-commerce Website"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground placeholder:text-muted-foreground ${
-                  errors.title ? "border-destructive focus:border-destructive" : "focus:border-primary"
-                }`}
+                className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground placeholder:text-muted-foreground ${errors.title ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                  }`}
               />
               {errors.title && (
                 <div className="flex items-center gap-2 text-destructive">
@@ -281,9 +283,8 @@ function AddGigs() {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={4}
-                className={`text-sm sm:text-base resize-none bg-input border-border text-foreground placeholder:text-muted-foreground ${
-                  errors.description ? "border-destructive focus:border-destructive" : "focus:border-primary"
-                }`}
+                className={`text-sm sm:text-base resize-none bg-input border-border text-foreground placeholder:text-muted-foreground ${errors.description ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                  }`}
               />
               {errors.description && (
                 <div className="flex items-center gap-2 text-destructive">
@@ -305,11 +306,10 @@ function AddGigs() {
                 placeholder="react, nextjs, nodejs, mongodb"
                 value={formData.skillsRequired}
                 onChange={handleInputChange}
-                className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground placeholder:text-muted-foreground ${
-                  errors.skillsRequired
-                    ? "border-destructive focus:border-destructive"
-                    : "focus:border-primary"
-                }`}
+                className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground placeholder:text-muted-foreground ${errors.skillsRequired
+                  ? "border-destructive focus:border-destructive"
+                  : "focus:border-primary"
+                  }`}
               />
               <div className="bg-accent rounded-lg p-3 border border-accent-foreground/20">
                 <p className="text-xs sm:text-sm text-accent-foreground">
@@ -433,9 +433,8 @@ function AddGigs() {
                   value={formData.expiresAt}
                   onChange={handleInputChange}
                   min={new Date().toISOString().split("T")[0]}
-                  className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground ${
-                    errors.expiresAt ? "border-destructive focus:border-destructive" : "focus:border-primary"
-                  }`}
+                  className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground ${errors.expiresAt ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                    }`}
                 />
                 {errors.expiresAt && (
                   <div className="flex items-center gap-2 text-destructive">
@@ -458,18 +457,16 @@ function AddGigs() {
                     <button
                       type="button"
                       onClick={() => handleCurrencyChange("USD")}
-                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-colors ${
-                        currency === "USD" ? "bg-card text-card-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                      }`}
+                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-colors ${currency === "USD" ? "bg-card text-card-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        }`}
                     >
                       USD ($)
                     </button>
                     <button
                       type="button"
                       onClick={() => handleCurrencyChange("INR")}
-                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-colors ${
-                        currency === "INR" ? "bg-card text-card-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                      }`}
+                      className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-medium transition-colors ${currency === "INR" ? "bg-card text-card-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        }`}
                     >
                       INR (₹)
                     </button>
@@ -488,9 +485,8 @@ function AddGigs() {
                     placeholder={currency === "USD" ? "500" : "40000"}
                     value={budgetAmount}
                     onChange={handleBudgetChange}
-                    className={`text-sm sm:text-base py-2 sm:py-3 pl-7 sm:pl-8 bg-input border-border text-foreground placeholder:text-muted-foreground ${
-                      errors.budget ? "border-destructive focus:border-destructive" : "focus:border-primary"
-                    }`}
+                    className={`text-sm sm:text-base py-2 sm:py-3 pl-7 sm:pl-8 bg-input border-border text-foreground placeholder:text-muted-foreground ${errors.budget ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                      }`}
                   />
                 </div>
 
@@ -538,6 +534,15 @@ function AddGigs() {
           </div>
         </form>
       </div>
+
+      {/* feedback dailog */}
+      <FeedbackDialog
+        open={showFeedbackDailog}
+        onClose={() => {
+          setShowFeedbackDailog(false)
+          router.push("/view-gigs")
+        }}
+      />
     </div>
   )
 }

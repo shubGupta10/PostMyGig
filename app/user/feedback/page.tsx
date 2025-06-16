@@ -21,7 +21,7 @@ import {
   Plus,
 } from "lucide-react"
 import { useSession } from "next-auth/react"
-import {toast} from 'sonner'
+import { toast } from 'sonner'
 
 export default function FeedbackPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -230,12 +230,14 @@ export default function FeedbackPage() {
                 <p className="text-primary leading-relaxed mb-6">
                   For urgent issues or technical support, reach out to our team directly.
                 </p>
-                <Button
-                  variant="outline"
-                  className="bg-gradient-to-r from-secondary-foreground via-secondary-foreground to-secondary-foreground hover:from-secondary-foreground/90 hover:via-secondary-foreground/90 hover:to-secondary-foreground/90 text-secondary"
-                >
-                  Contact Support
-                </Button>
+                <a href="https://x.com/postmygig" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outline"
+                    className="bg-gradient-to-r from-secondary-foreground via-secondary-foreground to-secondary-foreground hover:from-secondary-foreground/90 hover:via-secondary-foreground/90 hover:to-secondary-foreground/90 text-secondary"
+                  >
+                    Contact Me
+                  </Button>
+                </a>
               </CardContent>
             </Card>
           </div>
@@ -293,11 +295,10 @@ export default function FeedbackPage() {
                             key={type.id}
                             type="button"
                             onClick={() => setFeedbackType(type.id)}
-                            className={`p-4 sm:p-6 rounded-xl flex flex-col items-center gap-3 transition-all duration-200 border-2 transform hover:-translate-y-1 hover:shadow-lg ${
-                              isSelected
+                            className={`p-4 sm:p-6 rounded-xl flex flex-col items-center gap-3 transition-all duration-200 border-2 transform hover:-translate-y-1 hover:shadow-lg ${isSelected
                                 ? `${type.bgColor} ${type.borderColor} shadow-lg scale-105`
                                 : "border-border bg-muted hover:bg-muted/80 hover:border-muted-foreground"
-                            }`}
+                              }`}
                           >
                             <div
                               className={`w-10 h-10 sm:w-12 sm:h-12 ${type.color} rounded-xl flex items-center justify-center shadow-lg ${isSelected ? "scale-110" : ""} transition-transform duration-200`}

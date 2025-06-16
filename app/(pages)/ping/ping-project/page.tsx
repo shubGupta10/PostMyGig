@@ -11,6 +11,7 @@ import { useState, useEffect } from "react"
 import { AlertCircle, ArrowLeft, Send, LinkIcon, FileText, Loader2 } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { toast } from "sonner"
+import FeedbackDialog from "@/components/FeedbackDialog"
 
 function PingProject() {
   const { data } = useSession()
@@ -18,7 +19,7 @@ function PingProject() {
   const router = useRouter()
   const gigId = searchParams.get("gigId") as string
   const posterId = searchParams.get("posterId") as string
-  
+  const [showFeedbackDailog, setShowFeedbackDailog] = useState(false)
 
   const [formData, setFormData] = useState({
     projectId: gigId,
@@ -74,7 +75,7 @@ function PingProject() {
         bestWorkLink: "",
         bestWorkDescription: "",
       }))
-      router.push("/application-submitted")
+      setShowFeedbackDailog(true)
       toast.success("Application Submitted")
     } catch (error: any) {
       toast.error("Application failed to submit")
@@ -218,6 +219,13 @@ function PingProject() {
           </CardFooter>
         </Card>
       </div>
+      <FeedbackDialog
+        open={showFeedbackDailog}
+        onClose={() => {
+          setShowFeedbackDailog(false)
+          router.push("/application-submitted")
+        }}
+      />
     </div>
   )
 }

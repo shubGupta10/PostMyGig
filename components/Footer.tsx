@@ -64,6 +64,18 @@ function Footer() {
                   Send Feedback
                 </Link>
               </li>
+
+              <li>
+                <Link href="https://x.com/postmygig" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent-foreground transition-colors duration-200">
+                  Contact
+                </Link>
+              </li>
+
+              <li>
+                <Link href="https://shubgupta.vercel.app" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-accent-foreground transition-colors duration-200">
+                  Contact Developer
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
