@@ -30,6 +30,50 @@ const getAllUsers = async () => {
     }
 };
 
+//wait function
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+const sendEmailsInBatches = async (users: { email: string, name: string }[], batchSize = 2, delayMs = 1000) => {
+    for (let i = 0; i < users.length; i += batchSize) {
+        const batch = users.slice(i, i + batchSize);
+
+        await Promise.all(batch.map(async (user) => {
+            try {
+                if (NODE_ENV === 'production') {
+                    const { error } = await resend.emails.send({
+                        from: 'PostMyGig <hello@postmygig.xyz>',
+                        to: user.email,
+                        subject: 'New Gigs on PostMyGig!',
+                        html: postMyGigNewGigsTemplate(user.name)
+                    });
+
+                    if (error) {
+                        console.warn('[Resend Failed] Falling back to Nodemailer:', error);
+
+                        await EmailSender({
+                            to: user.email,
+                            subject: 'New Gigs on PostMyGig!',
+                            html: postMyGigNewGigsTemplate(user.name)
+                        });
+                    }
+                } else {
+                    await EmailSender({
+                        to: user.email,
+                        subject: 'New Gigs on PostMyGig!',
+                        html: postMyGigNewGigsTemplate(user.name)
+                    });
+                }
+            } catch (err) {
+                console.error('Error sending email:', err);
+            }
+        }));
+
+        // Wait 1 second between each batch to respect Resend's rate limit
+        await wait(delayMs);
+    }
+};
+
+
 export async function POST() {
     const redisKey = 'postmygig:last-email-sent';
     const isCoolDown = await redis.get(redisKey);
@@ -45,32 +89,8 @@ export async function POST() {
         return NextResponse.json({ message: 'No users found.' }, { status: 404 });
     }
 
-    for (const user of users) {
-        if (NODE_ENV === 'production') {
-            const { error } = await resend.emails.send({
-                from: 'PostMyGig <hello@postmygig.xyz>',
-                to: user.email,
-                subject: 'New Gigs on PostMyGig!',
-                html: postMyGigNewGigsTemplate(user.name)
-            });
-
-            if (error) {
-                console.warn('[Resend Failed] Falling back to Nodemailer:', error);
-
-                await EmailSender({
-                    to: user.email,
-                    subject: 'New Gigs on PostMyGig!',
-                    html: postMyGigNewGigsTemplate(user.name)
-                });
-            }
-        } else {
-            await EmailSender({
-                to: user.email,
-                subject: 'New Gigs on PostMyGig!',
-                html: postMyGigNewGigsTemplate(user.name)
-            });
-        }
-    }
+    // batch send emails safely
+    await sendEmailsInBatches(users);
 
     // Set cooldown TTL for 7 days (1 week)
     await redis.set(redisKey, 'sent', { ex: 60 * 60 * 24 * 7 });
