@@ -310,3 +310,27 @@ export const postMyGigGenericTemplate = (userName: string, content: string) => {
     </div>
   `;
 };
+
+export const postMyGigNewGigsTemplate = (userName: string) => {
+  return `
+    <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
+      <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <h1 style="font-size: 24px; font-weight: 600; color: #0f172a;">
+          Hey ${userName},
+        </h1>
+        <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
+          New gigs have been posted on PostMyGig. You can check them out here:
+        </p>
+        <p style="margin-top: 16px; font-size: 16px; color: #2563eb;">
+          <a href="${LIVE_URL}/view-gigs" style="color: #2563eb; text-decoration: underline;">${LIVE_URL}/view-gigs</a>
+        </p>
+        <p style="margin-top: 24px; font-size: 14px; color: #475569;">
+          Thanks for being with PostMyGig.
+        </p>
+        <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
+          If you have any questions, you can reach us at <a href="mailto:support@postmygig.xyz" style="color: #2563eb;">support@postmygig.xyz</a>.
+        </p>
+      </div>
+    </div>
+  `;
+};
