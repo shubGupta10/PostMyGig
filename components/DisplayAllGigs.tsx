@@ -15,6 +15,9 @@ import {
   Award,
   ShieldAlert,
   Eye,
+  Share,
+  Copy,
+  MessageCircle,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import {
@@ -26,6 +29,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 interface Gig {
   _id: string
@@ -68,13 +81,51 @@ function DisplayAllGigs() {
   })
   const [pagination, setPagination] = useState<PaginationData>({
     page: 1,
-    limit: 6, 
+    limit: 6,
     totalCount: 0,
     totalPages: 0,
     hasNextPage: false,
     hasPrevPage: false,
   })
   const router = useRouter()
+
+  const getShareUrl = useCallback((gigId: string) => {
+    const baseUrl = process.env.NEXT_PUBLIC_LIVE_URL || "http://localhost:3000"
+    return `${baseUrl}/open-gig/${gigId}`
+  }, [])
+
+  const handleCopyLink = useCallback(
+    async (gigId: string) => {
+      const url = getShareUrl(gigId)
+      try {
+        await navigator.clipboard.writeText(url)
+        toast.success("Link copied!")
+      } catch (error) {
+        toast.error("Failed to copy link")
+      }
+    },
+    [getShareUrl],
+  )
+
+  const handleWhatsAppShare = useCallback(
+    (gigId: string, title: string) => {
+      const url = getShareUrl(gigId)
+      const text = `Check out this gig: ${title}`
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`
+      window.open(whatsappUrl, "_blank")
+    },
+    [getShareUrl],
+  )
+
+  const handleXShare = useCallback(
+    (gigId: string, title: string) => {
+      const url = getShareUrl(gigId)
+      const text = `Check out this gig: ${title}`
+      const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${text} ${url}`)}`
+      window.open(xUrl, "_blank")
+    },
+    [getShareUrl],
+  )
 
   const fetchGigs = useCallback(async (page = 1, limit = 6) => {
     try {
@@ -138,7 +189,6 @@ function DisplayAllGigs() {
     }
   }, [])
 
-  // Memoized date formatting functions
   const formatDate = useCallback((dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
@@ -169,7 +219,6 @@ function DisplayAllGigs() {
     return diffInDays
   }, [])
 
-  // Memoized status configuration
   const getStatusConfig = useMemo(
     () => (status: string) => {
       switch (status.toLowerCase()) {
@@ -236,7 +285,6 @@ function DisplayAllGigs() {
     [fetchGigs, pagination.totalPages, pagination.limit],
   )
 
-  // Load data on mount
   useEffect(() => {
     fetchGigs()
   }, [fetchGigs])
@@ -262,12 +310,10 @@ function DisplayAllGigs() {
     )
   }, [rateLimitInfo])
 
-  // Generate pagination items
   const renderPaginationItems = useCallback(() => {
     const { page, totalPages } = pagination
     const items = []
 
-    // Always show first page
     items.push(
       <PaginationItem key="first">
         <PaginationLink onClick={() => handlePageChange(1)} isActive={page === 1}>
@@ -276,7 +322,6 @@ function DisplayAllGigs() {
       </PaginationItem>,
     )
 
-    // Show ellipsis if needed
     if (page > 3) {
       items.push(
         <PaginationItem key="ellipsis-start">
@@ -285,9 +330,8 @@ function DisplayAllGigs() {
       )
     }
 
-    // Show current page and surrounding pages
     for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
-      if (i === 1 || i === totalPages) continue // Skip first and last page as they're always shown
+      if (i === 1 || i === totalPages) continue
       items.push(
         <PaginationItem key={i}>
           <PaginationLink onClick={() => handlePageChange(i)} isActive={page === i}>
@@ -297,7 +341,6 @@ function DisplayAllGigs() {
       )
     }
 
-    // Show ellipsis if needed
     if (page < totalPages - 2) {
       items.push(
         <PaginationItem key="ellipsis-end">
@@ -306,7 +349,6 @@ function DisplayAllGigs() {
       )
     }
 
-    // Always show last page if there's more than one page
     if (totalPages > 1) {
       items.push(
         <PaginationItem key="last">
@@ -320,7 +362,6 @@ function DisplayAllGigs() {
     return items
   }, [pagination, handlePageChange])
 
-  // Memoized gig cards
   const gigCards = useMemo(() => {
     return gigs.map((gig, index) => {
       const statusConfig = getStatusConfig(gig.status)
@@ -334,22 +375,22 @@ function DisplayAllGigs() {
           className={`group bg-card rounded-3xl border-t-4 ${statusConfig.borderColor} border-l border-r border-b border-border hover:border-primary/50 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden min-h-[500px] sm:min-h-[520px] lg:min-h-[540px]`}
         >
           <div className="p-6 sm:p-8 h-full flex flex-col justify-between">
-            {/* Header with Status Badges */}
+            {/* Header with Status Badge and Share Button */}
             <div className="flex items-start justify-between gap-4 mb-6">
-              <Badge
-                variant="outline"
-                className={`${statusConfig.color} font-semibold text-sm px-4 py-2 flex items-center gap-2 flex-shrink-0`}
-              >
-                <div className={`w-2 h-2 rounded-full ${statusConfig.dot}`}></div>
-                <StatusIcon className="w-4 h-4" />
-                {gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
-              </Badge>
-
               <div className="flex flex-col gap-2">
+                <Badge
+                  variant="outline"
+                  className={`${statusConfig.color} font-semibold text-sm px-4 py-2 flex items-center gap-2 flex-shrink-0 w-fit`}
+                >
+                  <div className={`w-2 h-2 rounded-full ${statusConfig.dot}`}></div>
+                  <StatusIcon className="w-4 h-4" />
+                  {gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
+                </Badge>
+
                 {gig.isFlagged && (
                   <Badge
                     variant="outline"
-                    className="bg-accent text-accent-foreground border-accent font-semibold text-sm px-3 py-1"
+                    className="bg-accent text-accent-foreground border-accent font-semibold text-sm px-3 py-1 w-fit"
                   >
                     🚩 Flagged
                   </Badge>
@@ -357,25 +398,91 @@ function DisplayAllGigs() {
                 {isExpiringSoon && (
                   <Badge
                     variant="outline"
-                    className="bg-destructive/10 text-destructive border-destructive/20 font-semibold text-sm px-3 py-1"
+                    className="bg-destructive/10 text-destructive border-destructive/20 font-semibold text-sm px-3 py-1 w-fit"
                   >
                     ⏰ Expiring
                   </Badge>
                 )}
               </div>
+
+              {/* Share Button - Moved to top right */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="px-3 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer flex-shrink-0">
+                    <Share className="w-5 h-5" />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-xl bg-card border-border shadow-2xl backdrop-blur-sm rounded-3xl p-0 overflow-hidden">
+                  <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 p-8">
+                    <DialogHeader className="space-y-4">
+                      <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+                        <Share className="w-8 h-8 text-primary" />
+                      </div>
+                      <DialogTitle className="text-2xl font-bold text-center text-foreground">
+                        Share This Gig
+                      </DialogTitle>
+                      <DialogDescription className="text-center text-muted-foreground text-base leading-relaxed">
+                        Spread the word about this opportunity with your network using the options below.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 mt-8">
+                      <Button
+                        onClick={() => handleCopyLink(gig._id)}
+                        variant="outline"
+                        className="w-full justify-start gap-4 h-14 bg-card hover:bg-accent hover:text-accent-foreground border-border hover:border-accent transition-all duration-200 rounded-xl shadow-sm hover:shadow-md text-base font-semibold cursor-pointer"
+                      >
+                        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center ">
+                          <Copy className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold text-foreground">Copy Link</div>
+                          <div className="text-sm text-muted-foreground">Copy URL to clipboard</div>
+                        </div>
+                      </Button>
+
+                      <Button
+                        onClick={() => handleWhatsAppShare(gig._id, gig.title)}
+                        variant="outline"
+                        className="w-full justify-start gap-4 h-14 bg-card hover:bg-green-50 hover:text-green-700 border-border hover:border-green-200 transition-all duration-200 rounded-xl shadow-sm hover:shadow-md text-base font-semibold cursor-pointer"
+                      >
+                        <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                          <MessageCircle className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold">Share on WhatsApp</div>
+                          <div className="text-sm text-muted-foreground">Send to your contacts</div>
+                        </div>
+                      </Button>
+
+                      <Button
+                        onClick={() => handleXShare(gig._id, gig.title)}
+                        variant="outline"
+                        className="w-full justify-start gap-4 h-14 bg-card hover:bg-slate-50 hover:text-slate-700 border-border hover:border-slate-200 transition-all duration-200 rounded-xl shadow-sm hover:shadow-md text-base font-semibold cursor-pointer"
+                      >
+                        <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+                          <svg className="w-5 h-5 text-slate-600" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold">Share on X</div>
+                          <div className="text-sm text-muted-foreground">Post to your timeline</div>
+                        </div>
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
 
-            {/* Main Content */}
             <div className="space-y-6">
-              {/* Title */}
               <h2 className="text-xl sm:text-2xl font-bold text-foreground leading-tight line-clamp-2">{gig.title}</h2>
 
-              {/* Description */}
               <p className="text-muted-foreground leading-relaxed text-base line-clamp-3">
                 {gig.description.length > 140 ? `${gig.description.substring(0, 140)}...` : gig.description}
               </p>
 
-              {/* Skills Section */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
@@ -405,9 +512,7 @@ function DisplayAllGigs() {
               </div>
             </div>
 
-            {/* Footer */}
             <div className="space-y-4 mt-8">
-              {/* Date Information */}
               <div className="flex justify-between items-center text-sm text-muted-foreground bg-muted rounded-xl p-4">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-card rounded-lg flex items-center justify-center shadow-sm">
@@ -427,7 +532,7 @@ function DisplayAllGigs() {
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* View Details Button - Now full width */}
               <button
                 onClick={() => router.push(`/open-gig/${gig._id}`)}
                 className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl text-lg cursor-pointer"
@@ -441,7 +546,7 @@ function DisplayAllGigs() {
         </div>
       )
     })
-  }, [gigs, getStatusConfig, getDaysUntilExpiry, getTimeAgo, router])
+  }, [gigs, getStatusConfig, getDaysUntilExpiry, getTimeAgo, router, handleCopyLink, handleWhatsAppShare, handleXShare])
 
   if (loading) {
     return (
@@ -449,13 +554,11 @@ function DisplayAllGigs() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {RateLimitBanner}
 
-          {/* Header Skeleton */}
           <div className="text-center mb-12">
             <div className="h-10 bg-muted rounded-lg w-80 mx-auto mb-6 animate-pulse"></div>
             <div className="h-6 bg-muted rounded w-96 mx-auto animate-pulse"></div>
           </div>
 
-          {/* Cards Skeleton Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
               <div
@@ -492,7 +595,6 @@ function DisplayAllGigs() {
             ))}
           </div>
 
-          {/* Pagination Skeleton */}
           <div className="mt-10 flex justify-center">
             <div className="h-10 bg-muted rounded-lg w-64 animate-pulse"></div>
           </div>
@@ -592,7 +694,6 @@ function DisplayAllGigs() {
           </div>
         ) : (
           <div className="space-y-10">
-            {/* Header with Refresh and Debug Info */}
             <div className="flex justify-between items-center">
               <div className="text-sm text-muted-foreground">
                 Showing {gigs.length} gig{gigs.length !== 1 ? "s" : ""} of {pagination.totalCount} total
@@ -608,10 +709,8 @@ function DisplayAllGigs() {
               </button>
             </div>
 
-            {/* Gigs Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">{gigCards}</div>
 
-            {/* Pagination */}
             {pagination.totalPages > 1 && (
               <div className="mt-10">
                 <Pagination>
