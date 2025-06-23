@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 function Hero() {
   const { data: session } = useSession()
@@ -10,23 +11,19 @@ function Hero() {
       id="#about"
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background"
     >
-      {/* Background SVG Pattern */}
-      <div className="absolute inset-0 opacity-5 dark:opacity-10">
-        <svg className="w-full h-full" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-              <path
-                d="M 10 0 L 0 0 0 10"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="0.5"
-                className="text-primary"
-              />
-            </pattern>
-          </defs>
-          <rect width="100" height="100" fill="url(#grid)" />
-        </svg>
-      </div>
+      {/* Simple Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-primary/10" />
+      {/* Grid Background */}
+      <div
+        className={cn(
+          "absolute inset-0",
+          "[background-size:40px_40px]",
+          "[background-image:linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)]",
+          "dark:[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
+        )}
+      />
+      {/* Radial gradient for the container to give a faded look */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
@@ -36,20 +33,20 @@ function Hero() {
             <div className="inline-flex items-center space-x-2 bg-card/80 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 border border-primary/20">
               <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
               <span className="text-xs sm:text-sm font-medium  text-accent-foreground">
-               Built for Freelancers, Trusted by Early Users
+                Built for Freelancers, Trusted by Early Users
               </span>
             </div>
 
             {/* Main Headline */}
             <div className="space-y-4" style={{ fontFamily: "var(--font-serif)" }}>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-accent-foreground leading-tight">
-                Share Gigs <span className="text-primary">You Can’t Take</span>,{" "}
+                Share Gigs <span className="text-primary">You Can't Take</span>,{" "}
                 <span className="text-primary"> Find Work You Love</span>
               </h1>
 
               {/* Subheadline */}
               <p className="text-xl sm:text-2xl text-muted-foreground leading-relaxed max-w-2xl">
-               Too busy? Quickly post your extra gigs. Need work? Find one fast. Connect instantly via chat or email.
+                Too busy? Quickly post your extra gigs. Need work? Find one fast. Connect instantly via chat or email.
               </p>
             </div>
 
@@ -100,7 +97,9 @@ function Hero() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="whitespace-nowrap font-medium text-xs sm:text-sm md:text-base">WhatsApp integration</span>
+                <span className="whitespace-nowrap font-medium text-xs sm:text-sm md:text-base">
+                  WhatsApp integration
+                </span>
               </div>
 
               <div className="flex items-center space-x-1.5 sm:space-x-2 flex-shrink-0">
@@ -118,7 +117,6 @@ function Hero() {
                 <span className="whitespace-nowrap font-medium text-xs sm:text-sm md:text-base">Safe connections</span>
               </div>
             </div>
-
           </div>
 
           {/* Visual Section */}
@@ -243,7 +241,6 @@ function Hero() {
                     <div className="text-muted-foreground">Talk directly, no limits</div>
                   </div>
                 </div>
-
               </div>
             </div>
 

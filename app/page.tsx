@@ -8,13 +8,16 @@ import ProblemSolving from '@/components/landingpage/problemSolving'
 import VideoDemo from '@/components/landingpage/video-demo'
 import React from 'react'
 
+import Features from '@/components/landingpage/features'
+
 function Home() {
   return (
     <>
     <Hero/>
     <ProblemSolving/>
+    <Features/>
     <HowItWorks/>
-    <FreelancerClient/>
+    {/* <FreelancerClient/> */}
     <VideoDemo/>
     <FAQsTwo/>
     <EarlyUserFeedback/>

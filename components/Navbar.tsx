@@ -17,7 +17,6 @@ import {
   Menu,
   X,
   User,
-  Settings,
   LogOut,
   Home,
   Briefcase,
@@ -26,14 +25,12 @@ import {
   Shield,
   User2Icon,
   MessageCircleCodeIcon,
-  TrendingUp,
   Activity,
-  ActivityIcon,
 } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
 import { useRouter } from "next/navigation"
 import { DarkModeToggle } from "./DarkModeToggle"
-import { useUserData } from "@/store/userDataStore"
+import { cn } from "@/lib/utils"
 
 function Navbar() {
   const { data, status } = useSession()
@@ -65,7 +62,7 @@ function Navbar() {
   // Only show loading skeleton on initial load, not on route changes
   if (status === "loading" && !data) {
     return (
-      <nav className="w-full bg-background border-b border-border shadow-sm">
+      <nav className="w-full bg-background/80 backdrop-blur-[2px] border-b border-border/50 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo Section Skeleton */}
@@ -111,14 +108,23 @@ function Navbar() {
   }
 
   return (
-    <nav className="w-full bg-background border-b border-border shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="w-full bg-background/80 backdrop-blur-[2px] border-b border-border/50 shadow-sm sticky top-0 z-50">
+      <div
+        className={cn(
+          "absolute inset-0 opacity-30",
+          "[background-size:40px_40px]",
+          "[background-image:linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)]",
+          "dark:[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
+        )}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo Section */}
           <div className="flex items-center flex-shrink-0">
             <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => router.push("/")}>
               <div className="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
-                <Image src='/AppIcon.png' alt="App Icon" width={100} height={100} />
+                <Image src="/AppIcon.png" alt="App Icon" width={100} height={100} />
               </div>
               <span className="text-xl font-bold group-hover:text-primary transition-colors duration-200 text-primary">
                 PostMy<span className="text-accent-foreground">Gig</span>
@@ -159,7 +165,7 @@ function Navbar() {
                 </li>
               )}
               {/* Add Admin Dashboard to desktop navigation */}
-              {status === "authenticated" && data?.user?.role === 'admin' && (
+              {status === "authenticated" && data?.user?.role === "admin" && (
                 <li>
                   <a
                     href="/user/admin/dashboard"
@@ -188,7 +194,7 @@ function Navbar() {
             {status === "authenticated" ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center space-x-3 hover:bg-muted p-2 rounded-lg transition-colors duration-200 border border-transparent hover:border-border">
+                  <button className="flex items-center space-x-3 hover:bg-muted/50 p-2 rounded-lg transition-colors duration-200 border border-transparent hover:border-border/50 backdrop-blur-sm">
                     {data?.user?.image ? (
                       <Image
                         src={data.user.image || "/placeholder.svg"}
@@ -221,7 +227,10 @@ function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push(`/user/profile/${data.user.id}`)} className="cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={() => router.push(`/user/profile/${data.user.id}`)}
+                    className="cursor-pointer"
+                  >
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
@@ -241,7 +250,7 @@ function Navbar() {
                     Feedback
                   </DropdownMenuItem>
 
-                  {data?.user?.role === 'admin' ? (
+                  {data?.user?.role === "admin" ? (
                     <>
                       <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/user/admin/dashboard")}>
                         <Shield className="mr-2 h-4 w-4" />
@@ -251,7 +260,10 @@ function Navbar() {
                   ) : null}
 
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer text-destructive focus:text-destructive"
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </DropdownMenuItem>
@@ -262,7 +274,7 @@ function Navbar() {
                 <Button
                   variant="outline"
                   onClick={() => router.push("/auth/login")}
-                  className="border-border text-primary hover:bg-accent hover:border-primary px-6 py-2 rounded-lg font-medium transition-all duration-200"
+                  className="border-border text-primary hover:bg-accent hover:border-primary px-6 py-2 rounded-lg font-medium transition-all duration-200 backdrop-blur-sm"
                 >
                   Sign In
                 </Button>
@@ -277,7 +289,7 @@ function Navbar() {
             {status === "authenticated" && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center hover:bg-muted p-1.5 rounded-lg transition-colors duration-200">
+                  <button className="flex items-center hover:bg-muted/50 p-1.5 rounded-lg transition-colors duration-200 backdrop-blur-sm">
                     {data?.user?.image ? (
                       <Image
                         src={data.user.image || "/placeholder.svg"}
@@ -303,7 +315,10 @@ function Navbar() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => handleNavigation(`/user/profile/${data.user.id}`)} className="cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={() => handleNavigation(`/user/profile/${data.user.id}`)}
+                    className="cursor-pointer"
+                  >
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
@@ -315,13 +330,16 @@ function Navbar() {
                     <MessageCircleCodeIcon className="mr-2 h-4 w-4" />
                     Your Chats
                   </DropdownMenuItem>
-                   <DropdownMenuItem onClick={() => handleNavigation("/activity")} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => handleNavigation("/activity")} className="cursor-pointer">
                     <Activity className="mr-2 h-4 w-4" />
                     Activity
                   </DropdownMenuItem>
                   {/* Add Admin Dashboard to mobile dropdown */}
-                  {data?.user?.role === 'admin' && (
-                    <DropdownMenuItem className="cursor-pointer" onClick={() => handleNavigation("/user/admin/dashboard")}>
+                  {data?.user?.role === "admin" && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => handleNavigation("/user/admin/dashboard")}
+                    >
                       <Shield className="mr-2 h-4 w-4" />
                       Admin Dashboard
                     </DropdownMenuItem>
@@ -340,7 +358,7 @@ function Navbar() {
 
             {/* Hamburger Menu Button */}
             <button
-              className="text-foreground hover:text-primary hover:bg-accent p-2 rounded-lg transition-colors duration-200"
+              className="text-foreground hover:text-primary hover:bg-accent/50 p-2 rounded-lg transition-colors duration-200 backdrop-blur-sm"
               onClick={toggleMobileMenu}
               aria-label="Toggle menu"
             >
@@ -351,14 +369,15 @@ function Navbar() {
 
         {/* Mobile Navigation Menu */}
         <div
-          className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${isMobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-            }`}
+          className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${
+            isMobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          }`}
         >
-          <div className="py-4 border-t border-border">
+          <div className="py-4 border-t border-border/50 backdrop-blur-sm">
             <ul className="flex flex-col space-y-1">
               <li>
                 <button
-                  className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                  className="text-foreground hover:text-primary hover:bg-accent/50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                   onClick={() => handleNavigation("/")}
                 >
                   <Home className="w-5 h-5" />
@@ -367,7 +386,7 @@ function Navbar() {
               </li>
               <li>
                 <button
-                  className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                  className="text-foreground hover:text-primary hover:bg-accent/50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                   onClick={() => handleNavigation("/view-gigs")}
                 >
                   <Briefcase className="w-5 h-5" />
@@ -378,7 +397,7 @@ function Navbar() {
                 <>
                   <li>
                     <button
-                      className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      className="text-foreground hover:text-primary hover:bg-accent/50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                       onClick={() => handleNavigation("/dashboard")}
                     >
                       <LayoutDashboard className="w-5 h-5" />
@@ -387,7 +406,7 @@ function Navbar() {
                   </li>
                   <li>
                     <button
-                      className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      className="text-foreground hover:text-primary hover:bg-accent/50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                       onClick={() => handleNavigation("/user-gigs")}
                     >
                       <User2Icon className="w-5 h-5" />
@@ -396,7 +415,7 @@ function Navbar() {
                   </li>
                   <li>
                     <button
-                      className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                      className="text-foreground hover:text-primary hover:bg-accent/50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                       onClick={() => handleNavigation("/chat-history")}
                     >
                       <MessageCircleCodeIcon className="w-5 h-5" />
@@ -406,10 +425,10 @@ function Navbar() {
                 </>
               )}
               {/* Add Admin Dashboard to mobile menu with same protection logic */}
-              {status === "authenticated" && data?.user?.role === 'admin' && (
+              {status === "authenticated" && data?.user?.role === "admin" && (
                 <li>
                   <button
-                    className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                    className="text-foreground hover:text-primary hover:bg-accent/50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                     onClick={() => handleNavigation("/user/admin/dashboard")}
                   >
                     <Shield className="w-5 h-5" />
@@ -419,7 +438,7 @@ function Navbar() {
               )}
               <li>
                 <button
-                  className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                  className="text-foreground hover:text-primary hover:bg-accent/50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                   onClick={() => handleNavigation("/user/feedback")}
                 >
                   <MessageSquare className="w-5 h-5" />
@@ -429,7 +448,7 @@ function Navbar() {
 
               <li>
                 <button
-                  className="text-foreground hover:text-primary hover:bg-accent transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
+                  className="text-foreground hover:text-primary hover:bg-accent/50 transition-colors duration-200 font-medium w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3"
                   onClick={() => handleNavigation("/activity")}
                 >
                   <Activity className="w-5 h-5" />
@@ -443,7 +462,7 @@ function Navbar() {
               <div className="mt-6 px-4 space-y-3">
                 <Button
                   variant="outline"
-                  className="w-full border-border text-primary hover:bg-accent hover:border-primary py-3 rounded-lg font-medium transition-all duration-200"
+                  className="w-full border-border text-primary hover:bg-accent hover:border-primary py-3 rounded-lg font-medium transition-all duration-200 backdrop-blur-sm"
                   onClick={() => handleNavigation("/auth/login")}
                 >
                   Sign In
