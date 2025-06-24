@@ -9,7 +9,6 @@ import { Suspense } from "react";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
-import { SmoothCursor } from "@/components/ui/smooth-cursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -127,14 +126,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SmoothCursor
-              springConfig={{
-                damping: 50,
-                stiffness: 500,
-                mass: 1,
-                restDelta: 0.01
-              }}
-            />
             <Navbar />
             <Analytics />
             <Suspense>{children}</Suspense>
