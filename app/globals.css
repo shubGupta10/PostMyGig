@@ -3,10 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-* {
-  cursor: none !important;
-}
-
 
 :root {
   --background: #f9f9f9;
