@@ -127,7 +127,14 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SmoothCursor />
+            <SmoothCursor
+              springConfig={{
+                damping: 50,
+                stiffness: 500,
+                mass: 1,
+                restDelta: 0.01
+              }}
+            />
             <Navbar />
             <Analytics />
             <Suspense>{children}</Suspense>
