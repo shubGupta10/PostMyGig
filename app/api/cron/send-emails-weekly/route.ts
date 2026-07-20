@@ -41,7 +41,7 @@ const sendEmailsInBatches = async (users: { email: string, name: string }[], bat
             try {
                 if (NODE_ENV === 'production') {
                     const { error } = await resend.emails.send({
-                        from: 'PostMyGig <hello@postmygig.xyz>',
+                        from: 'PostMyGig <hello@postmygig.vercel.app>',
                         to: user.email,
                         subject: 'New Gigs on PostMyGig!',
                         html: postMyGigNewGigsTemplate(user.name)

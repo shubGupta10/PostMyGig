@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     //  Send verification email
     const { error } = await resend.emails.send({
-      from: 'PostMyGig <hello@postmygig.xyz>',
+      from: 'PostMyGig <hello@postmygig.vercel.app>',
       to: email,
       subject: 'Verify your PostMyGig account',
       html: postMyGigVerificationTemplate(name, verificationCode)

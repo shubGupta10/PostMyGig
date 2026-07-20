@@ -51,7 +51,7 @@ export async function DELETE(req: NextRequest) {
 
         //send mail for deletion
         const { error } = await resend.emails.send({
-            from: 'PostMyGig <hello@postmygig.xyz>',
+            from: 'PostMyGig <hello@postmygig.vercel.app>',
             to: userEmail,
             subject: "Confirmation: Your Account Has Been Permanently Deleted",
             html: postMyGigAccountDeletedTemplate(session.user.name)

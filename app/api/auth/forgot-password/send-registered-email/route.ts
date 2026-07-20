@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     const resetUrl = `${process.env.NEXT_PUBLIC_LIVE_URL}/auth/forgot-password/reset-password?token=${token}`;
 
     const { error } = await resend.emails.send({
-      from: 'PostMyGig <hello@postmygig.xyz>',
+      from: 'PostMyGig <hello@postmygig.vercel.app>',
       to: email,
       subject: "Reset Password",
       html: postMyGigResetPasswordTemplate(email, resetUrl),

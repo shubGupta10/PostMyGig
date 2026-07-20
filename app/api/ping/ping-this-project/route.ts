@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
 
     //send email
     const { error } = await resend.emails.send({
-      from: 'PostMyGig <hello@postmygig.xyz>',
+      from: 'PostMyGig <hello@postmygig.vercel.app>',
       to: posterEmail,
       subject: `New Application for Your Project: ${ping.projectId}`,
       html: emailData

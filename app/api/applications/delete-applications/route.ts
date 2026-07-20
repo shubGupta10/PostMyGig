@@ -25,7 +25,7 @@ export async function DELETE(req: NextRequest) {
 
         //send mail to the applier
         const { error } = await resend.emails.send({
-            from: 'PostMyGig <hello@postmygig.xyz>',
+            from: 'PostMyGig <hello@postmygig.vercel.app>',
             to: userData?.email as string,
             subject: `Update on your ping for ${gigData?.title}`,
             html: postMyGigPingRejectionTemplate(userData?.name as string, gigData?.title as string)

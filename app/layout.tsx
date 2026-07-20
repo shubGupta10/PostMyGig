@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.postmygig.xyz"),
+  metadataBase: new URL("https://www.postmygig.vercel.app"),
   title: "PostMyGig – Find & Share Freelance Gigs for Free",
   description:
     "Share freelance gigs you can't take, or find new projects to work on. Easy, free, and direct connections via chat. No middlemen.",
@@ -40,11 +40,11 @@ export const metadata: Metadata = {
     title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays.",
-    url: "https://postmygig.xyz",
+    url: "https://postmygig.vercel.app",
     siteName: "PostMyGig",
     images: [
       {
-        url: "https://postmygig.xyz/og-image.png",
+        url: "https://postmygig.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "PostMyGig – Freelance Gig Sharing Platform",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut.",
-    images: ["https://postmygig.xyz/twitter-image.png"],
+    images: ["https://postmygig.vercel.app/twitter-image.png"],
     creator: "@postmygig",
   },
   icons: {
@@ -90,13 +90,13 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <meta property="og:title" content="PostMyGig – Find & Share Freelance Gigs for Free" />
         <meta property="og:description" content="Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays." />
-        <meta property="og:image" content="https://postmygig.xyz/og-image.png" />
-        <meta property="og:url" content="https://postmygig.xyz" />
+        <meta property="og:image" content="https://postmygig.vercel.app/og-image.png" />
+        <meta property="og:url" content="https://postmygig.vercel.app" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="PostMyGig – Find & Share Freelance Gigs" />
         <meta name="twitter:description" content="List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut." />
-        <meta name="twitter:image" content="https://postmygig.xyz/twitter-image.png" />
+        <meta name="twitter:image" content="https://postmygig.vercel.app/twitter-image.png" />
         <meta name="twitter:creator" content="@postmygig" />
 
         <script type="application/ld+json" dangerouslySetInnerHTML={{
@@ -104,8 +104,8 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "PostMyGig",
-            "url": "https://www.postmygig.xyz",
-            "logo": "https://www.postmygig.xyz/favicon.ico"
+            "url": "https://www.postmygig.vercel.app",
+            "logo": "https://www.postmygig.vercel.app/favicon.ico"
           })
         }} />
 

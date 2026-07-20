@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     // Send email
     const { error } = await resend.emails.send({
-      from: 'PostMyGig <hello@postmygig.xyz>',
+      from: 'PostMyGig <hello@postmygig.vercel.app>',
       to: applyerData.email,
       subject: "You've been invited to chat about a project",
       html: postMyGigChatInvitationTemplate({

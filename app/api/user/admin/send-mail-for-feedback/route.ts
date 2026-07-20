@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         }
 
         const { error } = await resend.emails.send({
-            from: 'PostMyGig <hello@postmygig.xyz>',
+            from: 'PostMyGig <hello@postmygig.vercel.app>',
             to,
             subject,
             html: postMyGigGenericTemplate(userName, htmlContent)

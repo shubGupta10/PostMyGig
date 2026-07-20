@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://postmygig.xyz
+Host: https://postmygig.vercel.app
 
 # Sitemaps
-Sitemap: https://postmygig.xyz/sitemap.xml
+Sitemap: https://postmygig.vercel.app/sitemap.xml

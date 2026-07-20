@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
         //send mail for application accepted
         const { error } = await resend.emails.send({
-            from: 'PostMyGig <hello@postmygig.xyz>',
+            from: 'PostMyGig <hello@postmygig.vercel.app>',
             to: applicantEmail,
             subject: "You Application Got Selected",
             html: postMyGigApplicationAcceptedTemplate(
