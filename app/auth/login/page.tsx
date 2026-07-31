@@ -176,8 +176,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl bg-card rounded-3xl shadow-2xl overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4 py-12">
+      <div className="w-full max-w-6xl bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
         <div className="flex min-h-[700px]">
           {/* Left Panel - Form */}
           <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
@@ -187,7 +187,7 @@ export default function LoginPage() {
 
               {/* Header */}
               <div className="mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-6 shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-6 shadow-sm">
                   <CheckCircle className="h-8 w-8 text-primary-foreground" />
                 </div>
                 <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Welcome back! 👋</h1>
@@ -290,8 +290,8 @@ export default function LoginPage() {
                   className={`w-full h-14 ${
                     rateLimitInfo.isLimited
                       ? "bg-muted hover:bg-muted cursor-not-allowed text-muted-foreground"
-                      : "bg-primary hover:bg-primary/90 hover:shadow-xl transform hover:-translate-y-0.5 text-primary-foreground"
-                  } font-bold text-lg rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+                      : "bg-primary hover:opacity-90 transform hover:-translate-y-0.5 text-primary-foreground"
+                  } font-bold text-lg rounded-xl shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >
                   {isLoading ? (
@@ -395,7 +395,7 @@ export default function LoginPage() {
             {/* Content Overlay */}
             <div className="absolute inset-0 flex flex-col justify-center items-center text-primary-foreground p-12 text-center z-20">
               <div className="max-w-md">
-                <div className="w-20 h-20 bg-primary-foreground/20 rounded-3xl flex items-center justify-center mx-auto mb-8 backdrop-blur-sm">
+                <div className="w-20 h-20 bg-muted text-muted-foreground rounded-2xl flex items-center justify-center mx-auto mb-8 backdrop-blur-sm">
                   <Briefcase className="w-10 h-10 text-primary-foreground" />
                 </div>
 

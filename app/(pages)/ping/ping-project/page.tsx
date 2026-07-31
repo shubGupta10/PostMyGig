@@ -1,233 +1,50 @@
-"use client"
+import { Suspense } from "react"
+import { PingForm } from "@/components/ping/PingForm"
+import { Skeleton } from "@/components/ui/skeleton"
 
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { useSession } from "next-auth/react"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { useState, useEffect } from "react"
-import { AlertCircle, ArrowLeft, Send, LinkIcon, FileText, Loader2 } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { toast } from "sonner"
-import FeedbackDialog from "@/components/FeedbackDialog"
-
-function PingProject() {
-  const { data } = useSession()
-  const searchParams = useSearchParams();
-  const router = useRouter()
-  const gigId = searchParams.get("gigId") as string
-  const posterId = searchParams.get("posterId") as string
-  const [showFeedbackDailog, setShowFeedbackDailog] = useState(false)
-
-  const [formData, setFormData] = useState({
-    projectId: gigId,
-    userEmail: data?.user.email,
-    posterId: posterId,
-    message: "",
-    bestWorkLink: "",
-    bestWorkDescription: "",
-  })
-
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (data?.user?.id) {
-      setFormData((prev) => ({
-        ...prev,
-        userEmail: data.user.email,
-      }))
-    }
-  }, [data])
-
-  const pingProject = async () => {
-    if (!formData.message.trim()) {
-      setError("Please provide a message to the project owner")
-      return
-    }
-
-    try {
-      setIsLoading(true)
-      setError(null)
-
-      const response = await fetch("/api/ping/ping-this-project", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to submit application")
-      }
-
-      setSuccess(result.message || "Application submitted successfully!")
-
-      setFormData((prev) => ({
-        ...prev,
-        message: "",
-        bestWorkLink: "",
-        bestWorkDescription: "",
-      }))
-      setShowFeedbackDailog(true)
-      toast.success("Application Submitted")
-    } catch (error: any) {
-      toast.error("Application failed to submit")
-      console.error(error)
-      setError(error.message || "An error occurred while submitting your application")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
+function Loading() {
   return (
-    <div className="min-h-screen bg-background py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Back button */}
-        <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8 font-medium"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Gig
-        </button>
-
-        <Card className="border-border shadow-xl rounded-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-foreground">Apply for this Project</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Tell the project owner why you're the perfect fit for this gig
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="pt-6 pb-2">
-            {error && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {success && (
-              <Alert className="mb-6 bg-accent text-accent-foreground border-border">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Success!</AlertTitle>
-                <AlertDescription>{success}</AlertDescription>
-              </Alert>
-            )}
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                pingProject()
-              }}
-              className="space-y-6"
-            >
-              <div className="space-y-2">
-                <Label htmlFor="message" className="text-base font-semibold text-foreground">
-                  Your Message <span className="text-destructive">*</span>
-                </Label>
-                <Textarea
-                  id="message"
-                  placeholder="Introduce yourself and explain why you're interested in this project. Highlight relevant skills and experience."
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="min-h-[120px] text-base bg-card border-border text-card-foreground"
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  This message will be sent to the project owner. Be professional and concise.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label
-                  htmlFor="bestWorkLink"
-                  className="text-base font-semibold text-foreground flex items-center gap-2"
-                >
-                  <LinkIcon className="w-4 h-4 text-primary" />
-                  Portfolio or Best Work Link
-                </Label>
-                <Input
-                  id="bestWorkLink"
-                  type="url"
-                  placeholder="https://your-portfolio.com or link to your best work"
-                  value={formData.bestWorkLink}
-                  onChange={(e) => setFormData({ ...formData, bestWorkLink: e.target.value })}
-                  className="text-base bg-card border-border text-card-foreground"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Share a link to your portfolio, GitHub, or a specific project that showcases your skills.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label
-                  htmlFor="bestWorkDescription"
-                  className="text-base font-semibold text-foreground flex items-center gap-2"
-                >
-                  <FileText className="w-4 h-4 text-primary" />
-                  Work Description
-                </Label>
-                <Textarea
-                  id="bestWorkDescription"
-                  placeholder="Briefly describe your relevant experience or the work you've linked above."
-                  value={formData.bestWorkDescription}
-                  onChange={(e) => setFormData({ ...formData, bestWorkDescription: e.target.value })}
-                  className="min-h-[100px] text-base bg-card border-border text-card-foreground"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Explain what makes your work impressive and relevant to this project.
-                </p>
-              </div>
-            </form>
-          </CardContent>
-
-          <CardFooter className="flex justify-end gap-3 pt-2 pb-6">
-            <Button
-              variant="outline"
-              onClick={() => router.back()}
-              className="border-border text-muted-foreground hover:text-foreground"
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={pingProject}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" />
-                  Submit Application
-                </>
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
+    <div className="space-y-6">
+      <Skeleton className="h-6 w-32" />
+      <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
+        <div className="p-6 sm:p-8 border-b border-border">
+          <Skeleton className="h-8 w-64 mb-2" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+        <div className="p-6 sm:p-8 space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-[140px] w-full rounded-xl" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-48" />
+            <Skeleton className="h-11 w-full rounded-xl" />
+            <Skeleton className="h-4 w-80" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-[100px] w-full rounded-xl" />
+            <Skeleton className="h-4 w-72" />
+          </div>
+        </div>
+        <div className="flex justify-end gap-3 px-6 sm:px-8 pb-6 sm:pb-8 border-t border-border pt-6">
+          <Skeleton className="h-11 w-24 rounded-xl" />
+          <Skeleton className="h-11 w-48 rounded-xl" />
+        </div>
       </div>
-      <FeedbackDialog
-        open={showFeedbackDailog}
-        onClose={() => {
-          setShowFeedbackDailog(false)
-          router.push("/application-submitted")
-        }}
-      />
     </div>
   )
 }
 
-export default PingProject
+export default function PingProjectPage() {
+  return (
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-3xl mx-auto">
+        <Suspense fallback={<Loading />}>
+          <PingForm />
+        </Suspense>
+      </div>
+    </div>
+  )
+}
