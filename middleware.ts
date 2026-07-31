@@ -3,6 +3,15 @@ import { NextResponse } from 'next/server'
 
 export default withAuth(
     function middleware(req) {
+        const { pathname } = req.nextUrl;
+        const isAuth = !!req.nextauth.token;
+
+        const authRoutes = ["/auth/login", "/auth/register", "/"];
+
+        if (isAuth && authRoutes.includes(pathname)) {
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
+
         return NextResponse.next();
     },
     {

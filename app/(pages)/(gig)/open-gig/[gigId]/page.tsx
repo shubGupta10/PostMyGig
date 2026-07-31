@@ -321,17 +321,17 @@ function OpenGig() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-secondary via-background to-destructive/20">
+      <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center max-w-md mx-auto px-6">
-            <div className="w-24 h-24 bg-gradient-to-br from-destructive/20 to-destructive/30 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+            <div className="w-24 h-24 bg-destructive text-destructive-foreground rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
               <AlertCircle className="w-12 h-12 text-destructive" />
             </div>
             <h3 className="text-3xl font-bold text-foreground mb-4">Something went wrong</h3>
             <p className="text-muted-foreground mb-8 leading-relaxed text-lg">{error}</p>
             <button
               onClick={fetchGig}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary text-primary-foreground rounded-xl hover:from-primary/90 hover:to-primary/90 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold transform hover:-translate-y-1"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all duration-200 shadow-sm font-semibold transform hover:-translate-y-1"
             >
               <RefreshCw className="w-5 h-5" />
               Try Again
@@ -344,10 +344,10 @@ function OpenGig() {
 
   if (!gig) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-secondary via-background to-muted">
+      <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="w-32 h-32 bg-gradient-to-br from-muted to-muted/80 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+            <div className="w-32 h-32 bg-muted text-muted-foreground rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
               <Eye className="w-16 h-16 text-muted-foreground" />
             </div>
             <h3 className="text-2xl font-bold text-foreground mb-3">Gig Not Found</h3>
@@ -423,7 +423,7 @@ function OpenGig() {
                 {gig.isFlagged && (
                   <Badge
                     variant="outline"
-                    className="bg-gradient-to-r from-destructive/20 to-destructive/30 text-destructive border-destructive/30 font-semibold shadow-sm"
+                    className="bg-destructive text-destructive-foreground border-destructive font-semibold shadow-sm"
                   >
                     🚩 Flagged
                   </Badge>
@@ -431,7 +431,7 @@ function OpenGig() {
                 {isExpiringSoon && (
                   <Badge
                     variant="outline"
-                    className="bg-gradient-to-r from-secondary to-accent text-accent-foreground border-secondary font-semibold animate-pulse shadow-sm"
+                    className="bg-secondary text-secondary-foreground border-border font-semibold animate-pulse shadow-sm"
                   >
                     ⏰ Expiring Soon
                   </Badge>
@@ -506,7 +506,7 @@ function OpenGig() {
                               router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
                             }
                           }}
-                          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer"
+                          className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-primary hover:opacity-90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-sm transform hover:-translate-y-1 cursor-pointer"
                         >
                           <CheckCircle className="w-5 h-5" />
                           Apply Now
@@ -543,14 +543,11 @@ function OpenGig() {
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
-            <div className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
               <div className="p-8">
-                <h2 className="text-2xl font-bold text-card-foreground mb-6 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-secondary to-accent rounded-xl flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-accent-foreground" />
-                  </div>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
                   Project Description
-                </h2>
+                </p>
                 <div className="prose prose-gray max-w-none">
                   <p className="text-card-foreground leading-relaxed text-lg whitespace-pre-wrap">{gig.description}</p>
                 </div>
@@ -558,21 +555,18 @@ function OpenGig() {
             </div>
 
             {/* Skills Required */}
-            <div className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
               <div className="p-8">
-                <h2 className="text-2xl font-bold text-card-foreground mb-6 flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-secondary to-accent rounded-xl flex items-center justify-center">
-                    <Star className="w-5 h-5 text-accent-foreground" />
-                  </div>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
                   Skills & Technologies
-                </h2>
+                </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {gig.skillsRequired.map((skill, index) => (
                     <div
                       key={index}
-                      className="bg-accent border border-border rounded-xl p-4 text-center group hover:from-secondary hover:to-accent transition-all duration-200 cursor-pointer transform hover:-translate-y-1 hover:shadow-md"
+                      className="bg-muted border border-border rounded-xl p-4 text-center group transition-all duration-200 cursor-pointer transform hover:-translate-y-1 hover:shadow-sm"
                     >
-                      <span className="text-accent-foreground font-semibold text-sm group-hover:scale-105 transition-transform duration-200 inline-block">
+                      <span className="text-foreground font-semibold text-sm group-hover:scale-105 transition-transform duration-200 inline-block">
                         {skill.trim()}
                       </span>
                     </div>
@@ -583,15 +577,12 @@ function OpenGig() {
 
             {/* Contact Information */}
             {gig.contact && (gig.contact.email || gig.contact.whatsapp || gig.contact.x) && (
-              <div className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
                 <div className="p-6 sm:p-8">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <h2 className="text-xl sm:text-2xl font-bold text-card-foreground flex items-center gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-secondary rounded-xl flex items-center justify-center">
-                        <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-accent-foreground" />
-                      </div>
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
                       Contact Information
-                    </h2>
+                    </p>
                     {user?.email === gig.createdBy && (
                       <div className="flex items-center gap-3 bg-muted rounded-lg px-3 sm:px-4 py-2">
                         <span className="text-sm font-medium text-muted-foreground">
@@ -688,12 +679,11 @@ function OpenGig() {
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
             {/* Project Details Card */}
-            <div className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden sticky top-8 hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden sticky top-8">
               <div className="p-6">
-                <h3 className="text-xl font-bold text-card-foreground mb-6 flex items-center gap-3">
-                  <Briefcase className="w-6 h-6 text-primary" />
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
                   Project Details
-                </h3>
+                </p>
 
                 <div className="space-y-4">
                   {/* Budget */}
@@ -769,7 +759,7 @@ function OpenGig() {
                                   )
                                 }
                               }}
-                              className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-primary to-primary hover:from-primary/90 hover:to-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                              className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-primary hover:opacity-90 text-primary-foreground rounded-xl font-bold transition-all duration-200 shadow-sm transform hover:-translate-y-1"
                             >
                               <CheckCircle className="w-5 h-5" />
                               Apply for this Gig
@@ -800,14 +790,14 @@ function OpenGig() {
                     <div className="space-y-3">
                       <button
                         onClick={() => router.push(`/edit-gig/${gig._id}`)}
-                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-card text-primary border-2 border-primary hover:bg-secondary rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer"
+                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-card text-primary border-2 border-primary hover:bg-secondary rounded-xl font-bold transition-all duration-200 shadow-sm transform hover:-translate-y-1 cursor-pointer"
                       >
                         <Pen className="w-5 h-5" />
                         Edit Gig
                       </button>
                       <button
                         onClick={() => setShowDeleteDialog(true)}
-                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-destructive hover:bg-destructive/90 text-destructive-foreground border-2 border-destructive rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer"
+                        className="w-full inline-flex items-center justify-center gap-3 px-6 py-4 bg-destructive hover:opacity-90 text-destructive-foreground border-2 border-destructive rounded-xl font-bold transition-all duration-200 shadow-sm transform hover:-translate-y-1 cursor-pointer"
                       >
                         <Trash2 className="w-5 h-5" />
                         Delete Gig

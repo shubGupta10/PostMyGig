@@ -2,13 +2,21 @@ import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProviderWrapper from "../components/SessionProviderWrapper";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { HeaderTitle } from "@/components/header-title";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
+import Navbar from "@/components/Navbar";
+import { AddGigButton } from "@/components/gigs/AddGigButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,12 +75,13 @@ export const metadata: Metadata = {
   },
 };
 
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -126,11 +135,41 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar />
-            <Analytics />
-            <Suspense>{children}</Suspense>
-            <Toaster />
-            <Footer />
+            {session ? (
+              <TooltipProvider>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarInset>
+                    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border px-4">
+                      <div className="flex items-center gap-4">
+                        <SidebarTrigger />
+                        <HeaderTitle />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <AddGigButton />
+                        <DarkModeToggle />
+                      </div>
+                    </header>
+                    <main className="flex-1 flex flex-col">
+                      <Analytics />
+                      <Suspense>{children}</Suspense>
+                      <Toaster />
+                    </main>
+                    <Footer />
+                  </SidebarInset>
+                </SidebarProvider>
+              </TooltipProvider>
+            ) : (
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1 flex flex-col">
+                  <Analytics />
+                  <Suspense>{children}</Suspense>
+                  <Toaster />
+                </main>
+                <Footer />
+              </div>
+            )}
           </ThemeProvider>
         </SessionProviderWrapper>
       </body>
