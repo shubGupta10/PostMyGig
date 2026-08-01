@@ -39,7 +39,7 @@ function Loading() {
 
 export default function PingProjectPage() {
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
       <div className="max-w-3xl mx-auto">
         <Suspense fallback={<Loading />}>
           <PingForm />

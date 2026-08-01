@@ -37,20 +37,20 @@ export default function FinalCTA() {
         >
           <Link
             href="/auth/login"
-            className="group inline-flex items-center gap-3 px-10 py-5 bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-2xl font-bold text-lg shadow-2xl transform hover:-translate-y-2 transition-all duration-300"
+            className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-xl font-bold text-base sm:text-lg shadow-sm transition-all duration-200"
             style={{ fontFamily: "var(--font-sans)" }}
           >
-            <Briefcase className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+            <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 group-hover:rotate-12 transition-transform duration-300" />
             Post Your Project
-            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300" />
           </Link>
 
           <Link
             href="/view-gigs"
-            className="group inline-flex items-center gap-3 px-10 py-5 bg-transparent text-primary-foreground border-2 border-primary-foreground/30 rounded-2xl font-bold text-lg hover:bg-primary-foreground/10 hover:border-primary-foreground/50 transition-all duration-300"
+            className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-transparent text-primary-foreground border-2 border-primary-foreground/30 rounded-xl font-bold text-base sm:text-lg hover:bg-primary-foreground/10 hover:border-primary-foreground/50 transition-all duration-200"
             style={{ fontFamily: "var(--font-sans)" }}
           >
-            <Users className="w-6 h-6" />
+            <Users className="w-5 h-5 sm:w-6 sm:h-6" />
             Find Opportunities
           </Link>
         </motion.div>

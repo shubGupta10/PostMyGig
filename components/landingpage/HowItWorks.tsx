@@ -93,7 +93,7 @@ export default function HowItWorks() {
               className="group"
             >
               <motion.div
-                className="bg-card rounded-3xl border border-border p-8 h-full flex flex-col relative overflow-hidden"
+                className="bg-card rounded-2xl border-2 border-border p-6 sm:p-8 h-full flex flex-col relative overflow-hidden shadow-sm"
                 whileHover={{
                   y: -4,
                   transition: { duration: 0.3 },

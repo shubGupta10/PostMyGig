@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -176,22 +177,22 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4 py-12">
+    <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4 sm:p-6 py-6 sm:py-12">
       <div className="w-full max-w-6xl bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
-        <div className="flex min-h-[700px]">
+        <div className="flex min-h-[600px] sm:min-h-[700px]">
           {/* Left Panel - Form */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-5 sm:p-8 lg:p-12">
             <div className="max-w-md w-full">
               {/* Rate Limit Banner */}
               <RateLimitBanner />
 
               {/* Header */}
-              <div className="mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-6 shadow-sm">
-                  <CheckCircle className="h-8 w-8 text-primary-foreground" />
+              <div className="mb-8 flex flex-col items-center text-center">
+                <div className="mb-6 flex items-center justify-center">
+                  <Image src="/AppIcon.png" alt="Logo" width={48} height={48} className="size-12 rounded-xl" />
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Welcome back! 👋</h1>
-                <p className="text-muted-foreground text-lg">Enter to get unlimited access to data & information.</p>
+                <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-3">Welcome back! 👋</h1>
+                <p className="text-muted-foreground text-sm sm:text-lg">Enter to get unlimited access to data & information.</p>
               </div>
 
               {/* Error Alert */}
@@ -324,14 +325,14 @@ export default function LoginPage() {
               </div>
 
               {/* Social Login Buttons */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-8">
                 <Button
                   onClick={handleGoogleSignIn}
                   variant="outline"
-                  className={`h-14 border-2 ${
+                  className={`h-12 sm:h-14 border-2 ${
                     rateLimitInfo.isLimited
                       ? "border-border bg-muted cursor-not-allowed"
-                      : "border-border hover:border-primary hover:bg-primary/5 hover:shadow-md"
+                      : "border-border hover:border-primary hover:bg-primary/5"
                   } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >
@@ -358,10 +359,10 @@ export default function LoginPage() {
                 <Button
                   onClick={handleGitHubSignIn}
                   variant="outline"
-                  className={`h-14 border-2 ${
+                  className={`h-12 sm:h-14 border-2 ${
                     rateLimitInfo.isLimited
                       ? "border-border bg-muted cursor-not-allowed"
-                      : "border-border hover:border-muted-foreground hover:bg-muted hover:shadow-md"
+                      : "border-border hover:border-muted-foreground hover:bg-muted"
                   } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >

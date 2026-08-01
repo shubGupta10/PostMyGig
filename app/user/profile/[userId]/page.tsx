@@ -5,13 +5,7 @@ import {
   Star, Activity, LinkIcon, UserCheck, Clock, Settings,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-
-function formatDate(dateString: string) {
-  if (!dateString) return "Not available"
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric", month: "long", day: "numeric",
-  })
-}
+import { formatDate } from "@/lib/helpers"
 
 function getRoleConfig(role: string) {
   switch (role) {
@@ -28,7 +22,7 @@ export default async function ProfilePage() {
   const RoleIcon = roleConfig.icon
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
 
         {/* Header Card */}
@@ -41,8 +35,8 @@ export default async function ProfilePage() {
               </Badge>
             </div>
           </div>
-          <div className="relative z-10 px-6 sm:px-8 pb-8">
-            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-14 sm:-mt-16">
+          <div className="relative z-10 px-4 sm:px-8 pb-6 sm:pb-8">
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6 -mt-14 sm:-mt-16">
               {/* Avatar */}
               <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-card border-2 border-border shadow-sm overflow-hidden shrink-0">
                 {userData.profilePhoto ? (
@@ -55,7 +49,7 @@ export default async function ProfilePage() {
               </div>
               {/* Info */}
               <div className="flex-1 text-center sm:text-left pb-1">
-                <h1 className="text-3xl font-bold text-foreground mb-1">{userData.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{userData.name}</h1>
                 <div className="flex flex-col sm:flex-row items-center sm:justify-start gap-3 mt-2">
                   <div className="flex items-center gap-2 text-muted-foreground text-sm">
                     <Mail className="w-4 h-4" />
@@ -90,7 +84,7 @@ export default async function ProfilePage() {
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">

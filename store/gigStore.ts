@@ -64,7 +64,7 @@ export const useGigStore = create<GigState>()(
         set({ loading: true, error: null }, false, 'fetchGigData/start')
 
         try {
-          const response = await fetch("/api/gig/details", {
+          const response = await fetch("/api/gigs/open-gigs", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ gigId })

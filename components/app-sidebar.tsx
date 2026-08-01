@@ -52,19 +52,18 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              {session && authenticatedNavItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarNavLink href={item.href}>
+                    <item.icon className="size-4" />
+                    <span>{item.title}</span>
+                  </SidebarNavLink>
+                </SidebarMenuItem>
+              ))}
+
               {publicNavItems
                 .filter((item) => (session ? item.title !== "Home" : true))
                 .map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarNavLink href={item.href}>
-                      <item.icon className="size-4" />
-                      <span>{item.title}</span>
-                    </SidebarNavLink>
-                  </SidebarMenuItem>
-                ))}
-
-              {session &&
-                authenticatedNavItems.map((item) => (
                   <SidebarMenuItem key={item.href}>
                     <SidebarNavLink href={item.href}>
                       <item.icon className="size-4" />

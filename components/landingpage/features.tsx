@@ -10,7 +10,7 @@ const features = [
       "Quickly post your extra gigs when you have too much work. Help meet deadlines, manage workload, and support the freelance community.",
     href: "#",
     cta: "Start Posting",
-    className: "col-span-3 lg:col-span-2",
+    className: "col-span-1 lg:col-span-2",
     background: (
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/20">
         <div className="absolute top-4 right-4 w-32 h-32 bg-primary/20 rounded-full blur-2xl animate-pulse" />
@@ -29,7 +29,7 @@ const features = [
       "Instantly share gigs on X, WhatsApp, or copy direct links. Reach freelancers quickly across multiple platforms.",
     href: "#",
     cta: "Learn More",
-    className: "col-span-3 lg:col-span-1",
+    className: "col-span-1 lg:col-span-1",
     background: (
       <div className="absolute inset-0 bg-gradient-to-t from-secondary/10 to-transparent">
         <div className="absolute top-6 left-6 flex space-x-2">
@@ -52,7 +52,7 @@ const features = [
       "Chat directly with freelancers in real-time. Connect through WhatsApp, Email, or X with full control over conversations.",
     href: "#",
     cta: "Start Chatting",
-    className: "col-span-3 lg:col-span-1",
+    className: "col-span-1 lg:col-span-1",
     background: (
       <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-secondary/10">
         <div className="absolute top-4 left-4 space-y-2">
@@ -77,7 +77,7 @@ const features = [
       "Connect directly with freelancers. No commissions, no hidden charges, no communication limits. Simple, fast, and freelancer-first.",
     href: "#",
     cta: "Get Started",
-    className: "col-span-3 lg:col-span-2",
+    className: "col-span-1 lg:col-span-2",
     background: (
       <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/10 to-primary/5">
         <div className="absolute top-6 left-6">
@@ -119,8 +119,7 @@ function BentoCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl border bg-card p-6 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]",
-        "border-border hover:border-primary/20",
+        "group relative overflow-hidden rounded-2xl border-2 border-border bg-card p-6 shadow-sm transition-colors duration-200",
         className,
       )}
     >
@@ -152,7 +151,7 @@ function BentoCard({
 }
 
 function BentoGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-3 gap-6 max-w-7xl mx-auto">{children}</div>
+  return <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">{children}</div>
 }
 
 export default function Features() {

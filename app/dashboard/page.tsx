@@ -21,8 +21,8 @@ export default async function Dashboard() {
   const expiredProjects = dashboardData?.projects?.filter((p: any) => p.status.toLowerCase() === "expired").length || 0
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
         <RateLimitBanner rateLimitInfo={result.rateLimitInfo} />
 
         <DashboardStats

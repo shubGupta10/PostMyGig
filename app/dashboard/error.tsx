@@ -17,9 +17,8 @@ export default function Error({
   const isRateLimit = error.message.includes("Rate limit exceeded")
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-        <div className="flex flex-col items-center justify-center py-24 text-center">
+    <div className="min-h-screen bg-background p-4 sm:p-6 flex items-center justify-center">
+      <div className="max-w-md mx-auto text-center">
           <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-6 text-foreground shadow-sm">
             {isRateLimit ? <ShieldAlert className="w-8 h-8" /> : <AlertCircle className="w-8 h-8 text-destructive" />}
           </div>
@@ -31,13 +30,12 @@ export default function Error({
           </p>
           <button
             onClick={() => reset()}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm shadow-md transition-all hover:shadow-lg disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm shadow-sm transition-all cursor-pointer"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Try Again</span>
           </button>
         </div>
       </div>
-    </div>
   )
 }

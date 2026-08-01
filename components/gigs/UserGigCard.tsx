@@ -3,6 +3,8 @@
 import { Eye, Trash2, RefreshCw, Calendar, Clock, DollarSign, Activity } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import type { UserGig } from "@/app/(pages)/(gig)/(userGigs)/user-gigs/types"
 
 interface UserGigCardProps {
@@ -17,12 +19,24 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
-        return <span className="border border-border text-primary px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5"><Activity className="size-3" /> Completed</span>
+        return (
+          <Badge className="bg-primary text-primary-foreground border-primary border font-medium flex items-center gap-1.5 px-2.5 py-1">
+            <Activity className="w-3 h-3" /> Completed
+          </Badge>
+        )
       case "active":
-        return <span className="border border-border text-secondary-foreground px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5"><Activity className="size-3" /> Active</span>
+        return (
+          <Badge className="bg-primary text-primary-foreground border-primary border font-medium flex items-center gap-1.5 px-2.5 py-1">
+            <Activity className="w-3 h-3" /> Active
+          </Badge>
+        )
       case "pending":
       default:
-        return <span className="border border-border text-accent-foreground px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5"><Activity className="size-3" /> Pending</span>
+        return (
+          <Badge className="bg-secondary text-secondary-foreground border-border border font-medium flex items-center gap-1.5 px-2.5 py-1">
+            <Activity className="w-3 h-3" /> Pending
+          </Badge>
+        )
     }
   }
 
@@ -39,48 +53,25 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
   }
 
   return (
-    <AccordionItem 
-      value={project._id} 
+    <AccordionItem
+      value={project._id}
       className="group bg-card text-card-foreground rounded-2xl border-2 border-border shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
     >
       <AccordionTrigger className="p-5 sm:p-6 hover:no-underline hover:bg-muted transition-colors">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4 sm:gap-6 pr-4">
+        <div className="flex items-center justify-between w-full gap-3 sm:gap-6 pr-2 sm:pr-4">
           
-          {/* Left Column: Info */}
-          <div className="flex-1 min-w-0 text-left">
-            <h3 className="text-lg font-bold text-foreground mb-2 truncate">
+          {/* Left Column: Title & Status */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0 text-left">
+            <h3 className="text-base sm:text-lg font-bold text-foreground truncate">
               {project.title}
             </h3>
-            
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              {getStatusBadge(project.status)}
-              
-              <div className="flex items-center gap-1.5 bg-muted px-2.5 py-1 rounded-md border border-border">
-                <Calendar className="size-3.5" />
-                <span className="font-bold text-[10px] uppercase tracking-wider">Posted {formatDate(project.createdAt)}</span>
-              </div>
-
-              {isExpired(project.expiresAt) && (
-                <div className="flex items-center gap-1.5 border border-border text-muted-foreground px-2.5 py-1 rounded-md">
-                  <Clock className="size-3.5" />
-                  <span className="font-bold text-[10px] uppercase tracking-wider">Expired</span>
-                </div>
-              )}
-            </div>
+            {getStatusBadge(project.status)}
           </div>
 
-          {/* Right Column: Meta */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-4 shrink-0">
-            {/* Budget Pill */}
-            <div className="flex items-center gap-2 bg-muted px-4 py-2 rounded-xl border border-border text-left">
-              <div className="size-7 rounded-full bg-background flex items-center justify-center border border-border">
-                <DollarSign className="size-4 text-primary" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">Budget</span>
-                <span className="text-sm font-bold text-foreground leading-none">{project.budget}</span>
-              </div>
-            </div>
+          {/* Right Column: Budget */}
+          <div className="flex items-center gap-1.5 bg-muted px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border border-border shrink-0">
+            <DollarSign className="size-3.5 sm:size-4 text-primary" />
+            <span className="text-xs sm:text-sm font-bold text-foreground">{project.budget}</span>
           </div>
 
         </div>
@@ -88,10 +79,29 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
 
       <AccordionContent className="p-5 sm:p-6 pt-0 sm:pt-0 border-t border-border">
         <div className="mt-6 flex flex-col gap-6">
-          
+
+          {/* Metadata Block (Posted & Expiration) */}
+          <div className="bg-muted rounded-xl p-4 border border-border flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="size-4 text-muted-foreground" />
+              <span className="text-xs sm:text-sm font-medium text-foreground">
+                <strong className="text-muted-foreground uppercase text-[10px] tracking-wider block sm:inline sm:mr-1">Posted:</strong>
+                {formatDate(project.createdAt)}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Clock className="size-4 text-muted-foreground" />
+              <span className="text-xs sm:text-sm font-medium text-foreground">
+                <strong className="text-muted-foreground uppercase text-[10px] tracking-wider block sm:inline sm:mr-1">Expires:</strong>
+                {formatDate(project.expiresAt)}
+              </span>
+            </div>
+          </div>
+
           {/* Description */}
           <div>
-            <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Description</h4>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Description</p>
             <p className="text-sm text-foreground leading-relaxed">
               {project.description}
             </p>
@@ -100,12 +110,12 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
           {/* Skills Required */}
           {project.skillsRequired && project.skillsRequired.length > 0 && (
             <div>
-              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Skills Required</h4>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Skills Required</p>
               <div className="flex flex-wrap gap-2">
                 {project.skillsRequired.map((skill: string, index: number) => (
                   <span
                     key={index}
-                    className="bg-muted text-foreground px-2.5 py-1 rounded-md text-xs font-medium border border-border"
+                    className="bg-secondary text-secondary-foreground rounded-xl px-4 py-2 font-semibold text-sm"
                   >
                     {skill}
                   </span>
@@ -116,37 +126,35 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
 
           {/* Accepted Freelancer */}
           {project.AcceptedFreelancerEmail && (
-            <div className="bg-muted p-4 rounded-xl border border-border">
-              <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Accepted Freelancer</h4>
+            <div className="bg-muted rounded-xl p-4 border border-border">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Accepted Freelancer</p>
               <p className="text-sm font-medium text-foreground">{project.AcceptedFreelancerEmail}</p>
             </div>
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4">
-            <button
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+            <Button
+              variant="outline"
               onClick={(e) => {
                 e.stopPropagation()
                 router.push(`/applications/view-applications?gigId=${project._id}`)
               }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-foreground bg-muted hover:bg-primary hover:text-primary-foreground border border-border transition-colors"
+              className="border-border font-semibold flex items-center gap-2"
               title="View Applications"
             >
               <Eye className="size-4" />
               <span>View Applications</span>
-            </button>
-            
-            <button
+            </Button>
+
+            <Button
+              variant="destructive"
               onClick={(e) => {
                 e.stopPropagation()
                 onDelete(project)
               }}
               disabled={deletingId === project._id}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold border border-border transition-colors ${
-                deletingId === project._id
-                  ? "text-muted-foreground bg-muted opacity-50 cursor-not-allowed"
-                  : "text-destructive bg-muted hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
-              }`}
+              className="bg-destructive text-destructive-foreground font-semibold flex items-center gap-2"
               title="Delete Project"
             >
               {deletingId === project._id ? (
@@ -155,7 +163,7 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
                 <Trash2 className="size-4" />
               )}
               <span>Delete</span>
-            </button>
+            </Button>
           </div>
         </div>
       </AccordionContent>

@@ -44,18 +44,18 @@ export function DashboardStats({ totalProjects, totalPings, activeProjects }: Da
   ]
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {stats.map((stat, idx) => {
         const Icon = stat.icon
         return (
-          <Card key={idx} className="p-5 flex flex-col justify-between border border-border bg-card shadow-sm hover:shadow-md transition-shadow rounded-xl">
-            <div className="flex items-center gap-2 mb-3">
-              <Icon className={`h-4 w-4 ${stat.colorClass}`} />
-              <span className="text-sm font-medium text-muted-foreground">{stat.title}</span>
+          <Card key={idx} className="p-3.5 sm:p-5 flex flex-col justify-between border border-border bg-card shadow-sm hover:shadow-md transition-shadow rounded-xl">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+              <Icon className={`h-4 w-4 shrink-0 ${stat.colorClass}`} />
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{stat.title}</span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className={`text-3xl font-bold tracking-tight ${stat.colorClass}`}>{stat.value}</span>
-              <span className="text-xs font-medium text-muted-foreground">{stat.description}</span>
+            <div className="flex flex-wrap items-baseline gap-1 sm:gap-2">
+              <span className={`text-2xl sm:text-3xl font-bold tracking-tight ${stat.colorClass}`}>{stat.value}</span>
+              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">{stat.description}</span>
             </div>
           </Card>
         )

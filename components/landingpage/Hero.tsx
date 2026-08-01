@@ -54,14 +54,14 @@ function Hero() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
               <Link
                 href={session ? `/view-gigs` : "/auth/login"}
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-xl transition-colors duration-200 shadow-sm"
                 aria-label="Sign up for PostMyGig with Google or X authentication"
               >
                 Start Posting Gigs
               </Link>
               <Link
                 href="/view-gigs"
-                className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-accent-foreground bg-card hover:bg-accent border-2 border-primary rounded-lg transition-colors duration-200"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold text-accent-foreground bg-card hover:bg-accent border-2 border-primary rounded-xl transition-colors duration-200"
                 aria-label="Browse available freelance projects"
               >
                 Find Gigs Now
@@ -121,7 +121,7 @@ function Hero() {
 
           {/* Visual Section */}
           <div className="relative">
-            <div className="relative bg-card rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-border">
+            <div className="relative bg-card rounded-2xl p-4 sm:p-6 lg:p-8 border-2 border-border shadow-sm">
               {/* Mock App Interface */}
               <div className="space-y-4 sm:space-y-6">
                 {/* Header */}
@@ -245,12 +245,12 @@ function Hero() {
             </div>
 
             {/* Floating Elements */}
-            <div className="absolute -top-2 sm:-top-4 -right-2 sm:-right-4 bg-primary/10 rounded-full p-2 sm:p-3 shadow-lg">
+            <div className="absolute -top-2 sm:-top-4 -right-2 sm:-right-4 bg-primary/10 rounded-full p-2 sm:p-3 border border-border shadow-sm">
               <svg className="w-4 h-4 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
             </div>
-            <div className="absolute -bottom-2 sm:-bottom-4 -left-2 sm:-left-4 bg-primary/10 rounded-full p-2 sm:p-3 shadow-lg">
+            <div className="absolute -bottom-2 sm:-bottom-4 -left-2 sm:-left-4 bg-primary/10 rounded-full p-2 sm:p-3 border border-border shadow-sm">
               <svg className="w-4 h-4 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"

@@ -30,7 +30,7 @@ export function HeaderTitle() {
   }
 
   return (
-    <h1 className="text-sm font-semibold tracking-tight text-foreground hidden sm:block">
+    <h1 className="text-sm sm:text-base font-semibold tracking-tight text-foreground truncate max-w-[130px] sm:max-w-none">
       {title}
     </h1>
   )
