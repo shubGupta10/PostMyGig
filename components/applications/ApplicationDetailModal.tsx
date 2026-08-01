@@ -1,7 +1,8 @@
 import type { Application } from "@/app/(pages)/applications/view-applications/types"
-import { X, MessageSquare, Star, ExternalLink, FileText, XCircle, Check, Award, Mail, Calendar } from "lucide-react"
+import { X, MessageSquare, Star, ExternalLink, FileText, XCircle, Check, Mail, Calendar, User2, Contact2, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import type React from "react"
 
 interface Props {
   application: Application
@@ -9,22 +10,12 @@ interface Props {
   onClose: () => void
   onAccept: (id: string, email: string) => void
   onDelete: () => void
-  getStatusBadge: (status: string) => React.ReactNode
-  getApplicantInitials: (app: Application) => string
-  getApplicantDisplayName: (app: Application) => string
-  formatDate: (d: string) => string
-}
-
-function isValidUrl(s: string) {
-  try { new URL(s); return true } catch { return false }
+  onContact?: (email: string) => void
 }
 
 export function ApplicationDetailModal({
-  application, loading, onClose, onAccept, onDelete,
-  getStatusBadge, getApplicantInitials, getApplicantDisplayName, formatDate,
+  application, loading, onClose, onAccept, onDelete, onContact,
 }: Props) {
-  const isAccepted = application.status?.toLowerCase() === "accepted"
-  const isRejected = application.status?.toLowerCase() === "rejected"
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -34,16 +25,20 @@ export function ApplicationDetailModal({
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-4 min-w-0 flex-1">
             <div className="w-12 h-12 bg-primary text-primary-foreground rounded-xl flex items-center justify-center overflow-hidden shrink-0">
-              {application.applicant?.profilePhoto ? (
-                <img src={application.applicant.profilePhoto} alt={getApplicantDisplayName(application)} className="w-full h-full object-cover" />
+              {(application.applicant?.profilePhoto || (application.applicant as any)?.image || (application.applicant as any)?.avatar) ? (
+                <img
+                  src={application.applicant?.profilePhoto || (application.applicant as any)?.image || (application.applicant as any)?.avatar}
+                  alt={application.applicant?.name || "Applicant"}
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <span className="font-bold text-lg">{getApplicantInitials(application)}</span>
+                <span className="font-bold text-lg">{(application.applicant?.name?.[0] || "?").toUpperCase()}</span>
               )}
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h2 className="text-xl font-bold text-foreground truncate">{getApplicantDisplayName(application)}</h2>
-                {getStatusBadge(application.status || "pending")}
+                <h2 className="text-xl font-bold text-foreground truncate">{application.applicant?.name || application.applicant?.email || "Applicant"}</h2>
+                <Badge className="border px-2.5 py-1 capitalize font-medium">{application.status || "Pending"}</Badge>
               </div>
               {application.applicant?.email && (
                 <p className="text-muted-foreground text-sm flex items-center gap-1.5">
@@ -51,7 +46,7 @@ export function ApplicationDetailModal({
                 </p>
               )}
               <p className="text-muted-foreground text-sm flex items-center gap-1.5 mt-0.5">
-                <Calendar className="w-3.5 h-3.5" /> Applied on {formatDate(application.createdAt)}
+                <Calendar className="w-3.5 h-3.5" /> Applied on {new Date(application.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </p>
             </div>
           </div>
@@ -84,14 +79,10 @@ export function ApplicationDetailModal({
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-1.5">
                       <ExternalLink className="w-3 h-3" /> Work Link
                     </p>
-                    {isValidUrl(application.bestWorkLink) ? (
-                      <a href={application.bestWorkLink} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-primary font-semibold hover:underline">
-                        <ExternalLink className="w-4 h-4 shrink-0" /> View Portfolio
-                      </a>
-                    ) : (
-                      <p className="text-foreground break-words">{application.bestWorkLink}</p>
-                    )}
+                    <a href={application.bestWorkLink} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-primary font-semibold hover:underline">
+                      <ExternalLink className="w-4 h-4 shrink-0" /> {application.bestWorkLink}
+                    </a>
                   </div>
                 )}
                 {application.bestWorkDescription && (
@@ -109,18 +100,31 @@ export function ApplicationDetailModal({
 
         {/* Footer */}
         <div className="flex flex-col sm:flex-row justify-end gap-3 p-6 border-t border-border">
-          <Button variant="outline" onClick={onClose} className="border-border font-medium">Close</Button>
+          <Button variant="outline" onClick={onClose} className="border-border font-semibold">Close</Button>
           <Button onClick={onDelete} variant="outline" disabled={loading}
-            className="bg-destructive text-destructive-foreground border-destructive hover:bg-destructive/90 font-medium">
+            className="bg-destructive text-destructive-foreground border-destructive font-semibold">
             <XCircle className="w-4 h-4 mr-2" /> Reject Application
           </Button>
-          <Button
-            onClick={() => onAccept(application._id, application.applicant.email)}
-            disabled={isAccepted || isRejected || loading}
-            className="bg-primary text-primary-foreground font-medium"
-          >
-            {isAccepted ? <><Award className="w-4 h-4 mr-2" /> Already Accepted</> : <><Check className="w-4 h-4 mr-2" /> Accept Application</>}
-          </Button>
+          {application.status === "accepted" ? (
+            <>
+              {onContact && (
+                <Button onClick={() => onContact(application.applicant?.email || "")} className="bg-primary text-primary-foreground font-semibold">
+                  <User2 className="w-4 h-4 mr-2" /> Contact
+                </Button>
+              )}
+              <Button onClick={() => (window.location.href = `/chat/?projectId=${application.projectId}`)} className="bg-primary text-primary-foreground font-semibold">
+                <Contact2 className="w-4 h-4 mr-2" /> Chat
+              </Button>
+            </>
+          ) : (
+            <Button
+              onClick={() => onAccept(application._id, application.applicant?.email || "")}
+              disabled={loading}
+              className="bg-primary text-primary-foreground font-semibold"
+            >
+              <Check className="w-4 h-4 mr-2" /> Accept Application
+            </Button>
+          )}
         </div>
 
       </div>

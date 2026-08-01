@@ -6,9 +6,9 @@ export default async function ChatHistoryPage() {
   const chatHistoryData = await fetchChatHistory()
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-xl font-bold text-foreground mb-6">Your Chats</h2>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">Your Chats</h1>
         
         {chatHistoryData.length === 0 ? (
           <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden text-center py-16 px-8">

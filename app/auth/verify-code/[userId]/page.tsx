@@ -164,13 +164,13 @@ function VerifyCode() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-card rounded-3xl shadow-2xl p-8 text-center border border-border">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-full mb-6 shadow-lg">
-            <CheckCircle className="h-10 w-10 text-primary-foreground" />
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6 py-6 sm:py-12">
+        <div className="w-full max-w-md bg-card rounded-2xl shadow-sm p-6 sm:p-8 text-center border-2 border-border">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-6 shadow-sm">
+            <CheckCircle className="h-8 w-8 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground mb-3">Email Verified! ✨</h1>
-          <p className="text-muted-foreground mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-3">Email Verified! ✨</h1>
+          <p className="text-muted-foreground text-sm mb-6">
             Your account has been successfully verified. Redirecting you to login...
           </p>
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -180,8 +180,8 @@ function VerifyCode() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-card rounded-3xl shadow-2xl overflow-hidden border border-border">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6 py-6 sm:py-12">
+      <div className="w-full max-w-lg bg-card rounded-2xl shadow-sm overflow-hidden border-2 border-border">
         {/* Header */}
         <div className="bg-primary px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6 text-primary-foreground">
           <button
@@ -258,7 +258,7 @@ function VerifyCode() {
           {/* Manual Verify Button */}
           <Button
             onClick={() => handleVerify()}
-            className="w-full h-12 sm:h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg rounded-lg sm:rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
+            className="w-full h-12 sm:h-14 bg-primary hover:opacity-90 text-primary-foreground font-bold text-base sm:text-lg rounded-xl shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
             disabled={isLoading || verifyCode.some((digit) => digit === "")}
           >
             {isLoading ? (

@@ -8,7 +8,7 @@ export interface NavItem {
 
 export const publicNavItems: NavItem[] = [
   {
-    title: "Gigs",
+    title: "Browse Gigs",
     href: "/view-gigs",
     icon: Briefcase,
   },

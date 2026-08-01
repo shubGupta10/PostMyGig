@@ -140,12 +140,12 @@ export default async function RootLayout({
                 <SidebarProvider>
                   <AppSidebar />
                   <SidebarInset>
-                    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border px-4">
-                      <div className="flex items-center gap-4">
+                    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border px-3 sm:px-4">
+                      <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                         <SidebarTrigger />
                         <HeaderTitle />
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
                         <AddGigButton />
                         <DarkModeToggle />
                       </div>

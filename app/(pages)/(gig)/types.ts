@@ -9,6 +9,20 @@ export interface Gig {
   createdBy: string
   isFlagged: boolean
   reportCount: number
+  displayContactLinks?: boolean
+  contact?: {
+    email?: string
+    whatsapp?: string
+    x?: string
+  }
+  budget?: number
+  updatedAt?: string
+}
+
+export interface Owner {
+  id: string
+  name: string
+  email: string
 }
 
 export interface PaginationData {

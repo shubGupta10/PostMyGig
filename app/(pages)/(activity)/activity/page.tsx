@@ -8,7 +8,7 @@ export default async function ActivityPage() {
   const activities = await fetchActivityData()
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col gap-4">
           {activities.length > 0 ? (

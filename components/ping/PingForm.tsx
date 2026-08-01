@@ -80,8 +80,8 @@ export function PingForm() {
         <form onSubmit={handleSubmit}>
 
           {/* Header */}
-          <div className="p-6 sm:p-8 border-b border-border">
-            <h1 className="text-2xl font-bold text-foreground">Apply for this Project</h1>
+          <div className="p-4 sm:p-8 border-b border-border">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">Apply for this Project</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Tell the project owner why you're the perfect fit for this gig
             </p>
@@ -89,7 +89,7 @@ export function PingForm() {
 
           {/* Alerts */}
           {(error || success) && (
-            <div className="px-6 sm:px-8 pt-6">
+            <div className="px-4 sm:px-8 pt-4 sm:pt-6">
               {error && (
                 <div className="flex items-start gap-3 bg-destructive text-destructive-foreground rounded-xl p-4">
                   <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -106,7 +106,7 @@ export function PingForm() {
           )}
 
           {/* Fields */}
-          <div className="p-6 sm:p-8 space-y-6">
+          <div className="p-4 sm:p-8 space-y-5 sm:space-y-6">
             {/* Message */}
             <div className="space-y-2">
               <label htmlFor="message" className="text-sm font-semibold text-foreground">
@@ -164,20 +164,20 @@ export function PingForm() {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 px-6 sm:px-8 pb-6 sm:pb-8 border-t border-border pt-6">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 px-4 sm:px-8 pb-4 sm:pb-8 border-t border-border pt-4 sm:pt-6">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
               disabled={isLoading}
-              className="border-border font-semibold"
+              className="w-full sm:w-auto border-border font-semibold h-11"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-primary text-primary-foreground px-8 font-semibold"
+              className="w-full sm:w-auto bg-primary text-primary-foreground px-8 font-semibold h-11"
             >
               {isLoading ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>

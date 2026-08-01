@@ -226,27 +226,25 @@ function AddGigs() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <>
+      <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10">
+        <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3 sm:mb-4">
             Post Your <span className="text-primary">Gig</span>
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-3xl">
             Share your project details and connect with talented freelancers
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10">
+        <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10 max-w-3xl">
           {/* Project Information */}
           <div className="space-y-4 sm:space-y-6">
-            <h3 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-secondary rounded-lg flex items-center justify-center">
-                <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 text-secondary-foreground" />
-              </div>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
               Project Information
-            </h3>
+            </p>
 
             {/* Title */}
             <div className="space-y-2">
@@ -260,7 +258,7 @@ function AddGigs() {
                 placeholder="e.g., Full Stack Developer for E-commerce Website"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground placeholder:text-muted-foreground ${errors.title ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                className={`h-11 bg-background border-border text-sm placeholder:text-muted-foreground ${errors.title ? "border-destructive focus:border-destructive" : "focus:border-primary"
                   }`}
               />
               {errors.title && (
@@ -283,7 +281,7 @@ function AddGigs() {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={4}
-                className={`text-sm sm:text-base resize-none bg-input border-border text-foreground placeholder:text-muted-foreground ${errors.description ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                className={`text-sm bg-background border-2 border-border focus:border-primary resize-none placeholder:text-muted-foreground ${errors.description ? "border-destructive focus:border-destructive" : ""
                   }`}
               />
               {errors.description && (
@@ -306,15 +304,15 @@ function AddGigs() {
                 placeholder="react, nextjs, nodejs, mongodb"
                 value={formData.skillsRequired}
                 onChange={handleInputChange}
-                className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground placeholder:text-muted-foreground ${errors.skillsRequired
+                className={`h-11 bg-background border-border text-sm placeholder:text-muted-foreground ${errors.skillsRequired
                   ? "border-destructive focus:border-destructive"
                   : "focus:border-primary"
                   }`}
               />
-              <div className="bg-accent rounded-lg p-3 border border-accent-foreground/20">
-                <p className="text-xs sm:text-sm text-accent-foreground">
+              <div className="bg-muted rounded-xl p-4 border border-border">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Separate skills with commas:{" "}
-                  <code className="bg-card px-2 py-1 rounded text-xs sm:text-sm text-card-foreground">react, nextjs, nodejs</code>
+                  <code className="bg-background px-2 py-1 rounded text-xs sm:text-sm text-foreground border border-border">react, nextjs, nodejs</code>
                 </p>
               </div>
               {errors.skillsRequired && (
@@ -329,12 +327,9 @@ function AddGigs() {
           {/* Contact Information */}
           <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8 border-t border-border">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h3 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-secondary rounded-lg flex items-center justify-center">
-                  <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-secondary-foreground" />
-                </div>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
                 Contact Information
-              </h3>
+              </p>
               <div className="flex items-center gap-3 bg-muted rounded-lg px-3 sm:px-4 py-2">
                 <div className="flex items-center gap-2">
                   {formData.displayContactLinks ? (
@@ -350,8 +345,8 @@ function AddGigs() {
               </div>
             </div>
 
-            <div className="bg-secondary rounded-lg p-3 border border-secondary-foreground/20">
-              <p className="text-xs sm:text-sm text-secondary-foreground">
+            <div className="bg-muted rounded-xl p-4 border border-border">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {formData.displayContactLinks
                   ? "Your contact details will be visible on the gig page"
                   : "Your contact details will be hidden until someone applies"}
@@ -371,7 +366,7 @@ function AddGigs() {
                   placeholder="your.email@example.com"
                   value={formData.contact.email}
                   onChange={(e) => handleContactChange("email", e.target.value)}
-                  className="text-xs sm:text-sm py-2 bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
+                  className="h-11 bg-background border-border text-sm placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
 
@@ -390,7 +385,7 @@ function AddGigs() {
                   placeholder="+1234567890"
                   value={formData.contact.whatsapp}
                   onChange={(e) => handleContactChange("whatsapp", e.target.value)}
-                  className="text-xs sm:text-sm py-2 bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
+                  className="h-11 bg-background border-border text-sm placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
 
@@ -405,7 +400,7 @@ function AddGigs() {
                   placeholder="@username"
                   value={formData.contact.x}
                   onChange={(e) => handleContactChange("x", e.target.value)}
-                  className="text-xs sm:text-sm py-2 bg-input border-border text-foreground placeholder:text-muted-foreground focus:border-muted-foreground"
+                  className="h-11 bg-background border-border text-sm placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
             </div>
@@ -413,12 +408,9 @@ function AddGigs() {
 
           {/* Timeline & Budget */}
           <div className="space-y-4 sm:space-y-6 pt-6 sm:pt-8 border-t border-border">
-            <h3 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 sm:gap-3">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-secondary rounded-lg flex items-center justify-center">
-                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-secondary-foreground" />
-              </div>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
               Timeline & Budget
-            </h3>
+            </p>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Deadline */}
@@ -433,7 +425,7 @@ function AddGigs() {
                   value={formData.expiresAt}
                   onChange={handleInputChange}
                   min={new Date().toISOString().split("T")[0]}
-                  className={`text-sm sm:text-base py-2 sm:py-3 bg-input border-border text-foreground ${errors.expiresAt ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                  className={`h-11 bg-background border-border text-sm ${errors.expiresAt ? "border-destructive focus:border-destructive" : "focus:border-primary"
                     }`}
                 />
                 {errors.expiresAt && (
@@ -485,16 +477,16 @@ function AddGigs() {
                     placeholder={currency === "USD" ? "500" : "40000"}
                     value={budgetAmount}
                     onChange={handleBudgetChange}
-                    className={`text-sm sm:text-base py-2 sm:py-3 pl-7 sm:pl-8 bg-input border-border text-foreground placeholder:text-muted-foreground ${errors.budget ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                    className={`h-11 pl-7 sm:pl-8 bg-background border-border text-sm placeholder:text-muted-foreground ${errors.budget ? "border-destructive focus:border-destructive" : "focus:border-primary"
                       }`}
                   />
                 </div>
 
                 {/* Budget Preview */}
                 {formData.budget && (
-                  <div className="bg-accent rounded-lg p-2 border border-accent-foreground/20">
-                    <div className="flex items-center gap-2 text-accent-foreground">
-                      <CheckCircle className="w-4 h-4" />
+                  <div className="bg-muted rounded-xl p-4 border border-border">
+                    <div className="flex items-center gap-2 text-foreground">
+                      <CheckCircle className="w-4 h-4 text-primary" />
                       <span className="text-xs sm:text-sm">
                         Budget: <strong>{formData.budget}</strong>
                       </span>
@@ -517,7 +509,7 @@ function AddGigs() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full sm:w-auto sm:min-w-[200px] bg-primary hover:bg-primary/90 text-primary-foreground px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full h-12 bg-primary text-primary-foreground font-bold text-base rounded-xl transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
@@ -532,9 +524,9 @@ function AddGigs() {
               )}
             </Button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
-
       {/* feedback dailog */}
       <FeedbackDialog
         open={showFeedbackDailog}
@@ -543,7 +535,7 @@ function AddGigs() {
           router.push("/view-gigs")
         }}
       />
-    </div>
+    </>
   )
 }
 

@@ -63,23 +63,19 @@ export function UserGigsList({ initialProjects }: UserGigsListProps) {
 
   if (projects.length === 0) {
     return (
-      <div className="text-center py-20">
-        <div className="bg-card text-card-foreground rounded-xl shadow-sm p-12 max-w-2xl mx-auto border border-border">
-          <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6 border border-border">
-            <Briefcase className="size-10 text-muted-foreground" />
-          </div>
-          <h3 className="text-2xl font-bold text-foreground mb-4">No Projects Found</h3>
-          <p className="text-muted-foreground mb-8 leading-relaxed">
-            You haven't posted any gigs yet. Start sharing your projects with the community and find the perfect collaborators for your work.
-          </p>
-          <button
-            onClick={() => router.push("/add-gigs")}
-            className="bg-primary hover:opacity-90 text-primary-foreground px-8 py-3 rounded-lg font-semibold shadow-sm transition-opacity flex items-center gap-2 mx-auto"
-          >
-            <Plus className="size-5" />
-            Create Your First Gig
-          </button>
-        </div>
+      <div className="bg-muted rounded-xl p-10 text-center border border-border max-w-2xl mx-auto my-8">
+        <Briefcase className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+        <h3 className="text-lg font-semibold text-foreground mb-1">No Projects Found</h3>
+        <p className="text-sm text-muted-foreground mb-6">
+          You haven't posted any gigs yet. Start sharing your projects with the community and find the perfect collaborators for your work.
+        </p>
+        <button
+          onClick={() => router.push("/add-gigs")}
+          className="bg-primary text-primary-foreground font-semibold h-11 px-6 rounded-xl inline-flex items-center gap-2 hover:opacity-90 transition-opacity"
+        >
+          <Plus className="size-4" />
+          Create Your First Gig
+        </button>
       </div>
     )
   }
