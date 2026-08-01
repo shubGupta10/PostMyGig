@@ -128,8 +128,8 @@ export function OpenGigSidebar({ gig, owner, isPinged, canApply, disabledMessage
                 <StatusIcon className="w-5 h-5 text-primary" />
                 <span className="text-card-foreground font-medium">Status</span>
               </div>
-              <Badge variant="outline" className={`${statusConfig.color} border font-semibold`}>
-                <div className={`w-2 h-2 rounded-full ${statusConfig.dot} mr-2`}></div>
+              <Badge variant="outline" className={`${statusConfig.color} border font-semibold flex items-center gap-1.5 px-2.5 py-1`}>
+                <StatusIcon className="w-3.5 h-3.5" />
                 {gig.status.charAt(0).toUpperCase() + gig.status.slice(1)}
               </Badge>
             </div>
