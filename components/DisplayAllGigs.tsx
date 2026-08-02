@@ -1,9 +1,10 @@
-import { fetchGigs } from "@/app/(pages)/(gig)/services/gigApi"
 import { GigCard } from "./gigs/GigCard"
 import { RateLimitBanner } from "./gigs/RateLimitBanner"
+import { getGigs } from "@/app/(pages)/(gig)/services/gigService"
 
-export default async function DisplayAllGigs() {
-  const result = await fetchGigs(1, 100)
+export default async function DisplayAllGigs({ page = 1, search = "", skill = "", sort = "newest" }: { page?: number, search?: string, skill?: string, sort?: string }) {
+
+  const result = await getGigs(page, 9, search, skill, sort);
 
   if (result.error) {
     throw new Error(result.error)
@@ -28,7 +29,7 @@ export default async function DisplayAllGigs() {
     <div className="w-full relative overflow-hidden">
       <div className="max-w-7xl mx-auto pb-12 sm:pb-24 relative z-10 space-y-6">
         <RateLimitBanner rateLimitInfo={result.rateLimitInfo} />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 relative">
           {gigs.map((gig) => (
             <GigCard key={gig._id} gig={gig} />
