@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, after } from "next/server";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 import { getServerSession } from "next-auth";
@@ -50,21 +50,23 @@ export async function DELETE(req: NextRequest) {
         })
 
         //send mail for deletion
-        const { error } = await resend.emails.send({
-            from: 'PostMyGig <hello@postmygig.vercel.app>',
-            to: userEmail,
-            subject: "Confirmation: Your Account Has Been Permanently Deleted",
-            html: postMyGigAccountDeletedTemplate(session.user.name)
-        })
-
-        if (error) {
-            console.error('Resend email error:', error);
-            await EmailSender({
+        after(async () => {
+            const { error } = await resend.emails.send({
+                from: 'PostMyGig <hello@postmygig.vercel.app>',
                 to: userEmail,
                 subject: "Confirmation: Your Account Has Been Permanently Deleted",
                 html: postMyGigAccountDeletedTemplate(session.user.name)
-            });
-        }
+            })
+
+            if (error) {
+                console.error('Resend email error:', error);
+                await EmailSender({
+                    to: userEmail,
+                    subject: "Confirmation: Your Account Has Been Permanently Deleted",
+                    html: postMyGigAccountDeletedTemplate(session.user.name)
+                });
+            }
+        });
 
         return NextResponse.json({
             message: "User Account Deleted"

@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server"
+import { after, NextResponse, type NextRequest } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/options"
 import ProjectModel from "@/models/ProjectModel"
@@ -78,55 +78,32 @@ export async function POST(req: NextRequest) {
 
     await newGig.save()
 
-    // Update Redis cache after creating a new gig
-    const cacheKey = "fetch-gigs:all"
-
     try {
-      // Method 1: Update the existing cache by adding the new gig
-      const cachedGigsString = await redis.get(cacheKey)
-
-      if (cachedGigsString) {
-        // Parse existing cache
-        const cachedGigs = typeof cachedGigsString === "string" ? JSON.parse(cachedGigsString) : cachedGigsString
-
-        // Add the new gig to the beginning of the array (newest first)
-        const updatedCache = [newGig.toObject(), ...cachedGigs]
-
-        // Update the cache with the new array
-        await redis.set(cacheKey, JSON.stringify(updatedCache), { ex: 300 }) // 5 minutes cache
-
-        console.log("Redis cache updated with new gig")
-      } else {
-        // If no cache exists, create a new cache with just this gig
-        await redis.set(cacheKey, JSON.stringify([newGig.toObject()]), { ex: 300 })
+      const keys = await redis.keys("fetch-gigs:*");
+      if (keys.length > 0) {
+        await redis.del(...keys);
       }
+      console.log("Invalidated dynamic gig caches");
     } catch (redisError) {
-      // If updating the cache fails, delete the cache so the next GET request will fetch fresh data
-      console.warn("Failed to update Redis cache:", redisError)
-      try {
-        await redis.del(cacheKey)
-        console.log("Redis cache invalidated")
-      } catch (deleteError) {
-        console.warn("Failed to invalidate Redis cache:", deleteError)
+      console.warn("Failed to invalidate Redis cache:", redisError);
+    }
+
+
+    after(async () => {
+      //save activity
+      if (session.user.activityPublic === true) {
+        await Activity.create({
+          userId: session.user.id,
+          gigId: newGig.id,
+          type: 'posted',
+          metadata: {
+            FullName: session.user.name,
+            gigTitle: newGig.title,
+          }
+        })
+        await redis.del("real-time-activity-data");
       }
-    }
-
-    await redis.del("fetch-gigs:all")
-
-
-    //save activity
-    if (session.user.activityPublic === true) {
-      await Activity.create({
-        userId: session.user.id,
-        gigId: newGig.id,
-        type: 'posted',
-        metadata: {
-          FullName: session.user.name,
-          gigTitle: newGig.title,
-        }
-      })
-      await redis.del("real-time-activity-data");
-    }
+    })
 
     return NextResponse.json({ message: "Gig created successfully", gig: newGig }, { status: 201 })
   } catch (error) {

@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, after } from "next/server";
 import PingModel from "@/models/PingSchema";
 import ProjectModel from "@/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
@@ -6,6 +6,7 @@ import { EmailSender } from "@/lib/email/send";
 import { postMyGigApplicationAcceptedTemplate } from "@/lib/email/templates";
 import userModel from "@/models/UserModel";
 import resend from "@/lib/resend";
+import redis from "@/lib/redis";
 
 //accept application
 export async function POST(req: NextRequest) {
@@ -29,11 +30,11 @@ export async function POST(req: NextRequest) {
         //delete the rest freelancers pings upon selecting one application 
         const resultDelete = await PingModel.deleteMany({
             userEmail: { $ne: applicantEmail }, // delete pings where userEmail is NOT the selected freelancer's email
-            projectId: gigId 
+            projectId: gigId
         });
         console.log("Email", applicantEmail);
         console.log("Gig", gigId);
-        
+
         console.log("Here is result delete", resultDelete);
 
 
@@ -47,38 +48,51 @@ export async function POST(req: NextRequest) {
             status: "completed"
         }, { new: true });
 
+        // Invalidate gig caches since its status changed
+        try {
+            await redis.del(`fetch-open-gig:${gigId}`);
+            const keys = await redis.keys("fetch-gigs:*");
+            if (keys.length > 0) {
+                await redis.del(...keys);
+            }
+        } catch (e) {
+            console.warn("Failed to invalidate cache", e);
+        }
 
-        //find freelancerName
-        const freelancerWeSearchingFor = await userModel.findOne({ email: applicantEmail });
+
+        // Run both unrelated database queries at the exact same time
+        const [freelancerWeSearchingFor, fetchGigTitle] = await Promise.all([
+            userModel.findOne({ email: applicantEmail }).lean(),
+            ProjectModel.findById(gigId).lean()
+        ]);
+
         if (!freelancerWeSearchingFor) {
             return NextResponse.json({ error: "Freelancer not found" }, { status: 404 });
         }
 
-
-        //fetch gigTitle
-        const fetchGigTitle = await ProjectModel.findById(gigId);
-
-        //send mail for application accepted
-        const { error } = await resend.emails.send({
-            from: 'PostMyGig <hello@postmygig.vercel.app>',
-            to: applicantEmail,
-            subject: "You Application Got Selected",
-            html: postMyGigApplicationAcceptedTemplate(
-                freelancerWeSearchingFor.name,
-                fetchGigTitle?.title as string,
-            )
-        })
-
-        if (error) {
-            await EmailSender({
+        after(async () => {
+            const { error } = await resend.emails.send({
+                from: 'PostMyGig <hello@postmygig.vercel.app>',
                 to: applicantEmail,
-                subject: "You Application got selected",
+                subject: "You Application Got Selected",
                 html: postMyGigApplicationAcceptedTemplate(
                     freelancerWeSearchingFor.name,
                     fetchGigTitle?.title as string,
                 )
             })
-        }
+
+            if (error) {
+                await EmailSender({
+                    to: applicantEmail,
+                    subject: "You Application got selected",
+                    html: postMyGigApplicationAcceptedTemplate(
+                        freelancerWeSearchingFor.name,
+                        fetchGigTitle?.title as string,
+                    )
+                })
+            }
+        })
+
 
         return NextResponse.json({
             message: "Application accepted successfully",

@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, after } from "next/server";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 import PingModel from "@/models/PingSchema";
@@ -18,12 +18,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Project ID is required" }, { status: 400 });
     }
 
-    const projectData = await ProjectModel.findById(projectId).lean();
+    const [projectData, pingData] = await Promise.all([
+      ProjectModel.findById(projectId).lean(),
+      PingModel.findOne({ projectId }).lean(),
+    ])
     if (!projectData) {
       return NextResponse.json({ message: "Project not found" }, { status: 404 });
     }
 
-    const pingData = await PingModel.findOne({ projectId }).lean();
     if (!pingData) {
       return NextResponse.json({ message: "Ping not found" }, { status: 404 });
     }
@@ -55,21 +57,10 @@ export async function POST(req: NextRequest) {
       }, { status: 200 });
     }
 
-    // Send email
-    const { error } = await resend.emails.send({
-      from: 'PostMyGig <hello@postmygig.vercel.app>',
-      to: applyerData.email,
-      subject: "You've been invited to chat about a project",
-      html: postMyGigChatInvitationTemplate({
-        applyerName: applyerData.name,
-        posterName: posterData.name,
-        projectId,
-        projectName: projectData.title,
-      }),
-    })
-
-    if (error) {
-      await EmailSender({
+    after(async () => {
+      // Send email
+      const { error } = await resend.emails.send({
+        from: 'PostMyGig <hello@postmygig.vercel.app>',
         to: applyerData.email,
         subject: "You've been invited to chat about a project",
         html: postMyGigChatInvitationTemplate({
@@ -78,10 +69,24 @@ export async function POST(req: NextRequest) {
           projectId,
           projectName: projectData.title,
         }),
-      });
-    }
+      })
 
-    await redis.set(redisKey, "true", { ex: 172800  }); //48 hours
+      if (error) {
+        await EmailSender({
+          to: applyerData.email,
+          subject: "You've been invited to chat about a project",
+          html: postMyGigChatInvitationTemplate({
+            applyerName: applyerData.name,
+            posterName: posterData.name,
+            projectId,
+            projectName: projectData.title,
+          }),
+        });
+      }
+    })
+
+
+    await redis.set(redisKey, "true", { ex: 172800 }); //48 hours
 
     return NextResponse.json({
       message: "Invitation sent successfully",

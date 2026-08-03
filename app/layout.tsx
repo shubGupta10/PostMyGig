@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProviderWrapper from "../components/SessionProviderWrapper";
 import Footer from "@/components/Footer";
+import SmallFooter from "@/components/SmallFooter";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -155,7 +156,7 @@ export default async function RootLayout({
                       <Suspense>{children}</Suspense>
                       <Toaster />
                     </main>
-                    <Footer />
+                    <SmallFooter />
                   </SidebarInset>
                 </SidebarProvider>
               </TooltipProvider>

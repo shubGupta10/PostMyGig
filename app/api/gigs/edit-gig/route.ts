@@ -37,10 +37,14 @@ export async function PATCH(req: NextRequest) {
             expiresAt
         }, { new: true });
 
-        const keys = await redis.smembers("gig-cache-keys-for-deletion");
-        if (keys.length > 0) {
-            await redis.del(...keys);
-            await redis.del("gig-cache-keys-for-deletion"); 
+        try {
+            const keys = await redis.keys("fetch-gigs:*");
+            if (keys.length > 0) {
+                await redis.del(...keys);
+            }
+            await redis.del(`fetch-open-gig:${gigId}`);
+        } catch (e) {
+            console.warn("Failed to invalidate cache", e);
         }
 
         return NextResponse.json({

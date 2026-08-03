@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server"
+import { after, NextResponse, type NextRequest } from "next/server"
 import PingModel from "@/models/PingSchema"
 import userModel from "@/models/UserModel"
 import { ConnectoDatabase } from "@/lib/db"
@@ -57,23 +57,16 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Find the poster
-    const poster = await userModel.findById(posterId)
-    if (!poster) {
-      return NextResponse.json(
-        {
-          message: "Project owner not found",
-        },
-        { status: 404 },
-      )
-    }
+    const [poster, fetchedProject] = await Promise.all([
+      userModel.findById(posterId).lean(),
+      ProjectModel.findById(projectId).lean()
+    ]);
 
-    //fetch Project details
-    const fetchedProject = await ProjectModel.findById(projectId);
+    if (!poster) {
+      return NextResponse.json({ message: "Project owner not found" }, { status: 404 });
+    }
     if (!fetchedProject) {
-      return NextResponse.json({
-        message: "Project not found",
-      }, { status: 404 })
+      return NextResponse.json({ message: "Project not found" }, { status: 404 });
     }
 
     const posterEmail = poster?.email
@@ -99,38 +92,41 @@ export async function POST(req: NextRequest) {
       message: message,
     })
 
-    //send email
-    const { error } = await resend.emails.send({
-      from: 'PostMyGig <hello@postmygig.vercel.app>',
-      to: posterEmail,
-      subject: `New Application for Your Project: ${ping.projectId}`,
-      html: emailData
-    })
 
-    if (error) {
-      await EmailSender({
+    after(async () => {
+      //send email
+      const { error } = await resend.emails.send({
+        from: 'PostMyGig <hello@postmygig.vercel.app>',
         to: posterEmail,
         subject: `New Application for Your Project: ${ping.projectId}`,
-        html: emailData,
+        html: emailData
       })
-    }
-    console.log(session);
 
+      if (error) {
+        await EmailSender({
+          to: posterEmail,
+          subject: `New Application for Your Project: ${ping.projectId}`,
+          html: emailData,
+        })
+      }
+    })
 
+    after(async () => {
+      //save activity
+      if (session.user.activityPublic === true) {
+        await Activity.create({
+          userId: session.user.id,
+          gigId: fetchedProject.id,
+          type: 'pings',
+          metadata: {
+            FullName: session.user.name,
+            gigTitle: fetchedProject.title
+          }
+        })
+        await redis.del("real-time-activity-data");
+      }
 
-    //save activity
-    if (session.user.activityPublic === true) {
-      await Activity.create({
-        userId: session.user.id,
-        gigId: fetchedProject.id,
-        type: 'pings',
-        metadata: {
-          FullName: session.user.name,
-          gigTitle: fetchedProject.title
-        }
-      })
-      await redis.del("real-time-activity-data");
-    }
+    })
 
 
     return NextResponse.json(

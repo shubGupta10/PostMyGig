@@ -23,35 +23,41 @@ export async function POST(req: NextRequest) {
     try {
         await ConnectoDatabase();
 
-       const {userEmail} = await req.json();
-       if(!userEmail){
-        return NextResponse.json({
-            message: "User Email not found"
-        }, {status: 400})
-       }
+        const { userEmail } = await req.json();
+        if (!userEmail) {
+            return NextResponse.json({
+                message: "User Email not found"
+            }, { status: 400 })
+        }
 
-       const fetchCurrentUser = await userModel.findOne({email: userEmail});
-       if (!fetchCurrentUser) {
-           return NextResponse.json({
-               message: "User not found"
-           }, { status: 404 });
-       }
-       
+        const fetchCurrentUser = await userModel.findOne({ email: userEmail });
+        if (!fetchCurrentUser) {
+            return NextResponse.json({
+                message: "User not found"
+            }, { status: 404 });
+        }
+
         if (fetchCurrentUser.role !== 'admin') {
             return NextResponse.json({
                 message: "Only Admin is allowed to this route"
             }, { status: 403 })
         }
 
-        //fetch total users, projects and pings
-        const totalUsers = await userModel.countDocuments();
-        const totalProjects = await ProjectModel.countDocuments();
-        const totalPingSends = await PingModel.countDocuments();
-
-        //fetch all userslist
-        const totalUsersData = await userModel.find({}).lean();
-        const totalProjectsData = await ProjectModel.find({}).lean();
-        const fetchALLFeedbacks = await FeedbackModel.find({}).sort({ createdAt: -1 }).limit(50).lean();
+        const [
+            totalUsers,
+            totalProjects,
+            totalPingSends,
+            totalUsersData,
+            totalProjectsData,
+            fetchALLFeedbacks
+        ] = await Promise.all([
+            userModel.countDocuments(),
+            ProjectModel.countDocuments(),
+            PingModel.countDocuments(),
+            userModel.find({}).sort({ createdAt: -1 }).limit(50).lean(),
+            ProjectModel.find({}).sort({ createdAt: -1 }).limit(50).lean(),
+            FeedbackModel.find({}).sort({ createdAt: -1 }).limit(50).lean()
+        ])
 
         return NextResponse.json({
             message: "Fetch All data",
