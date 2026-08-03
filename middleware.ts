@@ -7,7 +7,10 @@ export default withAuth(
         const { pathname } = req.nextUrl;
 
         if (pathname.startsWith("/api") || pathname.startsWith("/auth")) {
-            const ip = req.headers.get("x-forwarded-for") || "127.0.0.1";
+            const forwardedFor = req.headers.get("x-forwarded-for");
+            const realIp = req.headers.get("x-real-ip");
+            const clientIp = forwardedFor ? forwardedFor.split(",")[0].trim() : realIp;
+            const ip = clientIp || "anonymous";
             const { success, reset } = await ratelimiter.limit(ip);
 
             if (!success) {

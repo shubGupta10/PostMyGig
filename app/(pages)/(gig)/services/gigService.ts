@@ -39,14 +39,16 @@ export async function getGigs(page = 1, limit = 9, search = "", skill = "", sort
         };
 
         if (search) {
+            const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             query.$or = [
-                { title: { $regex: search, $options: "i" } },
-                { description: { $regex: search, $options: "i" } },
-                { skillsRequired: { $regex: search, $options: "i" } }
+                { title: { $regex: safeSearch, $options: "i" } },
+                { description: { $regex: safeSearch, $options: "i" } },
+                { skillsRequired: { $regex: safeSearch, $options: "i" } }
             ]
         }
         if (skill) {
-            query.skillsRequired = { $regex: skill, $options: "i" };
+            const safeSkill = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            query.skillsRequired = { $regex: safeSkill, $options: "i" };
         }
 
         const [gigs, totalCount] = await Promise.all([
@@ -81,7 +83,7 @@ export async function getGigs(page = 1, limit = 9, search = "", skill = "", sort
                 await redis.sadd("gig-cache-keys-for-deletion", cachekey);
                 await redis.set(cachekey, JSON.stringify(datatoCache), { ex: 300 });
             } catch (error) {
-
+                console.error("Failed to update cache:", error);
             }
         })
 

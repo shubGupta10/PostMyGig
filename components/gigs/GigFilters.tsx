@@ -28,6 +28,8 @@ export default function GigFilters({ currentSearch, currentSkill = "", currentSo
         updateFilters(searchTerm, currentSkill, currentSort)
       }
     }, 500)
+    
+    return () => clearTimeout(timeoutId)
   }, [searchTerm, currentSearch, currentSkill])
 
   const updateFilters = (search: string, skill: string, sort: string) => {
