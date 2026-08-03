@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, after } from "next/server";
 import userModel from "@/models/UserModel";
 import redis from "@/lib/redis";
 import { postMyGigResetPasswordTemplate } from "@/lib/email/templates";
@@ -58,20 +58,22 @@ export async function POST(req: NextRequest) {
 
     const resetUrl = `${process.env.NEXT_PUBLIC_LIVE_URL}/auth/forgot-password/reset-password?token=${token}`;
 
-    const { error } = await resend.emails.send({
-      from: 'PostMyGig <hello@postmygig.vercel.app>',
-      to: email,
-      subject: "Reset Password",
-      html: postMyGigResetPasswordTemplate(email, resetUrl),
-    });
-
-    if (error) {
-      await EmailSender({
+    after(async () => {
+      const { error } = await resend.emails.send({
+        from: 'PostMyGig <hello@postmygig.vercel.app>',
         to: email,
         subject: "Reset Password",
         html: postMyGigResetPasswordTemplate(email, resetUrl),
       });
-    }
+
+      if (error) {
+        await EmailSender({
+          to: email,
+          subject: "Reset Password",
+          html: postMyGigResetPasswordTemplate(email, resetUrl),
+        });
+      }
+    });
 
     const response: any = {
       message: "Password reset link sent to your email.",

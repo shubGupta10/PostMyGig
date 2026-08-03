@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, after } from "next/server";
 import bcrypt from "bcryptjs";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
@@ -68,23 +68,25 @@ export async function POST(req: NextRequest) {
     // Set email cooldown (e.g., 2 minutes)
     await redis.set(cooldownKey, "1", { ex: 120 });
 
-    //  Send verification email
-    const { error } = await resend.emails.send({
-      from: 'PostMyGig <hello@postmygig.vercel.app>',
-      to: email,
-      subject: 'Verify your PostMyGig account',
-      html: postMyGigVerificationTemplate(name, verificationCode)
-    });
-
-    if (error) {
-      console.warn('[Resend Failed] Falling back to Nodemailer:', error);
-
-      await EmailSender({
+    after(async () => {
+      //  Send verification email
+      const { error } = await resend.emails.send({
+        from: 'PostMyGig <hello@postmygig.vercel.app>',
         to: email,
         subject: 'Verify your PostMyGig account',
         html: postMyGigVerificationTemplate(name, verificationCode)
       });
-    }
+
+      if (error) {
+        console.warn('[Resend Failed] Falling back to Nodemailer:', error);
+
+        await EmailSender({
+          to: email,
+          subject: 'Verify your PostMyGig account',
+          html: postMyGigVerificationTemplate(name, verificationCode)
+        });
+      }
+    });
 
     return NextResponse.json({
       message: "Verification code sent to your email",

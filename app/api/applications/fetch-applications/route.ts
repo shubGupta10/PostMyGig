@@ -1,7 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
 import PingModel from "@/models/PingSchema";
-import userModel from "@/models/UserModel";
-import { Types } from "mongoose";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,38 +10,48 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Gig ID is required" }, { status: 400 });
     }
 
-    const applications = await PingModel.find({ projectId: gigId });
+    const applicationWithUserData = await PingModel.aggregate([
+      {
+        $match: { projectId: gigId }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userEmail",
+          foreignField: "email",
+          as: "applicantArray"
+        }
+      },
+      {
+        $unwind: {
+          path: "$applicantArray",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $addFields: {
+          applicant: {
+            name: "$applicantArray.name",
+            email: "$applicantArray.email",
+            profilePhoto: "$applicantArray.profilePhoto"
+          }
+        }
+      },
+      {
+        $project: {
+          applicantArray: 0
+        }
+      }
+    ]);
 
-    if (applications.length === 0) {
-      return NextResponse.json({ error: "No applications found for this gig" }, { status: 200 });
+    if (applicationWithUserData.length === 0) {
+      return NextResponse.json({ error: "No application found for this gig" }, { status: 200 })
     }
 
-    const applicationsWithUserData = await Promise.all(
-      applications.map(async (application) => {
-        const userMail = application.userEmail;
-
-        let user = null;
-        if (Types.ObjectId.isValid(userMail)) {
-          user = await userModel.findOne({email: userMail}).select("name email profilePhoto");
-        } else {
-          user = await userModel.findOne({ email: userMail }).select("name email profilePhoto");
-        }
-        
-
-        return {
-          ...application.toObject(),
-          applicant: user || null, 
-        };
-      })
-    );
-
-    return NextResponse.json(
-      {
-        message: "Applications fetched successfully",
-        data: applicationsWithUserData,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      message: "Application fetched successfully",
+      data: applicationWithUserData
+    })
   } catch (error: any) {
     return NextResponse.json(
       {

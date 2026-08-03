@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, after } from "next/server";
 import PingModel from "@/models/PingSchema";
 import userModel from "@/models/UserModel";
 import ProjectModel from "@/models/ProjectModel";
@@ -18,26 +18,29 @@ export async function DELETE(req: NextRequest) {
         const userEmail = ping.userEmail;
         const gigId = ping.projectId;
 
-        //find userdata and gigData
-        const userData = await userModel.findOne({ email: userEmail });
-        const gigData = await ProjectModel.findById(gigId);
+        // Run both unrelated database queries at the exact same time
+        const [userData, gigData] = await Promise.all([
+            userModel.findOne({ email: userEmail }).lean(),
+            ProjectModel.findById(gigId).lean()
+        ]);
 
 
-        //send mail to the applier
-        const { error } = await resend.emails.send({
-            from: 'PostMyGig <hello@postmygig.vercel.app>',
-            to: userData?.email as string,
-            subject: `Update on your ping for ${gigData?.title}`,
-            html: postMyGigPingRejectionTemplate(userData?.name as string, gigData?.title as string)
-        })
-
-        if (error) {
-            await EmailSender({
+        after(async () => {
+            const { error } = await resend.emails.send({
+                from: 'PostMyGig <hello@postmygig.vercel.app>',
                 to: userData?.email as string,
                 subject: `Update on your ping for ${gigData?.title}`,
                 html: postMyGigPingRejectionTemplate(userData?.name as string, gigData?.title as string)
             })
-        }
+
+            if (error) {
+                await EmailSender({
+                    to: userData?.email as string,
+                    subject: `Update on your ping for ${gigData?.title}`,
+                    html: postMyGigPingRejectionTemplate(userData?.name as string, gigData?.title as string)
+                })
+            }
+        })
 
         return NextResponse.json({ message: "Application deleted successfully" }, { status: 200 });
     } catch (error) {

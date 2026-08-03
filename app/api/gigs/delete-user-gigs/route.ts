@@ -34,7 +34,16 @@ export async function DELETE(req: NextRequest) {
             }, { status: 500 });
         }
 
-        await redis.del(cacheKey);
+        try {
+            await redis.del(cacheKey);
+            await redis.del(`fetch-open-gig:${gigId}`);
+            const keys = await redis.keys("fetch-gigs:*");
+            if (keys.length > 0) {
+                await redis.del(...keys);
+            }
+        } catch (e) {
+            console.warn("Failed to invalidate cache", e);
+        }
 
         //set to delete the gig
         await Chat.deleteMany({

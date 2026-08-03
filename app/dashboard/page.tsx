@@ -1,16 +1,11 @@
-import { fetchDashboardDetails } from "./services/dashboardApi"
 import { RateLimitBanner } from "@/components/dashboard/RateLimitBanner"
 import { DashboardStats } from "@/components/dashboard/DashboardStats"
 import { DashboardProjects } from "@/components/dashboard/DashboardProjects"
-import { cookies } from "next/headers"
+import { getDashboardDetails } from "./services/dashboardService"
 
-export const dynamic = "force-dynamic"
 
 export default async function Dashboard() {
-  const cookieStore = cookies()
-  const cookieString = cookieStore.toString()
-  
-  const result = await fetchDashboardDetails(cookieString)
+  const result = await getDashboardDetails();
 
   if (result.error) {
     throw new Error(result.error)

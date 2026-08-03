@@ -23,11 +23,13 @@ export function ApplicationCard({
         <div className="col-span-6 flex items-center gap-4">
           <div className="relative shrink-0">
             <div className="w-12 h-12 bg-primary text-primary-foreground rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+
               {(applicant.applicant?.profilePhoto || (applicant.applicant as any)?.image || (applicant.applicant as any)?.avatar) ? (
                 <img
                   src={applicant.applicant?.profilePhoto || (applicant.applicant as any)?.image || (applicant.applicant as any)?.avatar}
                   alt={applicant.applicant?.name || "Applicant"}
                   className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
               ) : (
                 <span className="font-bold">{(applicant.applicant?.name?.[0] || "?").toUpperCase()}</span>

@@ -1,71 +1,45 @@
 import { NextResponse, NextRequest } from "next/server";
 import userModel from "@/models/UserModel";
-import ratelimiter from "@/lib/ratelimit";
 import redis from "@/lib/redis";
 import { ConnectoDatabase } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
-    
-  const ip = req.headers.get("x-forwarded-for") || "anonymous";
-  const { success, limit, reset, remaining } = await ratelimiter.limit(ip);
-
-  if (!success) {
-    return NextResponse.json(
-      {
-        message: `Rate limit exceeded. Try again in ${Math.ceil((reset - Date.now()) / 1000)}s.`,
-      },
-      { status: 429 }
-    );
-  }
-
   try {
     await ConnectoDatabase();
-    const {userId} = await req.json();
+    const { userId } = await req.json();
 
-    const fetchSessionUser = await userModel.findById(userId);
+    if (!userId) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
 
-    const user = fetchSessionUser;
-    const cacheKey = `fetch-user-profile:${user?.email}`;
+    const cacheKey = `fetch-user-profile:${userId}`;
+
     const cachedUser = await redis.get(cacheKey);
 
     if (typeof cachedUser === "string") {
-      return new NextResponse(
-        JSON.stringify({
+      return NextResponse.json(
+        {
           message: "User profile (from cache)",
           user: JSON.parse(cachedUser),
-        }),
-        {
-          status: 200,
-          headers: {
-            "X-RateLimit-Limit": limit.toString(),
-            "X-RateLimit-Remaining": remaining.toString(),
-            "X-RateLimit-Reset": reset.toString(),
-          },
-        }
+        },
+        { status: 200 }
       );
     }
 
-    const foundUser = await userModel.findOne({ email: user?.email }).select("-password -__v");
+    const foundUser = await userModel.findById(userId).select("-password -__v").lean();
+
     if (!foundUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Cache the user profile for 1 hour
     await redis.set(cacheKey, JSON.stringify(foundUser), { ex: 3600 });
 
-    return new NextResponse(
-      JSON.stringify({
+    return NextResponse.json(
+      {
         message: "User profile fetched successfully",
         user: foundUser,
-      }),
-      {
-        status: 200,
-        headers: {
-          "X-RateLimit-Limit": limit.toString(),
-          "X-RateLimit-Remaining": remaining.toString(),
-          "X-RateLimit-Reset": reset.toString(),
-        },
-      }
+      },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Error fetching user profile:", error);

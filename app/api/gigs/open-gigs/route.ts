@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import userModel from "@/models/UserModel";
 import redis from "@/lib/redis";
+import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,6 +18,22 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(gigId)) {
+      return NextResponse.json({
+        message: "Invalid Gig ID format"
+      }, { status: 400 });
+    }
+
+    const cachekey = `open-gig:${gigId}`;
+    try {
+      const cachedGig = await redis.get(cachekey);
+      if (cachedGig) {
+        return NextResponse.json(JSON.parse(cachedGig as string), { status: 200 });
+      }
+    } catch (error) {
+      console.warn("Redis read error:", error);
+    }
+
     // const session = await getServerSession(authOptions);
     // const user = session?.user;
 
@@ -26,22 +43,37 @@ export async function POST(req: NextRequest) {
     //     }, { status: 401 });
     // }
 
-    const gig = await ProjectModel.findById(gigId).lean();
+    const gigData = await ProjectModel.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(gigId)
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "email",
+          as: "ownerInfo"
+        }
+      }
+    ])
 
+    const gig = gigData[0];
     if (!gig) {
       return NextResponse.json({
         message: "Gig not found"
-      }, { status: 404 });
+      }, { status: 404 })
     }
 
-    // Remove contact info if not meant to be displayed
     if (!gig.displayContactLinks) {
       delete gig.contact;
     }
 
-    const owner = await userModel.findOne({ email: gig.createdBy }).lean();
+    const owner = gig.ownerInfo?.[0];
+    delete gig.ownerInfo;
 
-    return NextResponse.json({
+    const responseData = {
       message: "Gig found",
       gig: gig,
       owner: {
@@ -49,7 +81,15 @@ export async function POST(req: NextRequest) {
         name: owner?.name,
         email: owner?.email,
       }
-    }, { status: 200 });
+    };
+
+    try {
+      await redis.set(cachekey, JSON.stringify(responseData), { ex: 300 });
+    } catch (error) {
+      console.warn("Redis write error:", error);
+    }
+
+    return NextResponse.json(responseData, { status: 200 })
   } catch (error) {
     console.error("Error in fetching gig:", error);
     return NextResponse.json({
@@ -82,7 +122,7 @@ export async function DELETE(req: NextRequest) {
     await ProjectModel.findByIdAndDelete(gigId);
 
     await redis.del(cacheKey);
-
+    await redis.del(`open-gig:${gigId}`)
 
     return NextResponse.json({
       message: "Gig deleted successfully"
@@ -145,6 +185,7 @@ export async function PATCH(req: NextRequest) {
     // Update the displayContactLinks field
     gig.displayContactLinks = displayContactLinks
     await gig.save()
+    await redis.del(`open-gig:${gigId}`);
 
     return NextResponse.json(
       {
