@@ -1,69 +1,49 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight, Briefcase, Globe, Shield, Users, Star, CheckCircle } from "lucide-react"
+import { ArrowRight, Briefcase, Users } from "lucide-react"
 import Link from "next/link"
 
 export default function FinalCTA() {
   return (
-    <section className="py-20 bg-foreground relative transition-colors duration-300">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Main Content */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+    <section className="bg-background py-12 md:py-20 relative">
+      <div className="mx-auto max-w-4xl lg:max-w-6xl px-4 sm:px-6 relative z-10">
+        <motion.div 
+          className="bg-primary rounded-2xl p-6 sm:p-12 md:p-20 text-center shadow-2xl relative overflow-hidden"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-accent mb-6 leading-tight" style={{ fontFamily: "var(--font-serif)" }}>
-            Your Next Great Project
-            <br />
-            <span className=" text-accent">Starts Here</span>
-          </h3>
-
-          <p className="text-xl text-primary-foreground/80 mb-8 leading-relaxed max-w-3xl mx-auto" style={{ fontFamily: "var(--font-sans)" }}>
-            Stop scrolling through endless platforms with hidden fees. Start building real connections and growing your
-            freelance business today.
+          <h2 
+            className="relative z-10 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4 sm:mb-8" 
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
+            Ready to start <br className="hidden sm:block"/> working together?
+          </h2>
+          
+          <p className="relative z-10 text-base sm:text-lg md:text-2xl text-primary-foreground font-normal sm:font-medium mb-6 sm:mb-12 max-w-2xl mx-auto">
+            Stop scrolling through endless platforms with hidden fees. Start building real connections and growing your freelance business today.
           </p>
 
-        </motion.div>
+          <div className="relative z-10 flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+            <Link
+              href="/auth/login"
+              className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 sm:gap-3 px-6 sm:px-10 py-3.5 sm:py-5 bg-background text-foreground rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:scale-105 transition-all duration-300 shadow-md"
+            >
+              <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 group-hover:rotate-12 transition-transform duration-300" />
+              Post Your Project
+              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300" />
+            </Link>
 
-        {/* Action Buttons */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <Link
-            href="/auth/login"
-            className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-xl font-bold text-base sm:text-lg shadow-sm transition-all duration-200"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 group-hover:rotate-12 transition-transform duration-300" />
-            Post Your Project
-            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300" />
-          </Link>
-
-          <Link
-            href="/view-gigs"
-            className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-transparent text-primary-foreground border-2 border-primary-foreground/30 rounded-xl font-bold text-base sm:text-lg hover:bg-primary-foreground/10 hover:border-primary-foreground/50 transition-all duration-200"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            <Users className="w-5 h-5 sm:w-6 sm:h-6" />
-            Find Opportunities
-          </Link>
-        </motion.div>
-
-
-        {/* Final Message */}
-        <motion.div
-          className="text-center pt-12 border-t border-primary-foreground/10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <p className="text-primary-foreground/80 text-lg" style={{ fontFamily: "var(--font-sans)" }}>Ready to transform your freelancing journey? Start today!</p>
+            <Link
+              href="/view-gigs"
+              className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 sm:gap-3 px-6 sm:px-10 py-3.5 sm:py-5 bg-transparent text-primary-foreground border-2 border-primary-foreground rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-primary-foreground hover:text-primary transition-all duration-300"
+            >
+              <Users className="w-5 h-5 sm:w-6 sm:h-6" />
+              Find Opportunities
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>

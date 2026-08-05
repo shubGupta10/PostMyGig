@@ -1,432 +1,218 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import {
-  MessageSquareIcon,
-  MailIcon,
-  ShieldCheckIcon,
-  CheckIcon,
-  PlusIcon,
-  BellIcon,
-  ArrowRightIcon,
-  UserIcon,
-  ClockIcon,
-} from "lucide-react"
+import { cn } from "@/lib/utils";
+import { PlusIcon, BellIcon, MessageSquareIcon, CheckCircle2 } from "lucide-react";
+import type React from "react";
+import { motion } from "framer-motion";
 
-export default function HowItWorks() {
-  const [hoveredStep, setHoveredStep] = useState<number | null>(null)
+interface StepCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  visual: React.ReactNode;
+}
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
+const StepCard: React.FC<StepCardProps> = ({
+  icon,
+  title,
+  description,
+  visual,
+}) => (
+  <div
+    className={cn(
+      "relative rounded-2xl border-2 border-border bg-card p-5 sm:p-8 text-card-foreground transition-all duration-300 ease-in-out flex flex-col",
+      "hover:scale-105 hover:shadow-xl hover:border-primary hover:bg-muted"
+    )}
+  >
+    <div className="mb-4 sm:mb-6 flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl bg-background border-2 border-border text-primary shadow-sm">
+      {icon}
+    </div>
+    <h3 className="mb-2 sm:mb-3 text-xl sm:text-2xl font-bold">{title}</h3>
+    <p className="mb-6 sm:mb-8 text-sm sm:text-base font-normal text-muted-foreground leading-relaxed">{description}</p>
+    
+    {/* Visual Container */}
+    <div className="w-full bg-background border-2 border-border rounded-xl sm:rounded-2xl p-4 sm:p-6 mt-auto overflow-hidden flex items-center justify-center min-h-[200px] sm:min-h-[240px]">
+      {visual}
+    </div>
+  </div>
+);
+
+export default function HowItWorks({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLElement>) {
+  const stepsData = [
+    {
+      icon: <PlusIcon className="h-5 w-5 sm:h-7 sm:w-7" />,
+      title: "Post Your Project",
+      description: "Create a detailed project listing with your requirements, budget, and timeline.",
+      visual: (
+        <div className="w-full space-y-4 relative z-10 bg-card border-2 border-border p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-sm">
+          <div className="flex items-center justify-between border-b-2 border-border pb-3">
+             <span className="text-xs sm:text-sm font-bold">New Gig</span>
+             <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-primary animate-pulse"></div>
+          </div>
+          <div className="space-y-2.5 sm:space-y-3">
+            <div className="h-2.5 sm:h-3 bg-muted rounded-full w-2/3"></div>
+            <div className="h-3.5 sm:h-4 bg-border rounded-full w-full"></div>
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 pt-1 sm:pt-2">
+               <div className="h-2 bg-muted rounded-full w-full"></div>
+               <div className="h-2 bg-muted rounded-full w-full"></div>
+            </div>
+          </div>
+          <motion.div 
+            className="mt-4 sm:mt-6 bg-primary text-primary-foreground text-xs sm:text-sm font-bold py-3 sm:py-3.5 rounded-xl text-center relative overflow-hidden"
+            initial={{ scale: 0.95 }}
+            animate={{ scale: [0.95, 1, 0.95] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-green-500 flex items-center justify-center text-white"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: [0, 0, 1, 1, 0], y: [30, 30, 0, 0, -30] }}
+              transition={{ duration: 4, repeat: Infinity, times: [0, 0.4, 0.5, 0.9, 1] }}
+            >
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5" /> Posted
+            </motion.div>
+            <span className="opacity-100">Submit Project</span>
+          </motion.div>
+        </div>
+      )
     },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut" as const,
-      },
+    {
+      icon: <BellIcon className="h-5 w-5 sm:h-7 sm:w-7" />,
+      title: "Get Matched",
+      description: "Receive instant notifications when freelancers show interest or match your skills.",
+      visual: (
+        <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none"></div>
+          <motion.div 
+            className="flex flex-col gap-2.5 sm:gap-3 w-full"
+            animate={{ y: [40, 0, -60, -120] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", times: [0, 0.33, 0.66, 1] }}
+          >
+            {[
+              { title: "New Match!", sub: "React Developer", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" },
+              { title: "Perfect Match", sub: "UI/UX Designer", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" },
+              { title: "New Interest!", sub: "Backend Expert", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" },
+              { title: "New Match!", sub: "React Developer", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" }
+            ].map((item, i) => (
+              <div key={i} className="bg-card border-2 border-border rounded-xl p-2.5 sm:p-3 shadow-sm flex items-center gap-2.5 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary overflow-hidden border-2 border-border flex-shrink-0">
+                  <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                </div>
+                <div>
+                    <div className="text-xs sm:text-sm font-bold text-foreground">{item.title}</div>
+                    <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">{item.sub}</div>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      )
     },
-  }
+    {
+      icon: <MessageSquareIcon className="h-5 w-5 sm:h-7 sm:w-7" />,
+      title: "Connect & Collaborate",
+      description: "Choose your preferred communication method and start collaborating with no fees.",
+      visual: (
+        <div className="relative flex w-full flex-col space-y-4 sm:space-y-6 py-2 h-[180px] sm:h-[200px] justify-center">
+          {/* Freelancer Message */}
+          <motion.div 
+            className="relative flex w-[calc(80%+1rem)] sm:w-[calc(60%+1rem)] items-center justify-end gap-2.5 sm:gap-3"
+            initial={{ opacity: 0, x: -15 }}
+            animate={{ opacity: [0, 1, 1, 0], x: [-15, 0, 0, -15] }}
+            transition={{ duration: 6, repeat: Infinity, times: [0, 0.1, 0.9, 1] }}
+          >
+            <span className="block h-fit rounded-xl border-2 border-border bg-card px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm shadow-sm font-bold">I can do this!</span>
+            <div className="size-8 sm:size-10 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
+              <img className="size-full object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="User" />
+            </div>
+          </motion.div>
+          
+          {/* Your Reply */}
+          <motion.div 
+            className="relative ml-[calc(20%-1rem)] sm:ml-[calc(40%-1rem)] flex items-center gap-2.5 sm:gap-3"
+            initial={{ opacity: 0, x: 15 }}
+            animate={{ opacity: [0, 0, 1, 1, 0], x: [15, 15, 0, 0, 15] }}
+            transition={{ duration: 6, repeat: Infinity, times: [0, 0.2, 0.3, 0.9, 1] }}
+          >
+            <div className="size-8 sm:size-10 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
+              <img className="size-full object-cover" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" alt="You" />
+            </div>
+            <span className="block h-fit rounded-xl border-2 border-border bg-primary text-primary-foreground px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm shadow-sm font-bold">Let's talk</span>
+          </motion.div>
+
+          {/* Typing Indicator */}
+          <motion.div 
+            className="relative flex w-[calc(80%+1rem)] sm:w-[calc(60%+1rem)] items-center justify-end gap-2.5 sm:gap-3"
+            initial={{ opacity: 0, x: -15 }}
+            animate={{ opacity: [0, 0, 1, 1, 0], x: [-15, -15, 0, 0, -15] }}
+            transition={{ duration: 6, repeat: Infinity, times: [0, 0.4, 0.5, 0.9, 1] }}
+          >
+            <div className="flex items-center gap-1.5 bg-card border-2 border-border rounded-full px-3.5 sm:px-4 py-2 sm:py-3">
+              <motion.div className="w-1.5 h-1.5 bg-muted-foreground rounded-full" animate={{ y: [0, -3, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
+              <motion.div className="w-1.5 h-1.5 bg-muted-foreground rounded-full" animate={{ y: [0, -3, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} />
+              <motion.div className="w-1.5 h-1.5 bg-muted-foreground rounded-full" animate={{ y: [0, -3, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
+            </div>
+            <div className="size-8 sm:size-10 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
+              <img className="size-full object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="User" />
+            </div>
+          </motion.div>
+        </div>
+      )
+    },
+  ];
 
   return (
-    <section id="how-it-works" className="py-16 md:py-24 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Title */}
-        <motion.div
-          className="text-center mb-12 md:mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4"
+    <section
+      id="how-it-works"
+      className={cn("w-full bg-background py-12 md:py-20 scroll-mt-16", className)}
+      {...props}
+    >
+      <div className="mx-auto max-w-3xl lg:max-w-6xl px-4 sm:px-6">
+        {/* Section Header */}
+        <div className="mx-auto mb-8 sm:mb-12 md:mb-14 max-w-4xl text-center">
+          <h2 
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground"
             style={{ fontFamily: "var(--font-serif)" }}
           >
             How <span className="text-primary">PostMyGig</span> Works
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Three simple steps to connect with freelancers and get work done
-          </p>
-          <div className="w-16 h-1 bg-primary mx-auto rounded-full mt-6"></div>
-        </motion.div>
+        </div>
 
-        {/* Steps Container */}
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative">
-          {/* Connection Line */}
-          <div className="hidden lg:flex absolute top-24 left-0 right-0 items-center justify-center z-0">
-            <div className="flex items-center w-full max-w-4xl mx-auto px-32">
-              <motion.div
-                className="flex-1 h-0.5 bg-gradient-to-r from-primary via-accent-foreground to-primary"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.2, delay: 0.8 }}
-              />
-              <ArrowRightIcon className="w-6 h-6 text-primary mx-4" />
-              <motion.div
-                className="flex-1 h-0.5 bg-gradient-to-r from-primary via-accent-foreground to-primary"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.2, delay: 1 }}
-              />
-            </div>
+        {/* Step Indicators with Connecting Line */}
+        <div className="relative mx-auto mb-8 sm:mb-16 w-full">
+          <div
+            aria-hidden="true"
+            className="absolute left-[16.6667%] top-1/2 h-1 w-[66.6667%] -translate-y-1/2 bg-border rounded-full"
+          ></div>
+          <div className="relative grid grid-cols-3">
+            {stepsData.map((_, index) => (
+              <div
+                key={index}
+                className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center justify-self-center rounded-full bg-primary font-bold text-lg sm:text-2xl text-primary-foreground border-2 sm:border-4 border-background z-10 shadow-sm"
+              >
+                {index + 1}
+              </div>
+            ))}
           </div>
+        </div>
 
-          {/* Steps Grid */}
-          <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 relative z-10">
-            {/* Step 1: Post Your Project */}
-            <motion.div
-              variants={itemVariants}
-              onHoverStart={() => setHoveredStep(1)}
-              onHoverEnd={() => setHoveredStep(null)}
-              className="group"
-            >
-              <motion.div
-                className="bg-card rounded-2xl border-2 border-border p-6 sm:p-8 h-full flex flex-col relative overflow-hidden shadow-sm"
-                whileHover={{
-                  y: -4,
-                  transition: { duration: 0.3 },
-                }}
-              >
-                {/* Step Number Badge */}
-                {/* <motion.div
-                  className="absolute -top-4 -right-4 w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg"
-                  animate={{
-                    scale: hoveredStep === 1 ? 1.1 : 1,
-                    rotate: hoveredStep === 1 ? 5 : 0,
-                  }}
-                  transition={{ duration: 0.3 }}
-                >
-                  01
-                </motion.div> */}
-
-                {/* Icon */}
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                  <PlusIcon className="w-8 h-8 text-primary" />
-                </div>
-
-                <h3 className="text-2xl font-bold text-card-foreground text-center mb-4">Post Your Project</h3>
-
-                <p className="text-muted-foreground text-center mb-8 leading-relaxed">
-                  Create a detailed project listing with your requirements, budget, and timeline. Add optional contact
-                  methods for direct communication.
-                </p>
-
-                {/* Mock Form */}
-                <div className="bg-muted/50 rounded-2xl p-6 border border-border/50 mt-auto">
-                  <div className="space-y-4">
-                    {/* Form Header */}
-                    <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                      <span className="text-sm font-semibold text-card-foreground">New Project</span>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    </div>
-
-                    {/* Form Fields */}
-                    <div className="space-y-3">
-                      <div className="space-y-2">
-                        <div className="h-3 bg-card rounded-md"></div>
-                        <div className="text-xs text-muted-foreground">Project Title</div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="h-8 bg-card rounded-md"></div>
-                        <div className="text-xs text-muted-foreground">Description</div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-2">
-                          <div className="h-3 bg-card rounded-md"></div>
-                          <div className="text-xs text-muted-foreground">Budget</div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="h-3 bg-card rounded-md"></div>
-                          <div className="text-xs text-muted-foreground">Timeline</div>
-                        </div>
-                      </div>
-
-                      {/* Skills Tags */}
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full font-medium">
-                          React
-                        </span>
-                        <span className="px-3 py-1 bg-secondary/50 text-secondary-foreground text-xs rounded-full font-medium">
-                          Node.js
-                        </span>
-                        <span className="px-2 py-1 bg-accent/20 text-accent-foreground text-xs rounded-full">+2</span>
-                      </div>
-                    </div>
-
-                    {/* CTA Button */}
-                    <Link href="/add-gigs" className="block pt-4">
-                      <motion.button
-                        className="w-full bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold transition-all hover:bg-primary/90 hover:shadow-lg"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        Post Project
-                      </motion.button>
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Step 2: Get Matched */}
-            <motion.div
-              variants={itemVariants}
-              onHoverStart={() => setHoveredStep(2)}
-              onHoverEnd={() => setHoveredStep(null)}
-              className="group"
-            >
-              <motion.div
-                className="bg-card rounded-3xl border border-border p-8 h-full flex flex-col relative overflow-hidden"
-                whileHover={{
-                  y: -4,
-                  transition: { duration: 0.3 },
-                }}
-              >
-                {/* Step Number Badge */}
-                {/* <motion.div
-                  className="absolute -top-4 -right-4 w-16 h-16 bg-accent-foreground rounded-full flex items-center justify-center text-accent font-bold text-xl shadow-lg"
-                  animate={{
-                    scale: hoveredStep === 2 ? 1.1 : 1,
-                    rotate: hoveredStep === 2 ? -5 : 0,
-                  }}
-                  transition={{ duration: 0.3 }}
-                >
-                  02
-                </motion.div> */}
-
-                {/* Icon */}
-                <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                  <BellIcon className="w-8 h-8 text-accent-foreground" />
-                </div>
-
-                <h3 className="text-2xl font-bold text-card-foreground text-center mb-4">Get Matched</h3>
-
-                <p className="text-muted-foreground text-center mb-8 leading-relaxed">
-                  Receive instant notifications when freelancers show interest in your project or when projects match
-                  your skills.
-                </p>
-
-                {/* Notifications Mock */}
-                <div className="bg-muted/50 rounded-2xl p-6 border border-border/50 mt-auto">
-                  <div className="space-y-4">
-                    {/* Header */}
-                    <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                      <span className="text-sm font-semibold text-card-foreground">Recent Activity</span>
-                      <motion.div
-                        className="w-2 h-2 bg-accent-foreground rounded-full"
-                        animate={{ opacity: [1, 0.3, 1] }}
-                        transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
-                      />
-                    </div>
-
-                    {/* Notification Items */}
-                    <div className="space-y-3">
-                      <motion.div
-                        className="bg-card rounded-xl p-4 border border-primary/20"
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 1.5 }}
-                      >
-                        <div className="flex items-start space-x-3">
-                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <UserIcon className="w-5 h-5 text-primary" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-card-foreground">New Interest!</div>
-                            <div className="text-xs text-muted-foreground">
-                              Sarah wants to work on your React project
-                            </div>
-                            <div className="flex items-center space-x-1 mt-1">
-                              <ClockIcon className="w-3 h-3 text-primary" />
-                              <span className="text-xs text-primary font-medium">2 min ago</span>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-
-                      <motion.div
-                        className="bg-card rounded-xl p-4 border border-accent/20"
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 2 }}
-                      >
-                        <div className="flex items-start space-x-3">
-                          <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
-                            <CheckIcon className="w-5 h-5 text-accent-foreground" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-card-foreground">Perfect Match</div>
-                            <div className="text-xs text-muted-foreground">New project matches your skillset</div>
-                            <div className="flex items-center space-x-1 mt-1">
-                              <ClockIcon className="w-3 h-3 text-accent-foreground" />
-                              <span className="text-xs text-accent-foreground font-medium">5 min ago</span>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
-                      <div className="text-xs text-primary font-semibold text-center">3 new matches today</div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Step 3: Connect & Collaborate */}
-            <motion.div
-              variants={itemVariants}
-              onHoverStart={() => setHoveredStep(3)}
-              onHoverEnd={() => setHoveredStep(null)}
-              className="group"
-            >
-              <motion.div
-                className="bg-card rounded-3xl border border-border p-8 h-full flex flex-col relative overflow-hidden"
-                whileHover={{
-                  y: -4,
-                  transition: { duration: 0.3 },
-                }}
-              >
-                {/* Step Number Badge */}
-                {/* <motion.div
-                  className="absolute -top-4 -right-4 w-16 h-16 bg-secondary rounded-full flex items-center justify-center text-secondary-foreground font-bold text-xl shadow-lg"
-                  animate={{
-                    scale: hoveredStep === 3 ? 1.1 : 1,
-                    rotate: hoveredStep === 3 ? 5 : 0,
-                  }}
-                  transition={{ duration: 0.3 }}
-                >
-                  03
-                </motion.div> */}
-
-                {/* Icon */}
-                <div className="w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                  <MessageSquareIcon className="w-8 h-8 text-secondary-foreground" />
-                </div>
-
-                <h3 className="text-2xl font-bold text-card-foreground text-center mb-4">Connect & Collaborate</h3>
-
-                <p className="text-muted-foreground text-center mb-8 leading-relaxed">
-                  Choose your preferred communication method and start collaborating. No platform fees, no restrictions.
-                </p>
-
-                {/* Connection Options */}
-                <div className="bg-muted/50 rounded-2xl p-6 border border-border/50 mt-auto">
-                  <div className="space-y-4">
-                    {/* Header */}
-                    <div className="text-sm font-semibold text-card-foreground pb-3 border-b border-border/50">
-                      Choose how to connect:
-                    </div>
-
-                    {/* Connection Methods */}
-                    <div className="space-y-3">
-                      <motion.div
-                        className="bg-card border border-primary/20 rounded-xl p-4 cursor-pointer"
-                        whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary))" }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                              <MessageSquareIcon className="w-5 h-5 text-primary" />
-                            </div>
-                            <div>
-                              <div className="text-sm font-semibold text-card-foreground">Built-in Chat</div>
-                              <div className="text-xs text-muted-foreground">Secure messaging</div>
-                            </div>
-                          </div>
-                          <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        </div>
-                      </motion.div>
-
-                      <motion.div
-                        className="bg-card border border-accent/20 rounded-xl p-4 cursor-pointer"
-                        whileHover={{ scale: 1.02, borderColor: "hsl(var(--accent-foreground))" }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
-                              <span className="text-lg">📱</span>
-                            </div>
-                            <div>
-                              <div className="text-sm font-semibold text-card-foreground">WhatsApp</div>
-                              <div className="text-xs text-muted-foreground">Direct messaging</div>
-                            </div>
-                          </div>
-                          <div className="w-2 h-2 bg-accent-foreground rounded-full"></div>
-                        </div>
-                      </motion.div>
-
-                      <motion.div
-                        className="bg-card border border-border rounded-xl p-4 cursor-pointer"
-                        whileHover={{ scale: 1.02 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                              <MailIcon className="w-5 h-5 text-muted-foreground" />
-                            </div>
-                            <div>
-                              <div className="text-sm font-semibold text-card-foreground">Email</div>
-                              <div className="text-xs text-muted-foreground">Professional contact</div>
-                            </div>
-                          </div>
-                          <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
-                        </div>
-                      </motion.div>
-                    </div>
-
-                    {/* Privacy Badge */}
-                    <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-3">
-                      <div className="flex items-center justify-center space-x-2">
-                        <ShieldCheckIcon className="w-4 h-4 text-secondary-foreground" />
-                        <span className="text-xs text-secondary-foreground font-semibold">100% Privacy Protected</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
-        >
-          <Link href="/add-gigs">
-            <motion.button
-              className="bg-primary text-primary-foreground px-8 py-4 rounded-2xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Get Started Now
-              <ArrowRightIcon className="w-5 h-5 ml-2 inline" />
-            </motion.button>
-          </Link>
-        </motion.div>
+        {/* Steps Grid */}
+        <div className="mx-auto grid w-full grid-cols-1 gap-4 sm:gap-6 lg:gap-8 md:grid-cols-3">
+          {stepsData.map((step, index) => (
+            <StepCard
+              key={index}
+              icon={step.icon}
+              title={step.title}
+              description={step.description}
+              visual={step.visual}
+            />
+          ))}
+        </div>
       </div>
     </section>
-  )
+  );
 }

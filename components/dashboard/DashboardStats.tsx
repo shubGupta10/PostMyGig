@@ -16,28 +16,24 @@ export function DashboardStats({ totalProjects, totalPings, activeProjects }: Da
     {
       title: "Total Gigs",
       value: totalProjects,
-      description: "All-time posted",
       icon: Briefcase,
       colorClass: "text-primary",
     },
     {
       title: "Total Pings",
       value: totalPings,
-      description: "Engagement",
       icon: Users,
       colorClass: "text-secondary-foreground",
     },
     {
       title: "Active Gigs",
       value: activeProjects,
-      description: "Currently open",
       icon: TrendingUp,
       colorClass: "text-primary",
     },
     {
       title: "Success Rate",
       value: `${successRate}%`,
-      description: "Project completion",
       icon: BarChart3,
       colorClass: "text-secondary-foreground",
     },
@@ -55,7 +51,6 @@ export function DashboardStats({ totalProjects, totalPings, activeProjects }: Da
             </div>
             <div className="flex flex-wrap items-baseline gap-1 sm:gap-2">
               <span className={`text-2xl sm:text-3xl font-bold tracking-tight ${stat.colorClass}`}>{stat.value}</span>
-              <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">{stat.description}</span>
             </div>
           </Card>
         )
