@@ -1,7 +1,6 @@
 'use client'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import Link from 'next/link'
 
 export default function FAQsTwo() {
      const faqItems = [
@@ -33,56 +32,51 @@ export default function FAQsTwo() {
     ];
 
     return (
-        <section className="bg-background py-20 px-4 lg:px-8 transition-colors duration-300">
-            <div className="mx-auto max-w-5xl">
-                <div className="mx-auto max-w-4xl text-center">
-                    {/* Title with primary color underline */}
-                    <div className="mb-6">
-                        <h2
-                            className="text-4xl lg:text-5xl font-bold text-foreground mb-4"
-                            style={{ fontFamily: "var(--font-serif)" }}
-                        >
-                            Frequently <span className='text-primary'>Asked</span> <span className='text-secondary-foreground'>Questions</span>
-                        </h2>
-                        <div className="w-20 h-1 bg-primary rounded mx-auto"></div>
-                    </div>
-
-                    <p
-                        className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
-                        style={{ fontFamily: "var(--font-sans)" }}
+        <section className="bg-background py-12 md:py-20">
+            <div className="mx-auto max-w-3xl lg:max-w-6xl px-4 sm:px-6">
+                
+                {/* Section Header */}
+                <div className="mx-auto mb-8 sm:mb-12 md:mb-14 max-w-4xl text-center">
+                    <h2 
+                        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground"
+                        style={{ fontFamily: "var(--font-serif)" }}
                     >
-                        Discover quick and comprehensive answers to common questions about our platform, services, and features.
-                    </p>
+                        Frequently Asked <span className="text-primary">Questions</span>
+                    </h2>
                 </div>
 
-                <div className="mx-auto mt-16 max-w-4xl">
-                    <Accordion
-                        type="single"
-                        collapsible
-                        className="bg-card w-full rounded-2xl border border-border px-8 py-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                        {faqItems.map((item) => (
-                            <AccordionItem
-                                key={item.id}
-                                value={item.id}
-                                className="border-b border-border last:border-b-0">
-                                <AccordionTrigger
-                                    className="cursor-pointer text-lg lg:text-xl font-semibold text-card-foreground hover:text-primary hover:no-underline py-6 transition-colors duration-200"
-                                    style={{ fontFamily: "var(--font-sans)" }}
+                {/* FAQ Accordion Container */}
+                <div className="mx-auto max-w-3xl">
+                    <div className="bg-card border-2 border-border rounded-2xl p-4 sm:p-10 shadow-sm">
+                        <Accordion
+                            type="single"
+                            collapsible
+                            className="w-full"
+                        >
+                            {faqItems.map((item) => (
+                                <AccordionItem
+                                    key={item.id}
+                                    value={item.id}
+                                    className="border-b-2 border-border last:border-b-0"
                                 >
-                                    {item.question}
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    <p
-                                        className="text-base lg:text-lg text-muted-foreground leading-relaxed pb-4"
+                                    <AccordionTrigger
+                                        className="cursor-pointer text-base sm:text-lg lg:text-xl font-bold text-foreground hover:text-primary hover:no-underline py-4 sm:py-6 text-left transition-colors"
                                         style={{ fontFamily: "var(--font-sans)" }}
                                     >
-                                        {item.answer}
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-
+                                        {item.question}
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        <p
+                                            className="text-sm sm:text-base lg:text-lg font-normal text-muted-foreground leading-relaxed pb-4 sm:pb-6"
+                                            style={{ fontFamily: "var(--font-sans)" }}
+                                        >
+                                            {item.answer}
+                                        </p>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </div>
                 </div>
             </div>
         </section>
