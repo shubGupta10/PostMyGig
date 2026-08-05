@@ -7,10 +7,9 @@ export default withAuth(
         const { pathname } = req.nextUrl;
 
         if (pathname.startsWith("/api") || pathname.startsWith("/auth")) {
-            const forwardedFor = req.headers.get("x-forwarded-for");
             const realIp = req.headers.get("x-real-ip");
-            const clientIp = forwardedFor ? forwardedFor.split(",")[0].trim() : realIp;
-            const ip = clientIp || "anonymous";
+            const forwardedFor = req.headers.get("x-forwarded-for");
+            const ip = realIp || (forwardedFor ? forwardedFor.split(",")[0].trim() : "anonymous");
             const { success, reset } = await ratelimiter.limit(ip);
 
             if (!success) {
@@ -42,11 +41,15 @@ export default withAuth(
                     "/auth/register",
                     "/view-gigs",
                     "/api/gigs/fetch-gigs",
-                    "/auth/verify-code/[userId]",
+                    "/auth/verify-code",
                     "/activity"
                 ];
 
-                if (publicRoutes.some(route => pathname.startsWith(route))) {
+                const isPublic = publicRoutes.some(route =>
+                    route === "/" ? pathname === "/" : pathname.startsWith(route)
+                );
+
+                if (isPublic) {
                     return true;
                 }
 

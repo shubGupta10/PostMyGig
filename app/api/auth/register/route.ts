@@ -10,7 +10,9 @@ import { v4 as uuidv4 } from "uuid";
 import resend from "@/lib/resend";
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for") || "anonymous";
+  const realIp = req.headers.get("x-real-ip");
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const ip = realIp || (forwardedFor ? forwardedFor.split(",")[0].trim() : "anonymous");
   const { success, reset } = await ratelimiter.limit(ip);
 
   if (!success) {
