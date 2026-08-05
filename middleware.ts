@@ -25,7 +25,9 @@ export default withAuth(
         const authRoutes = ["/auth/login", "/auth/register", "/"];
 
         if (isAuth && authRoutes.includes(pathname)) {
-            return NextResponse.redirect(new URL("/dashboard", req.url));
+            const callbackUrl = req.nextUrl.searchParams.get("callbackUrl") || req.nextUrl.searchParams.get("callback");
+            const destination = callbackUrl || "/view-gigs";
+            return NextResponse.redirect(new URL(destination, req.url));
         }
 
         return NextResponse.next();

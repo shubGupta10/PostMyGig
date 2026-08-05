@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,6 +30,9 @@ export default function LoginPage() {
     timestamp: 0,
   })
   const router = useRouter()
+  const searchParams = useSearchParams();
+  const callbackUrlParam = searchParams.get("callbackUrl") || searchParams.get("callback")
+  const targetCallback = callbackUrlParam || "/view-gigs"
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target
@@ -42,20 +45,20 @@ export default function LoginPage() {
 
   const handleRateLimit = (retryAfter: string) => {
     const rateLimitMessage = `Too many login attempts. Please wait ${retryAfter} seconds before trying again.`
-    
+
     setRateLimitInfo({
       isLimited: true,
       retryAfter,
       message: rateLimitMessage,
       timestamp: Date.now(),
     })
-    
+
     setError(rateLimitMessage)
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    
+
     // Check if still rate limited
     if (rateLimitInfo.isLimited) {
       setError(`Please wait! You're still rate limited. Try again in ${rateLimitInfo.retryAfter || "a few"} seconds.`)
@@ -74,14 +77,14 @@ export default function LoginPage() {
 
       if (result?.error) {
         if (result.error.includes("rate") || result.error.includes("limit") || result.error.includes("429")) {
-          handleRateLimit("60") 
+          handleRateLimit("60")
         } else {
           setError(result.error)
         }
       } else {
         const response = await fetch("/api/auth/session")
         const sessionData = await response.json()
-        router.push("/")
+        router.push(targetCallback)
       }
     } catch (err) {
       console.error("Login error:", err)
@@ -99,7 +102,7 @@ export default function LoginPage() {
 
     try {
       const result = await signIn("google", {
-        callbackUrl: "/",
+        callbackUrl: targetCallback,
       })
 
       if (result?.error) {
@@ -123,7 +126,7 @@ export default function LoginPage() {
 
     try {
       const result = await signIn("github", {
-        callbackUrl: "/",
+        callbackUrl: targetCallback,
       })
 
       if (result?.error) {
@@ -199,20 +202,18 @@ export default function LoginPage() {
               {error && (
                 <Alert
                   variant="destructive"
-                  className={`mb-6 ${
-                    rateLimitInfo.isLimited 
-                      ? "border-border bg-accent" 
-                      : "border-destructive bg-destructive/10"
-                  } animate-in fade-in-50 duration-300 rounded-xl`}
+                  className={`mb-6 ${rateLimitInfo.isLimited
+                    ? "border-border bg-accent"
+                    : "border-destructive bg-destructive/10"
+                    } animate-in fade-in-50 duration-300 rounded-xl`}
                 >
                   {rateLimitInfo.isLimited ? (
                     <ShieldAlert className="h-5 w-5 text-destructive" />
                   ) : (
                     <AlertCircle className="h-5 w-5 text-destructive" />
                   )}
-                  <AlertDescription className={`${
-                    rateLimitInfo.isLimited ? "text-destructive" : "text-destructive"
-                  } ml-2 font-medium`}>
+                  <AlertDescription className={`${rateLimitInfo.isLimited ? "text-destructive" : "text-destructive"
+                    } ml-2 font-medium`}>
                     {error}
                   </AlertDescription>
                 </Alert>
@@ -234,11 +235,10 @@ export default function LoginPage() {
                       required
                       disabled={isLoading || rateLimitInfo.isLimited}
                       placeholder="Enter your email address"
-                      className={`pl-12 h-14 border-2 ${
-                        rateLimitInfo.isLimited 
-                          ? "border-border bg-muted" 
-                          : "border-border focus:border-primary focus:ring-primary"
-                      } rounded-xl text-base font-medium transition-all duration-200`}
+                      className={`pl-12 h-14 border-2 ${rateLimitInfo.isLimited
+                        ? "border-border bg-muted"
+                        : "border-border focus:border-primary focus:ring-primary"
+                        } rounded-xl text-base font-medium transition-all duration-200`}
                     />
                   </div>
                 </div>
@@ -265,11 +265,10 @@ export default function LoginPage() {
                       required
                       disabled={isLoading || rateLimitInfo.isLimited}
                       placeholder="Enter your password"
-                      className={`pl-12 pr-12 h-14 border-2 ${
-                        rateLimitInfo.isLimited 
-                          ? "border-border bg-muted" 
-                          : "border-border focus:border-primary focus:ring-primary"
-                      } rounded-xl text-base font-medium transition-all duration-200`}
+                      className={`pl-12 pr-12 h-14 border-2 ${rateLimitInfo.isLimited
+                        ? "border-border bg-muted"
+                        : "border-border focus:border-primary focus:ring-primary"
+                        } rounded-xl text-base font-medium transition-all duration-200`}
                     />
                     <button
                       type="button"
@@ -288,11 +287,10 @@ export default function LoginPage() {
                     e.preventDefault()
                     handleSubmit(e as any)
                   }}
-                  className={`w-full h-14 ${
-                    rateLimitInfo.isLimited
-                      ? "bg-muted hover:bg-muted cursor-not-allowed text-muted-foreground"
-                      : "bg-primary hover:opacity-90 transform hover:-translate-y-0.5 text-primary-foreground"
-                  } font-bold text-lg rounded-xl shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+                  className={`w-full h-14 ${rateLimitInfo.isLimited
+                    ? "bg-muted hover:bg-muted cursor-not-allowed text-muted-foreground"
+                    : "bg-primary hover:opacity-90 transform hover:-translate-y-0.5 text-primary-foreground"
+                    } font-bold text-lg rounded-xl shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >
                   {isLoading ? (
@@ -329,11 +327,10 @@ export default function LoginPage() {
                 <Button
                   onClick={handleGoogleSignIn}
                   variant="outline"
-                  className={`h-12 sm:h-14 border-2 ${
-                    rateLimitInfo.isLimited
-                      ? "border-border bg-muted cursor-not-allowed"
-                      : "border-border hover:border-primary hover:bg-primary/5"
-                  } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
+                  className={`h-12 sm:h-14 border-2 ${rateLimitInfo.isLimited
+                    ? "border-border bg-muted cursor-not-allowed"
+                    : "border-border hover:border-primary hover:bg-primary/5"
+                    } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -359,11 +356,10 @@ export default function LoginPage() {
                 <Button
                   onClick={handleGitHubSignIn}
                   variant="outline"
-                  className={`h-12 sm:h-14 border-2 ${
-                    rateLimitInfo.isLimited
-                      ? "border-border bg-muted cursor-not-allowed"
-                      : "border-border hover:border-muted-foreground hover:bg-muted"
-                  } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
+                  className={`h-12 sm:h-14 border-2 ${rateLimitInfo.isLimited
+                    ? "border-border bg-muted cursor-not-allowed"
+                    : "border-border hover:border-muted-foreground hover:bg-muted"
+                    } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
                   disabled={isLoading || rateLimitInfo.isLimited}
                 >
                   <Github className="mr-2 h-5 w-5" />
@@ -375,7 +371,7 @@ export default function LoginPage() {
               <p className="text-center text-muted-foreground">
                 Don't have an account?{" "}
                 <a
-                  href="/auth/register"
+                  href={callbackUrlParam ? `/auth/register?callbackUrl=${encodeURIComponent(callbackUrlParam)}` : "/auth/register"}
                   className="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
                 >
                   Register here

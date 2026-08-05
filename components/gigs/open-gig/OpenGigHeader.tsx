@@ -115,7 +115,7 @@ export function OpenGigHeader({ gig, owner, isPinged, canApply, disabledMessage 
                       <button
                         onClick={() => {
                           if (!session) {
-                            router.push("/auth/login")
+                            router.push(`/auth/login?callbackUrl=/open-gig/${gig._id}`)
                           } else {
                             router.push(`/ping/ping-project?gigId=${gig._id}${owner ? `&posterId=${owner.id}` : ""}`)
                           }

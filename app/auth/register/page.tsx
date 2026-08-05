@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -27,6 +27,9 @@ interface EmailCooldownInfo {
 
 export default function RegisterPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrlParam = searchParams.get("callbackUrl") || searchParams.get("callback")
+  const targetCallback = callbackUrlParam || "/view-gigs"
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -168,7 +171,7 @@ export default function RegisterPage() {
           description: "Please check your email for the verification code.",
           duration: 5000,
         })
-        router.push(`/auth/verify-code/${data.userId}`)
+        router.push(`/auth/verify-code/${data.userId}${callbackUrlParam ? `?callbackUrl=${encodeURIComponent(callbackUrlParam)}` : ""}`)
       } else {
         const errorMessage = "Registration failed. Please try again."
         setError(errorMessage)
@@ -193,7 +196,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const result = await signIn("google", { callbackUrl: `/`, redirect: true })
+      const result = await signIn("google", { callbackUrl: targetCallback, redirect: true })
 
       if (result?.error) {
         if (result.error.includes("rate") || result.error.includes("limit") || result.error.includes("429")) {
@@ -220,7 +223,7 @@ export default function RegisterPage() {
     }
 
     try {
-      const result = await signIn("github", { callbackUrl: `/`, redirect: true })
+      const result = await signIn("github", { callbackUrl: targetCallback, redirect: true })
 
       if (result?.error) {
         if (result.error.includes("rate") || result.error.includes("limit") || result.error.includes("429")) {
@@ -541,7 +544,7 @@ export default function RegisterPage() {
               <p className="text-center text-muted-foreground">
                 Already have an account?{" "}
                 <a
-                  href="/auth/login"
+                  href={callbackUrlParam ? `/auth/login?callbackUrl=${encodeURIComponent(callbackUrlParam)}` : "/auth/login"}
                   className="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
                 >
                   Log in here

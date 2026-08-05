@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter, useParams } from "next/navigation"
+import { useRouter, useParams, useSearchParams } from "next/navigation"
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,8 @@ import { AlertCircle, CheckCircle, Mail, ArrowLeft, Shield, RefreshCw, Clock } f
 function VerifyCode() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrlParam = searchParams.get("callbackUrl") || searchParams.get("callback")
   const userId = params?.userId
   console.log("User ID:", userId)
 
@@ -111,7 +113,7 @@ function VerifyCode() {
       }
 
       setSuccess(true)
-      router.push("/auth/login")
+      router.push(callbackUrlParam ? `/auth/login?callbackUrl=${encodeURIComponent(callbackUrlParam)}` : "/auth/login")
     } catch (error) {
       console.error("Verification error:", error)
       setError(error instanceof Error ? error.message : "Verification failed. Please try again.")
