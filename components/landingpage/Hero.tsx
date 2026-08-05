@@ -10,7 +10,7 @@ export default function Hero() {
   return (
     <section
       id="#about"
-      className="relative min-h-[85vh] flex flex-col items-center justify-start overflow-hidden bg-background pt-28 sm:pt-36 md:pt-40 lg:pt-44 pb-16 sm:pb-24 px-4 sm:px-6"
+      className="relative min-h-[85vh] flex flex-col items-center justify-center overflow-hidden bg-background py-12 sm:py-20 px-4 sm:px-6"
     >
       {/* Grid Background */}
       <div

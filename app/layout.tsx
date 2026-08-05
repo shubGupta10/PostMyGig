@@ -163,7 +163,7 @@ export default async function RootLayout({
             ) : (
               <div className="flex min-h-screen flex-col">
                 <Navbar />
-                <main className="flex-1 flex flex-col">
+                <main className="flex-1 flex flex-col pt-20 sm:pt-24">
                   <Analytics />
                   <Suspense>{children}</Suspense>
                   <Toaster />
