@@ -192,7 +192,7 @@ export default function LoginPage() {
               {/* Header */}
               <div className="mb-8 flex flex-col items-center text-center">
                 <div className="mb-6 flex items-center justify-center">
-                  <Image src="/AppIcon.png" alt="Logo" width={48} height={48} className="size-12 rounded-xl" />
+                  <Image unoptimized src="/AppIcon.png" alt="Logo" width={48} height={48} className="size-12 rounded-xl" />
                 </div>
                 <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-3">Welcome back! 👋</h1>
                 <p className="text-muted-foreground text-sm sm:text-lg">Enter to get unlimited access to data & information.</p>

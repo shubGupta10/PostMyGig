@@ -104,7 +104,7 @@ function ResetPassword() {
                     {/* Header */}
                     <div className="text-center mb-8 flex flex-col items-center">
                         <div className="mb-4 flex items-center justify-center">
-                            <Image src="/AppIcon.png" alt="Logo" width={48} height={48} className="size-12 rounded-xl" />
+                            <Image unoptimized src="/AppIcon.png" alt="Logo" width={48} height={48} className="size-12 rounded-xl" />
                         </div>
                         <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
                             Create New Password

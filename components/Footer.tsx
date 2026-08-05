@@ -15,7 +15,7 @@ function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-4 sm:mb-6">
               <div className="w-9 h-9 sm:w-10 sm:h-10 bg-transparent rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
-                <Image src='/AppIcon.png' alt="App Icon" width={100} height={100} />
+                <Image unoptimized src='/AppIcon.png' alt="App Icon" width={100} height={100} />
               </div>
               <span className="text-lg sm:text-xl font-bold text-primary">PostMy<span className="text-accent-foreground">Gig</span></span>
             </div>
