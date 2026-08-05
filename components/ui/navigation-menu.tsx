@@ -3,69 +3,32 @@
 import * as React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, useScroll, useMotionValueEvent, type Variants } from "framer-motion";
-import { Menu } from "lucide-react";
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
+import { Menu, X, ChevronRight } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-
-const EXPAND_SCROLL_THRESHOLD = 80;
-
-const containerVariants: Variants = {
-  expanded: {
-    y: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: "spring",
-      damping: 20,
-      stiffness: 300,
-      staggerChildren: 0.05,
-      delayChildren: 0.1,
-    },
-  },
-  collapsed: {
-    y: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: "spring",
-      damping: 20,
-      stiffness: 300,
-      when: "afterChildren",
-      staggerChildren: 0.04,
-      staggerDirection: -1,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  expanded: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", damping: 15 } },
-  collapsed: { opacity: 0, scale: 0.8, y: -10, transition: { duration: 0.2 } },
-};
 
 export function AnimatedNavFramer() {
-  const [isExpanded, setExpanded] = React.useState(true);
+  const [isVisible, setIsVisible] = React.useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const router = useRouter();
 
   const { scrollY } = useScroll();
   const lastScrollY = React.useRef(0);
-  const scrollPositionOnCollapse = React.useRef(0);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = lastScrollY.current;
-
-    if (isExpanded && latest > previous && latest > 150) {
-      setExpanded(false);
-      scrollPositionOnCollapse.current = latest;
-    } else if (!isExpanded && latest < previous && (scrollPositionOnCollapse.current - latest > EXPAND_SCROLL_THRESHOLD)) {
-      setExpanded(true);
+    if (latest > previous && latest > 80) {
+      setIsVisible(false);
+      setMobileMenuOpen(false);
+    } else if (latest < previous) {
+      setIsVisible(true);
     }
-
     lastScrollY.current = latest;
   });
 
   const handleScrollTo = (id: string) => {
+    setMobileMenuOpen(false);
     if (window.location.pathname !== "/") {
       router.push(`/${id}`);
     } else {
@@ -76,99 +39,127 @@ export function AnimatedNavFramer() {
     }
   };
 
-  const handleNavClick = (e: React.MouseEvent) => {
-    if (!isExpanded) {
-      e.preventDefault();
-      setExpanded(true);
-    }
-  };
-
   return (
-    <div className="fixed top-3 sm:top-6 left-1/2 -translate-x-1/2 z-50 px-2 sm:px-4 max-w-[calc(100vw-1rem)] sm:max-w-full">
-      <motion.nav
-        initial={{ y: -80, opacity: 0 }}
-        animate={isExpanded ? "expanded" : "collapsed"}
-        variants={containerVariants}
-        layout
-        whileHover={!isExpanded ? { scale: 1.06 } : {}}
-        whileTap={!isExpanded ? { scale: 0.96 } : {}}
-        onClick={handleNavClick}
-        className={cn(
-          "flex items-center rounded-full border border-border/60 bg-card/85 backdrop-blur-md shadow-lg shadow-black/5 transition-all duration-200",
-          !isExpanded
-            ? "cursor-pointer py-2 px-4 justify-center"
-            : "py-1.5 sm:py-2.5 px-2.5 sm:px-6 gap-1.5 sm:gap-6"
-        )}
-      >
-        {/* Brand / Logo */}
-        <div
-          className="flex items-center gap-2 cursor-pointer flex-shrink-0"
-          onClick={() => {
-            if (isExpanded) router.push("/");
-          }}
-        >
-          <div className="w-7 h-7 sm:w-9 sm:h-9 bg-transparent rounded-lg flex items-center justify-center">
-            <Image src="/AppIcon.png" alt="PostMyGig" width={36} height={36} className="w-full h-full object-contain" />
-          </div>
-          {isExpanded && (
-            <span className="hidden sm:inline text-base sm:text-lg font-bold text-primary tracking-tight pr-1">
+    <motion.header
+      initial={{ y: 0 }}
+      animate={{ y: isVisible ? 0 : "-100%" }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="fixed top-0 left-0 right-0 z-50 w-full"
+    >
+      <div className="w-full bg-card/85 backdrop-blur-xl border-b border-border/60 shadow-md rounded-b-[2rem] sm:rounded-b-[2.5rem] px-4 sm:px-8 py-3.5 transition-colors duration-200">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Brand Logo */}
+          <div
+            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer flex-shrink-0"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              router.push("/");
+            }}
+          >
+            <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
+              <Image src="/AppIcon.png" alt="PostMyGig" width={36} height={36} className="w-full h-full object-contain" />
+            </div>
+            <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
               PostMy<span className="text-accent-foreground">Gig</span>
             </span>
-          )}
+          </div>
+
+          {/* Desktop Nav Links - Plain text links without random background box */}
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4">
+            <button
+              onClick={() => handleScrollTo("#features")}
+              className="text-muted-foreground hover:text-foreground text-sm font-medium px-3.5 py-2 transition-colors whitespace-nowrap"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => handleScrollTo("#how-it-works")}
+              className="text-muted-foreground hover:text-foreground text-sm font-medium px-3.5 py-2 transition-colors whitespace-nowrap"
+            >
+              How it works
+            </button>
+            <button
+              onClick={() => handleScrollTo("#demo-video")}
+              className="text-muted-foreground hover:text-foreground text-sm font-medium px-3.5 py-2 transition-colors whitespace-nowrap"
+            >
+              Demo
+            </button>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-4">
+            <DarkModeToggle />
+            <Button
+              onClick={() => router.push("/view-gigs")}
+              className="bg-primary hover:opacity-90 text-primary-foreground text-sm font-semibold h-10 px-5 rounded-full shadow-sm whitespace-nowrap"
+            >
+              Get Started
+            </Button>
+          </div>
+
+          {/* Mobile Right Controls */}
+          <div className="flex md:hidden items-center gap-2">
+            <DarkModeToggle />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 text-foreground hover:bg-accent/60 rounded-full transition-colors flex items-center justify-center"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5 text-primary" /> : <Menu className="w-5 h-5 text-primary" />}
+            </button>
+          </div>
         </div>
+      </div>
 
-        {/* Collapsed Menu Icon */}
-        {!isExpanded && (
+      {/* Mobile Menu Dropdown Panel */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center justify-center text-foreground pl-1"
+            initial={{ opacity: 0, height: 0, y: -10 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="md:hidden overflow-hidden bg-card/95 backdrop-blur-xl border-b border-border/60 shadow-xl rounded-b-[2rem] px-5 py-5 mt-1 mx-3"
           >
-            <Menu className="w-5 h-5 text-primary" />
-          </motion.div>
-        )}
-
-        {/* Expanded Navigation Links & Actions */}
-        {isExpanded && (
-          <motion.div variants={itemVariants} className="flex items-center gap-1.5 sm:gap-6">
-            {/* Navigation Links - Always Visible */}
-            <div className="flex items-center space-x-0.5 sm:space-x-2">
+            <div className="flex flex-col gap-2">
               <button
                 onClick={() => handleScrollTo("#features")}
-                className="text-muted-foreground hover:text-foreground text-[11px] sm:text-sm font-medium px-2 sm:px-3.5 py-1 sm:py-2 rounded-full hover:bg-accent/60 transition-colors whitespace-nowrap"
+                className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-foreground hover:bg-accent/60 rounded-xl transition-colors"
               >
-                Features
+                <span>Features</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
               <button
                 onClick={() => handleScrollTo("#how-it-works")}
-                className="text-muted-foreground hover:text-foreground text-[11px] sm:text-sm font-medium px-2 sm:px-3.5 py-1 sm:py-2 rounded-full hover:bg-accent/60 transition-colors whitespace-nowrap"
+                className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-foreground hover:bg-accent/60 rounded-xl transition-colors"
               >
-                How it works
+                <span>How it works</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
               <button
                 onClick={() => handleScrollTo("#demo-video")}
-                className="text-muted-foreground hover:text-foreground text-[11px] sm:text-sm font-medium px-2 sm:px-3.5 py-1 sm:py-2 rounded-full hover:bg-accent/60 transition-colors whitespace-nowrap"
+                className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-foreground hover:bg-accent/60 transition-colors"
               >
-                Demo
+                <span>Demo</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
-            </div>
 
-            {/* Actions Section */}
-            <div className="flex items-center gap-1.5 sm:gap-4 pl-1.5 sm:pl-6 border-l border-border/60">
-              <DarkModeToggle />
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push("/view-gigs");
-                }}
-                className="bg-primary hover:opacity-90 text-primary-foreground text-[11px] sm:text-sm font-semibold h-7 sm:h-10 px-2.5 sm:px-5 rounded-full shadow-sm whitespace-nowrap"
-              >
-                Get Started
-              </Button>
+              {/* Bottom Middle: Get Started CTA */}
+              <div className="pt-4 mt-2 border-t border-border/60 flex items-center justify-center">
+                <Button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    router.push("/view-gigs");
+                  }}
+                  className="w-full max-w-xs bg-primary hover:opacity-90 text-primary-foreground text-sm font-semibold h-11 rounded-full shadow-sm"
+                >
+                  Get Started
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}
-      </motion.nav>
-    </div>
+      </AnimatePresence>
+    </motion.header>
   );
 }
