@@ -12,17 +12,20 @@ export default function Hero() {
       id="#about"
       className="relative min-h-[85vh] flex flex-col items-center justify-center overflow-hidden bg-background py-12 sm:py-20 px-4 sm:px-6"
     >
+      {/* Ambient Top Glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(100,74,64,0.10),transparent)] dark:bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(255,224,194,0.08),transparent)]" />
+
       {/* Grid Background */}
       <div
         className={cn(
           "absolute inset-0",
           "[background-size:40px_40px]",
-          "[background-image:linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)]",
-          "dark:[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
+          "[background-image:linear-gradient(to_right,rgba(0,0,0,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.07)_1px,transparent_1px)]",
+          "dark:[background-image:linear-gradient(to_right,rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.07)_1px,transparent_1px)]",
         )}
       />
-      {/* Radial gradient for the container to give a faded look */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+      {/* Radial gradient mask to fade grid edges */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_25%,black)]"></div>
 
       <div className="relative z-10 w-full max-w-6xl mx-auto space-y-12 sm:space-y-16">
 
