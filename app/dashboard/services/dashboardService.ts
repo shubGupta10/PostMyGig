@@ -6,6 +6,8 @@ import redis from "@/lib/redis";
 import ProjectModel from "@/models/ProjectModel";
 import PingModel from "@/models/PingSchema";
 import userModel from "@/models/UserModel";
+import { getUserUsageStats } from "@/lib/subscription/engine";
+import { ACTION_TYPES } from "@/lib/subscription/config/subscriptions";
 import { after } from "next/server";
 
 export async function getDashboardDetails(): Promise<FetchDashboardResult> {
@@ -62,6 +64,13 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
                 (p: any) => p.status?.toLowerCase() === "expired"
             ).length;
 
+            const usageStats = await getUserUsageStats(
+                session.user.id,
+                userEmail,
+                "client",
+                ACTION_TYPES.POST_GIG
+            );
+
             dashboardData = {
                 role: "client",
                 totalProjects: sanitizedProjects.length,
@@ -69,6 +78,7 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
                 expiredProjects,
                 totalApplicationsReceived,
                 projects: sanitizedProjects as any,
+                usageStats,
             };
         }
         // 3. Freelancer Dashboard Flow
@@ -113,6 +123,13 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
                 if (group._id === "rejected") rejectedPingsCount = group.count;
             });
 
+            const usageStats = await getUserUsageStats(
+                session.user.id,
+                userEmail,
+                "freelancer",
+                ACTION_TYPES.SEND_PING
+            );
+
             dashboardData = {
                 role: "freelancer",
                 totalPingsSent,
@@ -135,6 +152,7 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
                         }
                         : undefined,
                 })),
+                usageStats,
             };
         }
 

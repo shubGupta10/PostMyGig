@@ -2,6 +2,7 @@
 
 import type { ClientDashboardData } from "@/app/dashboard/types";
 import { DashboardProjects } from "./DashboardProjects";
+import { UsageMeter } from "@/components/subscription/UsageMeter";
 
 export function ClientDashboard({ data }: { data: ClientDashboardData }) {
     const stats = [
@@ -34,6 +35,11 @@ export function ClientDashboard({ data }: { data: ClientDashboardData }) {
                     </div>
                 ))}
             </div>
+
+            {/* Quota Usage Meter */}
+            {data.usageStats && (
+                <UsageMeter stats={data.usageStats} label="Gigs" />
+            )}
 
             {/* My Posted Gigs */}
             <DashboardProjects projects={data.projects as any} />

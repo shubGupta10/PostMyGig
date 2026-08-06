@@ -41,6 +41,8 @@ export interface AppliedPingHistory {
   };
 }
 
+import type { UserUsageStats } from "@/lib/subscription/types";
+
 export interface ClientDashboardData {
   role: "client";
   totalProjects: number;
@@ -48,6 +50,7 @@ export interface ClientDashboardData {
   expiredProjects: number;
   totalApplicationsReceived: number;
   projects: Project[];
+  usageStats?: UserUsageStats;
 }
 
 export interface FreelancerDashboardData {
@@ -57,6 +60,7 @@ export interface FreelancerDashboardData {
   pendingPingsCount: number;
   rejectedPingsCount: number;
   appliedHistory: AppliedPingHistory[];
+  usageStats?: UserUsageStats;
 }
 
 export type DashboardData = ClientDashboardData | FreelancerDashboardData;
