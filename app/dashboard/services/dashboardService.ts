@@ -1,79 +1,157 @@
 import { ConnectoDatabase } from "@/lib/db";
-import { FetchDashboardResult } from "../types";
+import { FetchDashboardResult, ClientDashboardData, FreelancerDashboardData } from "../types";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import redis from "@/lib/redis";
 import ProjectModel from "@/models/ProjectModel";
 import PingModel from "@/models/PingSchema";
+import userModel from "@/models/UserModel";
 import { after } from "next/server";
 
 export async function getDashboardDetails(): Promise<FetchDashboardResult> {
     try {
         await ConnectoDatabase();
         const session = await getServerSession(authOptions);
-        if (!session?.user.id || !session.user.email) {
+
+        if (!session?.user?.id || !session?.user?.email) {
             return {
                 data: null,
                 rateLimitInfo: { isLimited: false, retryAfter: null, message: "", timestamp: 0 },
-                error: "Unauthorized"
-            }
+                error: "Unauthorized",
+            };
         }
 
         const userEmail = session.user.email;
-        const cacheKey = `dashboard-data:${userEmail}`;
+        const userRole = session.user.role || "freelancer";
+        const cacheKey = `dashboard-data:${userRole}:${userEmail}`;
 
+        // 1. Try Redis Cache
         try {
             const cachedData = await redis.get(cacheKey);
             if (cachedData) {
                 const parsedData = typeof cachedData === "string" ? JSON.parse(cachedData) : cachedData;
                 return {
                     data: parsedData,
-                    rateLimitInfo: {
-                        isLimited: false,
-                        retryAfter: null,
-                        message: "",
-                        timestamp: 0
-                    },
+                    rateLimitInfo: { isLimited: false, retryAfter: null, message: "", timestamp: 0 },
                     error: null,
-                }
+                };
             }
         } catch (error) {
-            console.warn("Failed to parse cached data, fetching fresh:", error);
+            console.warn("Failed to parse cached dashboard data, fetching fresh:", error);
         }
 
-        const allprojects = await ProjectModel.find({ createdBy: userEmail }).lean();
-        const totalPings = await PingModel.countDocuments({ userEmail });
+        let dashboardData: ClientDashboardData | FreelancerDashboardData;
 
-        const sanitizedProjects = allprojects.map(project => ({
-            ...project,
-            _id: project._id.toString(),
-        }));
+        // 2. Client Dashboard Flow
+        if (userRole === "client") {
+            const [allProjects, totalApplicationsReceived] = await Promise.all([
+                ProjectModel.find({ createdBy: userEmail }).sort({ createdAt: -1 }).lean(),
+                PingModel.countDocuments({ posterEmail: userEmail }),
+            ]);
 
-        const dashboardData = {
-            totalProjects: sanitizedProjects.length,
-            totalPings,
-            projects: sanitizedProjects
-        };
+            const sanitizedProjects = allProjects.map((project: any) => ({
+                ...project,
+                _id: project._id.toString(),
+            }));
 
+            const activeProjects = sanitizedProjects.filter(
+                (p: any) => p.status?.toLowerCase() === "active"
+            ).length;
+
+            const expiredProjects = sanitizedProjects.filter(
+                (p: any) => p.status?.toLowerCase() === "expired"
+            ).length;
+
+            dashboardData = {
+                role: "client",
+                totalProjects: sanitizedProjects.length,
+                activeProjects,
+                expiredProjects,
+                totalApplicationsReceived,
+                projects: sanitizedProjects as any,
+            };
+        }
+        // 3. Freelancer Dashboard Flow
+        else {
+            const [pingStatusCounts, appliedHistory] = await Promise.all([
+                // Group status counts in 1 DB query
+                PingModel.aggregate([
+                    { $match: { userEmail } },
+                    { $group: { _id: "$status", count: { $sum: 1 } } },
+                ]),
+                // Fetch pings joined with project details using $lookup aggregation
+                PingModel.aggregate([
+                    { $match: { userEmail } },
+                    { $sort: { createdAt: -1 } },
+                    {
+                        $addFields: {
+                            projectObjectId: { $toObjectId: "$projectId" }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "projects",
+                            localField: "projectObjectId",
+                            foreignField: "_id",
+                            as: "projectDetails"
+                        }
+                    },
+                    { $unwind: { path: "$projectDetails", preserveNullAndEmptyArrays: true } }
+                ])
+            ]);
+
+            // Parse Aggregation Results
+            let totalPingsSent = 0;
+            let acceptedPingsCount = 0;
+            let pendingPingsCount = 0;
+            let rejectedPingsCount = 0;
+
+            pingStatusCounts.forEach((group: { _id: string; count: number }) => {
+                totalPingsSent += group.count;
+                if (group._id === "accepted") acceptedPingsCount = group.count;
+                if (group._id === "pending") pendingPingsCount = group.count;
+                if (group._id === "rejected") rejectedPingsCount = group.count;
+            });
+
+            dashboardData = {
+                role: "freelancer",
+                totalPingsSent,
+                acceptedPingsCount,
+                pendingPingsCount,
+                rejectedPingsCount,
+                appliedHistory: appliedHistory.map((p: any) => ({
+                    _id: p._id.toString(),
+                    projectId: p.projectId ? p.projectId.toString() : "",
+                    userEmail: p.userEmail,
+                    posterEmail: p.posterEmail,
+                    message: p.message || "",
+                    status: p.status || "pending",
+                    createdAt: p.createdAt ? new Date(p.createdAt).toISOString() : new Date().toISOString(),
+                    projectDetails: p.projectDetails
+                        ? {
+                            title: p.projectDetails.title,
+                            category: p.projectDetails.category,
+                            budget: p.projectDetails.budget,
+                        }
+                        : undefined,
+                })),
+            };
+        }
+
+        // Cache the role-based data in Redis for 10 minutes
         after(async () => {
             try {
                 await redis.set(cacheKey, JSON.stringify(dashboardData), { ex: 600 });
             } catch (error) {
-                console.warn("Failed to cache data:", error);
+                console.warn("Failed to cache dashboard data:", error);
             }
-        })
+        });
 
         return {
-            data: dashboardData as any,
-            rateLimitInfo: {
-                isLimited: false,
-                retryAfter: null,
-                message: "",
-                timestamp: 0
-            },
-            error: null
-        }
-
+            data: dashboardData,
+            rateLimitInfo: { isLimited: false, retryAfter: null, message: "", timestamp: 0 },
+            error: null,
+        };
     } catch (error) {
         console.error("Error in dashboard service:", error);
         return {

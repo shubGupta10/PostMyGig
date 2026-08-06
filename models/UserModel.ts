@@ -9,6 +9,7 @@ interface User extends Document {
   name: string;
   email: string;
   role?: string;
+  onboardingCompleted: boolean;
   password?: string;
   profilePhoto?: string;
   provider: string;
@@ -38,6 +39,10 @@ const userSchema = new Schema<User>({
     enum: ['freelancer', 'client', 'admin'],
     required: false,
     default: "freelancer"
+  },
+  onboardingCompleted: {
+    type: Boolean,
+    default: false
   },
   password: {
     type: String,

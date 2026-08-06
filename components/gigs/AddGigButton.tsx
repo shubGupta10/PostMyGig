@@ -6,8 +6,12 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 export function AddGigButton() {
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
+
+  if (status === "authenticated" && session?.user?.role !== "client") {
+    return null;
+  }
 
   const handleAddGigs = () => {
     if (status === "unauthenticated") {

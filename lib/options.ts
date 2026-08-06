@@ -44,6 +44,7 @@ export const authOptions: NextAuthOptions = {
                         provider: user.provider,
                         role: user.role || 'freelancer',
                         activityPublic: user.activityPublic,
+                        onboardingCompleted: user.onboardingCompleted ?? false,
                     }
                 } catch (error) {
                     throw error;
@@ -67,17 +68,17 @@ export const authOptions: NextAuthOptions = {
         })
     ],
     callbacks: {
-        async jwt({ token, user, account }) {
+        async jwt({ token, user, account, trigger }) {
             if (user) {
                 token.id = user.id;
                 token.provider = account?.provider;
                 token.role = (user as any).role;
                 token.activityPublic = (user as any).activityPublic;
+                token.onboardingCompleted = (user as any).onboardingCompleted ?? false;
             }
 
-            // Always fetch fresh user data from database to ensure role is up-to-date
-            // This is especially important for OAuth logins where role might not be in the user object
-            if (token.email && !token.role) {
+            // Fetch fresh user data from database when session is updated or onboarding is incomplete
+            if (trigger === "update" || (token.email && (!token.role || !token.onboardingCompleted))) {
                 try {
                     await ConnectoDatabase();
                     const dbUser = await userModel.findOne({ email: token.email });
@@ -86,9 +87,10 @@ export const authOptions: NextAuthOptions = {
                         token.role = dbUser.role || 'freelancer';
                         token.provider = dbUser.provider;
                         token.activityPublic = dbUser.activityPublic;
+                        token.onboardingCompleted = dbUser.onboardingCompleted ?? false;
                     }
                 } catch (error) {
-                    console.error("Error fetching user role in JWT callback:", error);
+                    console.error("Error fetching user data in JWT callback:", error);
                 }
             }
 
@@ -100,6 +102,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.provider = token.provider as string;
                 session.user.role = token.role as string;
                 session.user.activityPublic = token.activityPublic as boolean;
+                session.user.onboardingCompleted = (token.onboardingCompleted as boolean) ?? false;
 
                 // If role is still not available, fetch from database as fallback
                 if (!session.user.role && session.user.email) {
@@ -111,6 +114,7 @@ export const authOptions: NextAuthOptions = {
                             session.user.id = dbUser.id.toString();
                             session.user.provider = dbUser.provider;
                             session.user.activityPublic = dbUser.activityPublic as boolean;
+                            session.user.onboardingCompleted = dbUser.onboardingCompleted ?? false;
                         }
                     } catch (error) {
                         console.error("Error fetching user role in session callback:", error);
@@ -148,12 +152,14 @@ export const authOptions: NextAuthOptions = {
                             (user as any).role = updatedUser.role || 'freelancer';
                             user.id = updatedUser.id.toString();
                             (user as any).activityPublic = updatedUser.activityPublic;
+                            (user as any).onboardingCompleted = updatedUser.onboardingCompleted ?? false;
                         }
                     } else {
                         const newUser = new userModel({
                             name: user.name,
                             email: user.email,
                             role: "freelancer",
+                            onboardingCompleted: false,
                             profilePhoto: user.image || "",
                             provider: account.provider,
                         });
@@ -163,6 +169,7 @@ export const authOptions: NextAuthOptions = {
                         (user as any).role = savedUser.role || 'freelancer';
                         user.id = savedUser.id.toString();
                         (user as any).activityPublic = savedUser.activityPublic;
+                        (user as any).onboardingCompleted = false;
                     }
                     return true;
                 }

@@ -1,10 +1,20 @@
 import * as React from "react"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/options"
-import { publicNavItems, authenticatedNavItems, adminNavItems } from "@/config/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { User, User2Icon, MessageCircleCodeIcon, MessageSquare } from "lucide-react"
+import {
+  User,
+  User2Icon,
+  MessageCircleCodeIcon,
+  MessageSquare,
+  LayoutDashboard,
+  FileText,
+  Briefcase,
+  Send,
+  Activity,
+  Shield,
+} from "lucide-react"
 
 import {
   Sidebar,
@@ -24,7 +34,8 @@ import { SidebarNavLink } from "./sidebar-nav-link"
 
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const session = await getServerSession(authOptions)
-  const isAdmin = session?.user?.role === "admin"
+  const userRole = session?.user?.role || "freelancer"
+  const isAdmin = userRole === "admin"
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -52,25 +63,43 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {session && authenticatedNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarNavLink href={item.href}>
-                    <item.icon className="size-4" />
-                    <span>{item.title}</span>
-                  </SidebarNavLink>
-                </SidebarMenuItem>
-              ))}
-
-              {publicNavItems
-                .filter((item) => (session ? item.title !== "Home" : true))
-                .map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarNavLink href={item.href}>
-                      <item.icon className="size-4" />
-                      <span>{item.title}</span>
+              {/* Client Navigation */}
+              {session && userRole === "client" && (
+                <>
+                  <SidebarMenuItem>
+                    <SidebarNavLink href="/dashboard">
+                      <LayoutDashboard className="size-4" />
+                      <span>Dashboard</span>
                     </SidebarNavLink>
                   </SidebarMenuItem>
-                ))}
+                </>
+              )}
+
+              {/* Freelancer Navigation */}
+              {session && userRole === "freelancer" && (
+                <>
+                  <SidebarMenuItem>
+                    <SidebarNavLink href="/dashboard">
+                      <LayoutDashboard className="size-4" />
+                      <span>Dashboard</span>
+                    </SidebarNavLink>
+                  </SidebarMenuItem>
+                </>
+              )}
+
+              {/* Shared Navigation (Available to both Client & Freelancer) */}
+              <SidebarMenuItem>
+                <SidebarNavLink href="/view-gigs">
+                  <Briefcase className="size-4" />
+                  <span>Browse Gigs</span>
+                </SidebarNavLink>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarNavLink href="/activity">
+                  <Activity className="size-4" />
+                  <span>Activity</span>
+                </SidebarNavLink>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -86,12 +115,17 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
                     <span>Profile</span>
                   </SidebarNavLink>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarNavLink href="/user-gigs">
-                    <User2Icon className="size-4" />
-                    <span>Manage Gigs</span>
-                  </SidebarNavLink>
-                </SidebarMenuItem>
+
+                {/* Only clients have posted gigs to manage */}
+                {userRole === "client" && (
+                  <SidebarMenuItem>
+                    <SidebarNavLink href="/user-gigs">
+                      <User2Icon className="size-4" />
+                      <span>Manage Gigs</span>
+                    </SidebarNavLink>
+                  </SidebarMenuItem>
+                )}
+
                 <SidebarMenuItem>
                   <SidebarNavLink href="/chat-history">
                     <MessageCircleCodeIcon className="size-4" />
@@ -114,14 +148,12 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {adminNavItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarNavLink href={item.href}>
-                      <item.icon className="size-4" />
-                      <span>{item.title}</span>
-                    </SidebarNavLink>
-                  </SidebarMenuItem>
-                ))}
+                <SidebarMenuItem>
+                  <SidebarNavLink href="/user/admin/dashboard">
+                    <Shield className="size-4" />
+                    <span>Admin Dashboard</span>
+                  </SidebarNavLink>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -135,3 +167,4 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
     </Sidebar>
   )
 }
+

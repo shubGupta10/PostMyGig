@@ -18,6 +18,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import Navbar from "@/components/Navbar";
 import { AddGigButton } from "@/components/gigs/AddGigButton";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -82,6 +83,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
+  const inNotOnboarded = session?.user && !session.user.onboardingCompleted;
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -136,7 +138,13 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {session ? (
+            {inNotOnboarded ? (
+              <div className="min-h-screen bg-background flex flex-col justify-center items-center p-6">
+                <Analytics />
+                <Suspense>{children}</Suspense>
+                <Toaster />
+              </div>
+            ) : session ? (
               <TooltipProvider>
                 <SidebarProvider>
                   <AppSidebar />
@@ -148,6 +156,7 @@ export default async function RootLayout({
                       </div>
                       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
                         <AddGigButton />
+                        <RoleSwitcher />
                         <DarkModeToggle />
                       </div>
                     </header>

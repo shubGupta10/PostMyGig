@@ -1,31 +1,68 @@
 export interface Project {
-  _id: string
-  title: string
-  description: string
-  skillsRequired: string[]
-  status: string
-  createdAt: string
-  expiresAt: string
-  createdBy: string
-  isFlagged: boolean
-  reportCount: number
-}
-
-export interface DashboardProps {
-  projects: Project[]
-  totalPings: number
-  totalProjects: number
+  _id: string;
+  title: string;
+  description: string;
+  createdBy: string;
+  skillsRequired?: string[];
+  contact?: {
+    email?: string;
+    whatsapp?: string;
+    x?: string;
+  };
+  budget: string;
+  displayContactLinks?: boolean;
+  AcceptedFreelancerEmail?: string;
+  status: string;
+  createdAt?: string;
+  expiresAt?: string;
+  reportCount?: number;
+  isFlagged?: boolean;
 }
 
 export interface RateLimitInfo {
-  isLimited: boolean
-  retryAfter: string | null
-  message: string
-  timestamp: number
+  isLimited: boolean;
+  retryAfter: number | null;
+  message: string;
+  timestamp: number;
 }
 
+export interface AppliedPingHistory {
+  _id: string;
+  projectId: string;
+  userEmail: string;
+  posterEmail: string;
+  message?: string;
+  status: "pending" | "accepted" | "rejected";
+  createdAt: string;
+  projectDetails?: {
+    title?: string;
+    category?: string;
+    budget?: string;
+  };
+}
+
+export interface ClientDashboardData {
+  role: "client";
+  totalProjects: number;
+  activeProjects: number;
+  expiredProjects: number;
+  totalApplicationsReceived: number;
+  projects: Project[];
+}
+
+export interface FreelancerDashboardData {
+  role: "freelancer";
+  totalPingsSent: number;
+  acceptedPingsCount: number;
+  pendingPingsCount: number;
+  rejectedPingsCount: number;
+  appliedHistory: AppliedPingHistory[];
+}
+
+export type DashboardData = ClientDashboardData | FreelancerDashboardData;
+
 export interface FetchDashboardResult {
-  data: DashboardProps | null
-  rateLimitInfo: RateLimitInfo
-  error: string | null
+  data: DashboardData | null;
+  rateLimitInfo: RateLimitInfo;
+  error: string | null;
 }
