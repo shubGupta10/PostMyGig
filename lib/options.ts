@@ -75,10 +75,15 @@ export const authOptions: NextAuthOptions = {
                 token.role = (user as any).role;
                 token.activityPublic = (user as any).activityPublic;
                 token.onboardingCompleted = (user as any).onboardingCompleted ?? false;
+                token.subscription = (user as any).subscription || (user as any).subscriptionSnapshot || {
+                    plan: "free",
+                    status: "active",
+                    expiresAt: null,
+                };
             }
 
             // Fetch fresh user data from database when session is updated or onboarding is incomplete
-            if (trigger === "update" || (token.email && (!token.role || !token.onboardingCompleted))) {
+            if (trigger === "update" || (token.email && (!token.role || !token.onboardingCompleted || !token.subscription))) {
                 try {
                     await ConnectoDatabase();
                     const dbUser = await userModel.findOne({ email: token.email });
@@ -88,6 +93,11 @@ export const authOptions: NextAuthOptions = {
                         token.provider = dbUser.provider;
                         token.activityPublic = dbUser.activityPublic;
                         token.onboardingCompleted = dbUser.onboardingCompleted ?? false;
+                        token.subscription = dbUser.subscriptionSnapshot || {
+                            plan: "free",
+                            status: "active",
+                            expiresAt: null,
+                        }
                     }
                 } catch (error) {
                     console.error("Error fetching user data in JWT callback:", error);
@@ -103,6 +113,11 @@ export const authOptions: NextAuthOptions = {
                 session.user.role = token.role as string;
                 session.user.activityPublic = token.activityPublic as boolean;
                 session.user.onboardingCompleted = (token.onboardingCompleted as boolean) ?? false;
+                session.user.subscription = (token.subscription as any) || {
+                    plan: "free",
+                    status: "active",
+                    expiresAt: null,
+                }
 
                 // If role is still not available, fetch from database as fallback
                 if (!session.user.role && session.user.email) {

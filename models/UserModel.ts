@@ -1,3 +1,4 @@
+import { SubscriptionSnapshot } from '@/lib/subscription/types';
 import mongoose, { Model, Schema, Document } from 'mongoose';
 
 interface ContactLinks {
@@ -20,6 +21,7 @@ interface User extends Document {
   reportCount?: number;
   activityPublic?: boolean;
   isBanned?: boolean;
+  subscriptionSnapshot?: SubscriptionSnapshot;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -88,6 +90,22 @@ const userSchema = new Schema<User>({
   activityPublic: {
     type: Boolean,
     default: true,
+  },
+  subscriptionSnapshot: {
+    plan: {
+      type: String,
+      enum: ["free", "pro"],
+      default: "free",
+    },
+    status: {
+      type: String,
+      enum: ["active", "canceled", "past_due", "expired"],
+      default: "active"
+    },
+    expiresAt: {
+      type: String,
+      default: null,
+    },
   },
   createdAt: {
     type: String,
