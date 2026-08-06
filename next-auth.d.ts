@@ -8,8 +8,9 @@ declare module "next-auth" {
       name: string;
       provider: string;
       role: string;
-      profilePhoto: string; 
+      profilePhoto: string;
       activityPublic: boolean;
+      onboardingCompleted: boolean;
     } & DefaultSession["user"];
   }
 
@@ -20,5 +21,6 @@ declare module "next-auth" {
     provider: string;
     role: string;
     profilePhoto: string;
+    onboardingCompleted?: boolean;
   }
 }

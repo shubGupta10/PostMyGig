@@ -30,6 +30,23 @@ export default withAuth(
             return NextResponse.redirect(new URL(destination, req.url));
         }
 
+        if (isAuth && !pathname.startsWith("/api")) {
+            const onboardingCompleted = req.nextauth.token?.onboardingCompleted;
+
+            if (!onboardingCompleted && pathname !== "/onboarding") {
+                const callbackUrl = req.nextUrl.searchParams.get("callbackUrl") || req.nextUrl.searchParams.get("callback") || pathname;
+                const url = new URL("/onboarding", req.url);
+                url.searchParams.set("callbackUrl", callbackUrl);
+                return NextResponse.redirect(url);
+            }
+
+            if (onboardingCompleted && pathname === "/onboarding") {
+                const callbackUrl = req.nextUrl.searchParams.get("callbackUrl") || req.nextUrl.searchParams.get("callback");
+                const destination = callbackUrl || "/view-gigs";
+                return NextResponse.redirect(new URL(destination, req.url));
+            }
+        }
+
         return NextResponse.next();
     },
     {
