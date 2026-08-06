@@ -1,4 +1,23 @@
-import { Project } from "@/models/ProjectModel";
+export interface Project {
+  _id: string;
+  title: string;
+  description: string;
+  createdBy: string;
+  skillsRequired?: string[];
+  contact?: {
+    email?: string;
+    whatsapp?: string;
+    x?: string;
+  };
+  budget: string;
+  displayContactLinks?: boolean;
+  AcceptedFreelancerEmail?: string;
+  status: string;
+  createdAt?: string;
+  expiresAt?: string;
+  reportCount?: number;
+  isFlagged?: boolean;
+}
 
 export interface RateLimitInfo {
   isLimited: boolean;

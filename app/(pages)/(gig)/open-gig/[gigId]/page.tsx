@@ -10,7 +10,7 @@ import { isGigAvailableForApplication, getDisabledButtonMessage } from "@/compon
 
 export default async function OpenGig({ params }: { params: Promise<{ gigId: string }> }) {
   const { gigId } = await params;
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const cookieString = cookieStore.toString()
 
   const session = await getServerSession(authOptions)
@@ -18,11 +18,7 @@ export default async function OpenGig({ params }: { params: Promise<{ gigId: str
 
   const { gig, owner, error } = await fetchGigDetails(gigId, cookieString)
 
-  if (error) {
-    throw new Error(error)
-  }
-
-  if (!gig) {
+  if (error || !gig) {
     notFound()
   }
 

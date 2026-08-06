@@ -31,7 +31,7 @@ export function ProjectCard({ project }: { project: Project }) {
   }
 
   return (
-    <Card className="flex flex-col h-full border-2 border-border bg-card shadow-xs hover:border-muted-foreground transition-all rounded-2xl overflow-hidden">
+    <Card className="flex flex-col h-full border-2 border-border bg-card shadow-xs rounded-2xl overflow-hidden">
       <CardHeader className="p-5 sm:p-6 pb-3 sm:pb-4 space-y-2.5 sm:space-y-3 flex-none relative">
         <div className="flex items-start justify-between gap-3 sm:gap-4">
           <CardTitle className="text-base sm:text-lg font-semibold text-foreground line-clamp-2 leading-tight">
@@ -50,16 +50,16 @@ export function ProjectCard({ project }: { project: Project }) {
         <div className="space-y-2.5 sm:space-y-3 text-xs font-normal text-muted-foreground">
           <div className="flex items-center gap-2">
             <CalendarDays className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span>Created {formatDate(project.createdAt)}</span>
+            <span>Created {project.createdAt ? formatDate(project.createdAt) : "N/A"}</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span>Expires {formatDate(project.expiresAt)}</span>
+            <span>Expires {project.expiresAt ? formatDate(project.expiresAt) : "N/A"}</span>
           </div>
           {project.isFlagged && (
             <div className="flex items-center gap-2 text-destructive mt-2">
               <Flag className="h-4 w-4 shrink-0" />
-              <span className="font-semibold">Flagged for review ({project.reportCount})</span>
+              <span className="font-semibold">Flagged for review ({project.reportCount ?? 0})</span>
             </div>
           )}
         </div>
@@ -67,8 +67,9 @@ export function ProjectCard({ project }: { project: Project }) {
 
       <CardFooter className="p-5 sm:p-6 pt-4 sm:pt-5 flex-none mt-auto border-t border-border">
         <Button
+          variant="secondary"
           onClick={() => router.push(`/open-gig/${project._id}`)}
-          className="w-full justify-center h-10 bg-secondary text-secondary-foreground hover:opacity-90 font-semibold text-xs transition-all rounded-xl shadow-xs cursor-pointer"
+          className="w-full justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer"
         >
           <Eye className="h-4 w-4 mr-2" />
           View Details

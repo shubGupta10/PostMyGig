@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -82,7 +81,7 @@ export function FreelancerDashboard({ data }: { data: FreelancerDashboardData })
                         {data.appliedHistory.map((item) => (
                             <div
                                 key={item._id}
-                                className="flex flex-col h-full border-2 border-border bg-card shadow-xs hover:border-muted-foreground transition-all rounded-2xl overflow-hidden p-5 sm:p-6 space-y-4 justify-between"
+                                className="flex flex-col h-full border-2 border-border bg-card shadow-xs rounded-2xl overflow-hidden p-5 sm:p-6 space-y-4 justify-between"
                             >
                                 <div className="space-y-2.5">
                                     <div className="flex items-start justify-between gap-3">
@@ -105,8 +104,9 @@ export function FreelancerDashboard({ data }: { data: FreelancerDashboardData })
 
                                 <div className="pt-4 border-t border-border mt-auto">
                                     <Button
+                                        variant="secondary"
                                         onClick={() => router.push(`/open-gig/${item.projectId}`)}
-                                        className="w-full justify-center h-10 bg-secondary text-secondary-foreground hover:opacity-90 font-semibold text-xs transition-all rounded-xl shadow-xs cursor-pointer"
+                                        className="w-full justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer"
                                     >
                                         <Eye className="h-4 w-4 mr-2" />
                                         View Details
