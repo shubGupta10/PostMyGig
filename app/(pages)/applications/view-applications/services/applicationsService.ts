@@ -28,6 +28,9 @@ export async function acceptApplicationService(
     body: JSON.stringify({ applicationId, applicantEmail, gigId }),
   })
   if (!response.ok) throw new Error("Failed to accept applicant")
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("refresh-notification"))
+  }
 }
 
 export async function deleteApplicationService(applicationId: string): Promise<void> {
@@ -37,6 +40,9 @@ export async function deleteApplicationService(applicationId: string): Promise<v
     body: JSON.stringify({ applicationId }),
   })
   if (!response.ok) throw new Error("Error deleting application")
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("refresh-notification"))
+  }
 }
 
 export async function fetchContactDetailsService(applicantEmail: string): Promise<ContactData> {

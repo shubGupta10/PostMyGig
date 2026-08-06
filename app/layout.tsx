@@ -19,6 +19,7 @@ import { authOptions } from "@/lib/options";
 import Navbar from "@/components/Navbar";
 import { AddGigButton } from "@/components/gigs/AddGigButton";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
+import { NotificationBell } from "@/components/notification/NotificationBell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -158,6 +159,7 @@ export default async function RootLayout({
                         <AddGigButton />
                         <RoleSwitcher />
                         <DarkModeToggle />
+                        <NotificationBell />
                       </div>
                     </header>
                     <main className="flex-1 flex flex-col">

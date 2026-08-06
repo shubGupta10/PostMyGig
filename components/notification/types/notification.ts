@@ -10,6 +10,7 @@ export interface INotificationItem {
     senderEmail?: string;
     senderName?: string;
     type: NotificationType;
+    title: string;
     message: string;
     link?: string;
     isRead: boolean;

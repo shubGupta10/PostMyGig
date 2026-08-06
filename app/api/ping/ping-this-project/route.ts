@@ -12,6 +12,7 @@ import Activity from "@/models/ActivityModel"
 import redis from "@/lib/redis"
 import { canUserPerformAction, incrementUserUsage } from "@/lib/subscription/engine"
 import { ACTION_TYPES } from "@/lib/subscription/config/subscriptions"
+import { dispatchNotification } from "@/lib/notification/dispatcher"
 
 export async function POST(req: NextRequest) {
   try {
@@ -59,9 +60,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const [poster, fetchedProject] = await Promise.all([
+    const [poster, fetchedProject, existingPing] = await Promise.all([
       userModel.findById(posterId).lean(),
-      ProjectModel.findById(projectId).lean()
+      ProjectModel.findById(projectId).lean(),
+      PingModel.findOne({ projectId, userEmail: session.user.email }).lean(),
     ]);
 
     if (!poster) {
@@ -69,6 +71,12 @@ export async function POST(req: NextRequest) {
     }
     if (!fetchedProject) {
       return NextResponse.json({ message: "Project not found" }, { status: 404 });
+    }
+    if (existingPing) {
+      return NextResponse.json(
+        { message: "You have already applied for this project." },
+        { status: 400 }
+      );
     }
 
     const posterEmail = poster?.email
@@ -127,6 +135,17 @@ export async function POST(req: NextRequest) {
           html: emailData,
         })
       }
+
+      // Send in-app notification to project owner
+      await dispatchNotification({
+        recipientEmail: posterEmail,
+        senderEmail: userEmail,
+        senderName: session.user.name || "Applicant",
+        type: "ping_received",
+        title: "New Pitch Received",
+        message: `${session.user.name || "A freelancer"} pitched for your project: "${fetchedProject.title || 'Gig'}"`,
+        link: `/open-gig/${projectId}`,
+      })
     })
 
     after(async () => {
