@@ -10,6 +10,8 @@ import ProjectModel from "@/models/ProjectModel"
 import resend from "@/lib/resend"
 import Activity from "@/models/ActivityModel"
 import redis from "@/lib/redis"
+import { canUserPerformAction, incrementUserUsage } from "@/lib/subscription/engine"
+import { ACTION_TYPES } from "@/lib/subscription/config/subscriptions"
 
 export async function POST(req: NextRequest) {
   try {
@@ -71,6 +73,20 @@ export async function POST(req: NextRequest) {
 
     const posterEmail = poster?.email
 
+    const quotaCheck = await canUserPerformAction(
+      session.user.id,
+      session.user.email!,
+      "freelancer",
+      ACTION_TYPES.SEND_PING
+    )
+
+    if (!quotaCheck.canPerform) {
+      return NextResponse.json(
+        { message: quotaCheck.reason, limitReached: true },
+        { status: 403 }
+      );
+    }
+
     // Create the ping with optional fields
     const ping = await PingModel.create({
       projectId,
@@ -81,6 +97,8 @@ export async function POST(req: NextRequest) {
       bestWorkLink: bestWorkLink || "",
       bestWorkDescription: bestWorkDescription || "",
     })
+
+    await incrementUserUsage(session.user.id, session.user.email!, ACTION_TYPES.SEND_PING)
 
     //config html email
     const emailData = postMyGigPingTemplate({

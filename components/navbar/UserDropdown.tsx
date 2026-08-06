@@ -41,7 +41,7 @@ export function UserDropdown({ session }: UserDropdownProps) {
   const isAdmin = user?.role === "admin"
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center space-x-3 hover:bg-muted/50 p-2 rounded-lg transition-colors duration-200 border border-transparent hover:border-border">
           {user?.image ? (

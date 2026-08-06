@@ -8,6 +8,7 @@ import ProblemSolving from '@/components/landingpage/problemSolving'
 import fs from 'fs'
 import path from 'path'
 import Features from '@/components/landingpage/features'
+import LandingPricing from '@/components/landingpage/pricing'
 
 // Copy generated 16:9 thumbnail image to public directory
 try {
@@ -28,6 +29,7 @@ function Home() {
       <Features />
       <HowItWorks />
       {/* <FreelancerClient/> */}
+      <LandingPricing />
       <FAQsTwo />
       <EarlyUserFeedback />
       <FinalCTA />

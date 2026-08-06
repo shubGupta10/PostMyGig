@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Briefcase } from "lucide-react";
 import type { FreelancerDashboardData } from "@/app/dashboard/types";
+import { UsageMeter } from "@/components/subscription/UsageMeter";
 
 export function FreelancerDashboard({ data }: { data: FreelancerDashboardData }) {
     const router = useRouter();
@@ -50,6 +51,11 @@ export function FreelancerDashboard({ data }: { data: FreelancerDashboardData })
                     </div>
                 ))}
             </div>
+
+            {/* Quota Usage Meter */}
+            {data.usageStats && (
+                <UsageMeter stats={data.usageStats} label="Pings" />
+            )}
 
             {/* Application History */}
             <div className="space-y-4 sm:space-y-6">

@@ -51,11 +51,12 @@ export async function DELETE(req: NextRequest) {
 
         //send mail for deletion
         after(async () => {
+            const userName = session.user.name || "User";
             const { error } = await resend.emails.send({
                 from: 'PostMyGig <hello@postmygig.vercel.app>',
                 to: userEmail,
                 subject: "Confirmation: Your Account Has Been Permanently Deleted",
-                html: postMyGigAccountDeletedTemplate(session.user.name)
+                html: postMyGigAccountDeletedTemplate(userName)
             })
 
             if (error) {
@@ -63,7 +64,7 @@ export async function DELETE(req: NextRequest) {
                 await EmailSender({
                     to: userEmail,
                     subject: "Confirmation: Your Account Has Been Permanently Deleted",
-                    html: postMyGigAccountDeletedTemplate(session.user.name)
+                    html: postMyGigAccountDeletedTemplate(userName)
                 });
             }
         });

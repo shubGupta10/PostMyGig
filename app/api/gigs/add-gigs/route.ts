@@ -5,6 +5,8 @@ import ProjectModel from "@/models/ProjectModel"
 import { ConnectoDatabase } from "@/lib/db"
 import redis from "@/lib/redis"
 import Activity from "@/models/ActivityModel"
+import { canUserPerformAction, incrementUserUsage } from "@/lib/subscription/engine"
+import { ACTION_TYPES } from "@/lib/subscription/config/subscriptions"
 
 interface ContactInfo {
   email?: string
@@ -64,6 +66,18 @@ export async function POST(req: NextRequest) {
       cleanContact.x = contact.x.trim()
     }
 
+    const quotaCheck = await canUserPerformAction(
+      session.user.id,
+      session.user.email!,
+      "client",
+      ACTION_TYPES.POST_GIG
+    );
+    if (!quotaCheck.canPerform) {
+      return NextResponse.json({
+        message: quotaCheck.reason, limitReached: true
+      }, { status: 403 })
+    }
+
     const newGig = new ProjectModel({
       title: title.trim(),
       description: description.trim(),
@@ -77,6 +91,7 @@ export async function POST(req: NextRequest) {
     })
 
     await newGig.save()
+    await incrementUserUsage(session.user.id, session.user.email!, ACTION_TYPES.POST_GIG);
 
     try {
       const keys = await redis.keys("fetch-gigs:*");
