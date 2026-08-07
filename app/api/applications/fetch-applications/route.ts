@@ -12,7 +12,10 @@ export async function GET(req: NextRequest) {
 
     const applicationWithUserData = await PingModel.aggregate([
       {
-        $match: { projectId: gigId }
+        $match: {
+          projectId: gigId,
+          status: { $ne: "rejected" }
+        },
       },
       {
         $lookup: {

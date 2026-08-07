@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useRef, type JSX } from "react"
-import { Send, MessageCircle, Loader, AlertCircle, ChevronDown } from "lucide-react"
+import { Send, MessageCircle, Loader, AlertCircle, ChevronDown, ArrowLeft, CheckCheck } from "lucide-react"
 import { toast } from "sonner"
 import {
   connectSocket,
@@ -23,6 +23,10 @@ import {
 } from "@/lib/(socket)/socket"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { getInitials } from "@/lib/helpers"
+import { SidebarAutoCollapser } from "./chat/SidebarAutoCollapser"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 interface Message {
   message: string
@@ -56,9 +60,10 @@ interface UserData {
 
 interface ChatSystemProps {
   projectId: string
+  onBackToThreads?: () => void
 }
 
-export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element {
+export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemProps): JSX.Element {
   const [messages, setMessages] = useState<Message[]>([])
   const [message, setMessage] = useState<string>("")
   const [isConnected, setIsConnected] = useState<boolean>(false)
@@ -125,13 +130,9 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
 
         const data: UserData = await response.json()
         setUserData(data)
-        console.log("User data", data)
 
         const posterId = data.posterData._id
-        console.log("Poster data", posterId)
-
         const applyerId = data.applyerData._id
-        console.log("Applyer data", applyerId)
 
         setPosterUserId(posterId)
         setApplyerUserId(applyerId)
@@ -174,28 +175,23 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
   const initializeSocketConnection = async (userId: string, targetId: string) => {
     try {
       setIsConnecting(true)
-      toast.loading("Connecting to chat...", { id: "chat-connection" })
 
       await connectSocket()
       initUser(userId)
       joinPrivateRoom(targetId)
       setIsConnected(true)
 
-      toast.success("Connected to chat", { id: "chat-connection" })
-
-      // Handle chat history
       onChatHistory((historyData: ChatHistoryData[]) => {
         const formattedMessages: Message[] = historyData.map((chat) => ({
           message: chat.message,
           sender: chat.senderId,
-          timestamp: new Date(chat.timeStamp).toLocaleTimeString(),
+          timestamp: new Date(chat.timeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           isOwn: chat.senderId === userId,
         }))
 
         setMessages(formattedMessages)
         setHistoryLoaded(true)
 
-        // Scroll to bottom after loading history
         setTimeout(() => {
           scrollToBottom()
         }, 100)
@@ -207,21 +203,18 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
           {
             message: data.message,
             sender: data.sender,
-            timestamp: new Date().toLocaleTimeString(),
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isOwn: false,
           },
         ])
-        toast.success("New message received")
       })
 
       onDisconnect(() => {
         setIsConnected(false)
-        toast.error("Disconnected from chat server")
       })
     } catch (error) {
       setError("Failed to connect to chat server")
       setIsConnected(false)
-      toast.error("Failed to connect to chat server", { id: "chat-connection" })
     } finally {
       setIsConnecting(false)
     }
@@ -242,17 +235,14 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
     const currentUserId = getCurrentUserId()
     const targetUserId = currentUserId === posterUserId ? applyerUserId : posterUserId
 
-    // Determine sender and receiver data based on current user role
     let senderName: string, senderEmail: string, receiverName: string, receiverEmail: string
 
     if (currentUserRole === "poster") {
-      // Current user is poster, so they are sender
       senderName = userData?.posterData.name as string
       senderEmail = userData?.posterData.email as string
       receiverName = userData?.applyerData.name as string
       receiverEmail = userData?.applyerData.email as string
     } else {
-      // Current user is applyer, so they are sender
       senderName = userData?.applyerData.name as string
       senderEmail = userData?.applyerData.email as string
       receiverName = userData?.posterData.name as string
@@ -262,25 +252,25 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
     const messageData: Message = {
       message: message.trim(),
       sender: currentUserId || "",
-      timestamp: new Date().toLocaleTimeString(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isOwn: true,
     }
 
     setMessages((prev) => [...prev, messageData])
+    setTimeout(scrollToBottom, 50)
 
     try {
       sendPrivateMessage(
         targetUserId,
         message.trim(),
         projectId,
-        senderName, // Current user's name
-        senderEmail, // Current user's email
-        receiverName, // Target user's name
-        receiverEmail, // Target user's email
+        senderName,
+        senderEmail,
+        receiverName,
+        receiverEmail,
       )
       setMessage("")
     } catch (error) {
-      setError("Failed to send message")
       toast.error("Failed to send message")
     }
   }
@@ -292,227 +282,114 @@ export default function ChatSystem({ projectId }: ChatSystemProps): JSX.Element 
     }
   }
 
-  const getConnectionStatus = (): { text: string; color: string } => {
-    if (isConnecting || isLoading) return { text: "Connecting...", color: "text-accent-foreground" }
-    if (error) return { text: "Error", color: "text-destructive" }
-    if (isConnected) return { text: "Connected", color: "text-primary" }
-    return { text: "Disconnected", color: "text-destructive" }
-  }
-
-  const getConnectionDot = (): string => {
-    if (isConnecting || isLoading) return "bg-accent-foreground"
-    if (error) return "bg-destructive"
-    if (isConnected) return "bg-primary"
-    return "bg-destructive"
-  }
-
-  const getRoleColors = () => {
-    return currentUserRole === "poster"
-      ? {
-          bg: "bg-primary",
-          hover: "hover:bg-primary/90",
-          text: "text-primary",
-          light: "bg-secondary",
-          border: "border-primary",
-        }
-      : {
-          bg: "bg-accent-foreground",
-          hover: "hover:bg-accent-foreground/90",
-          text: "text-accent-foreground",
-          light: "bg-accent",
-          border: "border-accent-foreground",
-        }
-  }
-
-  const getPartnerColors = () => {
-    return currentUserRole === "poster"
-      ? { bg: "bg-accent", text: "text-accent-foreground", border: "border-accent" }
-      : { bg: "bg-secondary", text: "text-secondary-foreground", border: "border-secondary" }
-  }
-
   if (status === "loading" || isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-card rounded-3xl shadow-2xl p-10 border border-border text-center max-w-lg w-full">
-          <div className="w-20 h-20 bg-secondary rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <Loader className="w-10 h-10 animate-spin text-primary" />
-          </div>
-          <h2 className="text-2xl font-bold text-card-foreground mb-4 tracking-tight">Initializing Chat</h2>
-          <p className="text-muted-foreground text-lg leading-relaxed">Setting up your private conversation...</p>
-          <div className="mt-6 flex justify-center space-x-1">
-            <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-            <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-          </div>
+      <div className="h-full bg-background flex items-center justify-center p-4">
+        <SidebarAutoCollapser />
+        <div className="bg-card rounded-2xl p-8 border-2 border-border text-center max-w-sm w-full space-y-4 shadow-xs">
+          <Loader className="w-8 h-8 animate-spin text-primary mx-auto" />
+          <p className="text-sm font-semibold text-foreground">Connecting to Chat...</p>
         </div>
       </div>
     )
   }
-
-  if (status === "unauthenticated" || !session?.user?.id) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-card rounded-3xl shadow-2xl p-10 border border-destructive/30 text-center max-w-lg w-full">
-          <div className="w-20 h-20 bg-destructive/20 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <AlertCircle className="w-10 h-10 text-destructive" />
-          </div>
-          <h2 className="text-2xl font-bold text-card-foreground mb-4 tracking-tight">Unauthorized Access</h2>
-          <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
-            You need to be logged in to access this chat.
-          </p>
-          <button
-            onClick={() => router.push("/auth/login")}
-            className="px-8 py-4 bg-primary text-primary-foreground rounded-2xl hover:bg-primary/90 transition-all duration-200 font-bold text-lg shadow-lg hover:scale-105 active:scale-95"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="bg-card rounded-3xl shadow-2xl p-10 border border-destructive/30 text-center max-w-lg w-full">
-          <div className="w-20 h-20 bg-destructive/20 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <AlertCircle className="w-10 h-10 text-destructive" />
-          </div>
-          <h2 className="text-2xl font-bold text-card-foreground mb-4 tracking-tight">Chat Error</h2>
-          <p className="text-muted-foreground mb-8 text-lg leading-relaxed">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-8 py-4 bg-destructive text-destructive-foreground rounded-2xl hover:bg-destructive/90 transition-all duration-200 font-bold text-lg shadow-lg hover:scale-105 active:scale-95"
-          >
-            Retry Connection
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  const roleColors = getRoleColors()
-  const partnerColors = getPartnerColors()
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-5xl mx-auto h-screen max-h-[calc(100vh-2rem)] flex flex-col bg-card rounded-3xl shadow-2xl overflow-hidden border border-border">
-        {/* Enhanced Header */}
-        <div className={`bg-card border-b ${roleColors.border} p-6 backdrop-blur-sm`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+    <div className="h-full bg-background flex flex-col flex-1 overflow-hidden">
+      <SidebarAutoCollapser />
+      {/* WhatsApp Web Right Header */}
+      <div className="h-16 px-4 bg-card border-b border-border flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => (onBackToThreads ? onBackToThreads() : router.back())}
+            className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer md:hidden"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="size-10 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center font-bold text-sm border border-border shrink-0">
+            {getInitials(chatPartnerName || "User")}
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-foreground">{chatPartnerName}</h2>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
+              <span className={`w-2 h-2 rounded-full ${isConnected ? "bg-primary animate-pulse" : isConnecting ? "bg-yellow-500 animate-pulse" : "bg-destructive"}`} />
+              <span>{isConnected ? "Online" : isConnecting ? "Connecting..." : "Disconnected"}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Messages Feed */}
+      <div
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 bg-background relative"
+        ref={messagesContainerRef}
+      >
+        {messages.length === 0 ? (
+          <div className="text-center py-16 space-y-2">
+            <div className="w-12 h-12 bg-secondary rounded-2xl flex items-center justify-center mx-auto text-secondary-foreground shadow-xs">
+              <MessageCircle className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-semibold text-foreground">Start the Conversation</p>
+            <p className="text-xs text-muted-foreground">Messages are connected in real-time.</p>
+          </div>
+        ) : (
+          messages.map((msg, idx) => (
+            <div
+              key={idx}
+              className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
+            >
               <div
-                className={`w-14 h-14 ${roleColors.bg} rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-background`}
+                className={`max-w-[85%] sm:max-w-[70%] px-4 py-2.5 shadow-xs space-y-1 ${
+                  msg.isOwn
+                    ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
+                    : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border-2 border-border"
+                }`}
               >
-                <MessageCircle className="w-7 h-7 text-primary-foreground" />
-              </div>
-              <div className="flex flex-col">
-                <h2 className="text-xl font-bold text-card-foreground tracking-tight">{session.user.name}</h2>
-                <div className="flex items-center gap-3 text-sm">
-                  <div className={`w-3 h-3 rounded-full ${getConnectionDot()} animate-pulse`}></div>
-                  <span className={`font-semibold ${getConnectionStatus().color}`}>{getConnectionStatus().text}</span>
-                  <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
-                  <span className={`font-medium ${roleColors.text} capitalize px-2 py-1 rounded-md bg-muted`}>
-                    {currentUserRole}
-                  </span>
+                <p className="text-sm leading-relaxed font-normal break-words">{msg.message}</p>
+                <div
+                  className={`flex items-center justify-end gap-1 text-[10px] ${
+                    msg.isOwn ? "text-primary-foreground/80" : "text-secondary-foreground/70"
+                  }`}
+                >
+                  <span>{msg.timestamp}</span>
+                  {msg.isOwn && <CheckCheck className="w-3 h-3" />}
                 </div>
               </div>
             </div>
-            <div className={`px-4 py-2 ${roleColors.light} ${roleColors.border} border-2 rounded-2xl shadow-sm`}>
-              <span className={`text-sm font-bold ${roleColors.text} tracking-wide`}>PROJECT CHAT</span>
-            </div>
-          </div>
-        </div>
+          ))
+        )}
+        <div ref={messagesEndRef} />
 
-        {/* Enhanced Messages Area */}
-        <div
-          className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-card relative"
-          ref={messagesContainerRef}
-        >
-          <div className="space-y-4">
-            {messages.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="w-20 h-20 bg-muted rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                  <MessageCircle className="w-10 h-10 text-muted-foreground" />
-                </div>
-                <h3 className="text-xl font-bold text-card-foreground mb-3">
-                  {historyLoaded ? "No Messages Yet" : "Loading Chat History..."}
-                </h3>
-                <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed">
-                  {historyLoaded
-                    ? `Begin discussing your project with ${chatPartnerName}`
-                    : "Fetching your conversation history..."}
-                </p>
-              </div>
-            ) : (
-              messages.map((msg: Message, index: number) => (
-                <div key={index} className={`flex ${msg.isOwn ? "justify-end" : "justify-start"} mb-4`}>
-                  <div className={`flex flex-col ${msg.isOwn ? "items-end" : "items-start"} max-w-sm lg:max-w-md`}>
-                    <div
-                      className={`px-5 py-4 rounded-3xl shadow-md transition-all duration-200 hover:shadow-lg ${
-                        msg.isOwn
-                          ? `${roleColors.bg} text-primary-foreground rounded-br-lg`
-                          : `${partnerColors.bg} ${partnerColors.text} border-2 ${partnerColors.border} rounded-bl-lg`
-                      }`}
-                    >
-                      <div className="break-words leading-relaxed font-medium">{msg.message}</div>
-                    </div>
-                    <div
-                      className={`text-xs mt-2 px-2 font-medium ${
-                        msg.isOwn ? "text-muted-foreground" : "text-muted-foreground"
-                      }`}
-                    >
-                      {msg.timestamp}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+        {showScrollButton && (
+          <button
+            onClick={scrollToBottom}
+            className="fixed bottom-24 right-8 p-3 bg-card border-2 border-border text-foreground rounded-full shadow-lg hover:bg-secondary transition-colors z-10 cursor-pointer"
+          >
+            <ChevronDown className="w-5 h-5" />
+          </button>
+        )}
+      </div>
 
-          {/* Enhanced Scroll Button */}
-          {showScrollButton && (
-            <button
-              onClick={scrollToBottom}
-              className={`fixed bottom-32 right-8 w-14 h-14 ${roleColors.bg} ${roleColors.hover} text-primary-foreground rounded-2xl shadow-xl flex items-center justify-center transition-all duration-300 z-10 hover:scale-110 ring-4 ring-background`}
-            >
-              <ChevronDown className="w-6 h-6" />
-            </button>
-          )}
-        </div>
-
-        {/* Enhanced Input Area */}
-        <div className={`bg-card border-t-2 ${roleColors.border} p-6 backdrop-blur-sm`}>
-          <div className="flex gap-4 items-end">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                value={message}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder={`Message ${chatPartnerName}...`}
-                disabled={!isConnected || isConnecting || isLoading}
-                className="w-full px-6 py-4 border-2 border-border rounded-2xl focus:outline-none focus:ring-4 focus:ring-ring focus:border-primary disabled:opacity-50 disabled:bg-muted text-card-foreground placeholder-muted-foreground font-medium text-base transition-all duration-200 shadow-sm bg-background"
-              />
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                <div className={`w-2 h-2 rounded-full ${getConnectionDot()}`}></div>
-              </div>
-            </div>
-            <button
-              onClick={sendMessage}
-              disabled={!isConnected || !message.trim() || isConnecting || isLoading}
-              className={`px-6 py-4 ${roleColors.bg} ${roleColors.hover} text-primary-foreground rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg font-bold text-base hover:scale-105 active:scale-95`}
-            >
-              <Send className="w-5 h-5" />
-              <span className="hidden sm:inline">Send</span>
-            </button>
-          </div>
-
-          {/* Typing Indicator Area */}
-          <div className="mt-3 h-4 flex items-center">
-            <div className={`text-xs ${roleColors.text} font-medium opacity-0`}>{chatPartnerName} is typing...</div>
-          </div>
+      {/* Input Bar */}
+      <div className="p-3 bg-card border-t border-border shrink-0">
+        <div className="flex gap-2 sm:gap-3 items-center">
+          <Input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder={`Type a message...`}
+            disabled={!isConnected}
+            className="flex-1 h-10 px-4 bg-background border border-border rounded-xl"
+          />
+          <Button
+            onClick={sendMessage}
+            disabled={!isConnected || !message.trim()}
+            className="h-10 px-4 bg-primary text-primary-foreground rounded-xl font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+          >
+            <Send className="w-4 h-4" />
+            <span className="hidden sm:inline">Send</span>
+          </Button>
         </div>
       </div>
     </div>

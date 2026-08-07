@@ -2,7 +2,7 @@ import React from "react"
 import { getDashboardDetails } from "@/app/dashboard/services/dashboardService"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Eye, Briefcase, Calendar } from "lucide-react"
+import { Eye, Briefcase, Calendar, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import type { FreelancerDashboardData } from "@/app/dashboard/types"
 import { redirect } from "next/navigation"
@@ -35,15 +35,7 @@ export default async function ApplicationHistoryPage() {
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10">
-      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-            Application <span className="text-primary">History</span>
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Track all pitches and applications you've submitted across open gigs
-          </p>
-        </div>
+      <div className="max-w-7xl mx-auto space-y-6">
 
         {applications.length === 0 ? (
           <div className="border-2 border-dashed border-border bg-card p-6 sm:p-12 text-center rounded-2xl flex flex-col items-center justify-center">
@@ -92,16 +84,30 @@ export default async function ApplicationHistoryPage() {
                   </div>
                 </div>
 
-                <Button
-                  asChild
-                  variant="secondary"
-                  className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs"
-                >
-                  <Link href={`/open-gig/${item.projectId}`}>
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </Link>
-                </Button>
+                {item.status.toLowerCase() === "accepted" ? (
+                  <Button
+                    asChild
+                    className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs bg-primary text-primary-foreground cursor-pointer"
+                  >
+                    <Link href={`/projects/${item.projectId}/huddle`}>
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Open Project Huddle
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    variant="secondary"
+                    className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs"
+                  >
+                    <Link href={`/open-gig/${item.projectId}`}>
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Details
+                    </Link>
+                  </Button>
+                )}
+
+
               </div>
             ))}
           </div>

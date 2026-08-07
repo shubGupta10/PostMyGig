@@ -5,6 +5,7 @@ import SessionProviderWrapper from "../components/SessionProviderWrapper";
 import Footer from "@/components/Footer";
 import SmallFooter from "@/components/SmallFooter";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { BackendWarmer } from "@/components/BackendWarmer";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { HeaderTitle } from "@/components/header-title";
@@ -141,12 +142,14 @@ export default async function RootLayout({
           >
             {inNotOnboarded ? (
               <div className="min-h-screen bg-background flex flex-col justify-center items-center p-6">
+                <BackendWarmer />
                 <Analytics />
                 <Suspense>{children}</Suspense>
                 <Toaster />
               </div>
             ) : session ? (
               <TooltipProvider>
+                <BackendWarmer />
                 <SidebarProvider>
                   <AppSidebar />
                   <SidebarInset>
