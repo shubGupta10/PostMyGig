@@ -28,6 +28,26 @@ export async function dispatchNotification(params: DispatchNotificationParams) {
             console.warn("Failed to increment Redis notification cache:", error);
         }
 
+
+        try {
+            const channel = `user-notification:${params.recipientEmail}`;
+            const payload = JSON.stringify({
+                _id: notification._id,
+                recipientEmail: notification.recipientEmail,
+                senderEmail: notification.senderEmail,
+                senderName: notification.senderName,
+                type: notification.type,
+                title: notification.title,
+                message: notification.message,
+                link: notification.link,
+                isRead: notification.isRead,
+                createdAt: notification.createdAt.toISOString(),
+            })
+            await redis.publish(channel, payload);
+        } catch (error) {
+            console.warn("Failed to publish live notification to Redis:", error);
+        }
+
         return notification;
     } catch (error) {
         console.error("Error dispatching notification:", error);

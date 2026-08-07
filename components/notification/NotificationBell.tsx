@@ -39,25 +39,41 @@ export function NotificationBell() {
     useEffect(() => {
         fetchNotifications();
 
-        const handleInstantRefresh = () => fetchNotifications();
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === "visible") {
-                fetchNotifications();
-            }
-        };
-
+        const handleInstantRefresh = () =>
+            fetchNotifications();
         window.addEventListener("refresh-notification", handleInstantRefresh);
-        window.addEventListener("focus", handleInstantRefresh);
-        document.addEventListener("visibilitychange", handleVisibilityChange);
 
-        const interval = setInterval(fetchNotifications, 10000);
+        let eventSource: EventSource | null = null;
+        if (session?.user.email) {
+            eventSource = new EventSource("/api/notifications/stream");
+
+            eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === "heartbeat" && typeof data.unreadCount === "number") {
+                        setUnreadCount((prev) => {
+                            if (data.unreadCount > prev) {
+                                fetchNotifications();
+                            }
+                            return data.unreadCount;
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error parsing SSE message:", error);
+                }
+            };
+            eventSource.onerror = () => {
+
+            }
+        }
+
         return () => {
             window.removeEventListener("refresh-notification", handleInstantRefresh);
-            window.removeEventListener("focus", handleInstantRefresh);
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
-            clearInterval(interval);
-        }
-    }, [fetchNotifications]);
+            if (eventSource) {
+                eventSource.close();
+            }
+        };
+    }, [fetchNotifications, session?.user.email]);
 
     const handleMarkAsRead = async (id: string) => {
         // Optimistic UI update
@@ -105,7 +121,9 @@ export function NotificationBell() {
                 >
                     <Bell className="h-5 w-5 text-foreground" />
                     {unreadCount > 0 && (
-                        <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-background animate-pulse" />
+                        <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold border-2 border-background animate-in zoom-in">
+                            {unreadCount > 9 ? "99+" : unreadCount}
+                        </span>
                     )}
                     <span className="sr-only">Toggle notifications ({unreadCount} unread)</span>
                 </Button>
