@@ -58,6 +58,7 @@ export default withAuth(
                     "/",
                     "/auth/login",
                     "/auth/register",
+                    "/auth/forgot-password",
                     "/view-gigs",
                     "/api/gigs/fetch-gigs",
                     "/auth/verify-code",
