@@ -6,7 +6,7 @@ import ratelimiter from "@/lib/ratelimit"
 
 export async function GET(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "anonymous"
-  
+
   // Get page and limit from URL
   const { searchParams } = new URL(req.url)
   const page = parseInt(searchParams.get("page") || "1")
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
     // Get total count
     const totalCount = await ProjectModel.countDocuments({
       expiresAt: { $gt: currentDate },
-      status: { $nin: ["accepted", "completed"] }
+      status: { $nin: ["accepted", "completed", "expired"] }
     })
 
     const totalPages = Math.ceil(totalCount / limit)
