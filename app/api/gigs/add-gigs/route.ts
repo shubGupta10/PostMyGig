@@ -7,6 +7,7 @@ import redis from "@/lib/redis"
 import Activity from "@/models/ActivityModel"
 import { canUserPerformAction, incrementUserUsage } from "@/lib/subscription/engine"
 import { ACTION_TYPES } from "@/lib/subscription/config/subscriptions"
+import { dispatchNotification } from "@/lib/notification/dispatcher"
 
 interface ContactInfo {
   email?: string
@@ -118,6 +119,15 @@ export async function POST(req: NextRequest) {
         })
         await redis.del("real-time-activity-data");
       }
+
+      // Dispatch in-app notification to client
+      await dispatchNotification({
+        recipientEmail: session.user.email!,
+        type: "system_alert",
+        title: "Gig Posted Successfully",
+        message: `Your gig "${newGig.title}" is now live on the board.`,
+        link: `/open-gig/${newGig.id}`,
+      })
     })
 
     return NextResponse.json({ message: "Gig created successfully", gig: newGig }, { status: 201 })

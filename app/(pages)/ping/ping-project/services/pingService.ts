@@ -13,5 +13,9 @@ export async function submitPingService(formData: PingFormData): Promise<string>
     throw new Error(result.message || "Failed to submit application")
   }
 
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("refresh-notification"))
+  }
+
   return result.message || "Application submitted successfully!"
 }

@@ -1,9 +1,10 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest, after } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import { ConnectoDatabase } from "@/lib/db";
 import userModel from "@/models/UserModel";
 import SubscriptionModel from "@/models/SubscriptionModel";
+import { dispatchNotification } from "@/lib/notification/dispatcher";
 
 export async function POST(req: NextRequest) {
     try {
@@ -46,6 +47,17 @@ export async function POST(req: NextRequest) {
             },
             { upsert: true, new: true }
         );
+
+        // 3. Dispatch system alert in-app notification
+        after(async () => {
+            await dispatchNotification({
+                recipientEmail: session.user.email!,
+                type: "system_alert",
+                title: "Plan Upgraded!",
+                message: `Welcome to PostMyGig ${plan.toUpperCase()} plan. You now have higher monthly gig and pitch quotas.`,
+                link: "/dashboard",
+            });
+        });
 
         return NextResponse.json({
             message: `Successfully upgraded to ${plan.toUpperCase()} plan!`,

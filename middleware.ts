@@ -6,7 +6,7 @@ export default withAuth(
     async function middleware(req) {
         const { pathname } = req.nextUrl;
 
-        if (pathname.startsWith("/api") || pathname.startsWith("/auth")) {
+        if ((pathname.startsWith("/api") || pathname.startsWith("/auth")) && !pathname.startsWith("/api/auth")) {
             const realIp = req.headers.get("x-real-ip");
             const forwardedFor = req.headers.get("x-forwarded-for");
             const ip = realIp || (forwardedFor ? forwardedFor.split(",")[0].trim() : "anonymous");

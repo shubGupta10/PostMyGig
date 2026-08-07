@@ -7,6 +7,7 @@ import { postMyGigApplicationAcceptedTemplate } from "@/lib/email/templates";
 import userModel from "@/models/UserModel";
 import resend from "@/lib/resend";
 import redis from "@/lib/redis";
+import { dispatchNotification } from "@/lib/notification/dispatcher";
 
 //accept application
 export async function POST(req: NextRequest) {
@@ -91,6 +92,15 @@ export async function POST(req: NextRequest) {
                     )
                 })
             }
+
+            // Dispatch in-app notification to freelancer
+            await dispatchNotification({
+                recipientEmail: applicantEmail,
+                type: "ping_accepted",
+                title: "Application Accepted!",
+                message: `Your pitch for "${fetchGigTitle?.title || 'Gig'}" was accepted by the client.`,
+                link: `/open-gig/${gigId}`,
+            })
         })
 
 

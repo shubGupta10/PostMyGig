@@ -194,6 +194,9 @@ function AddGigs() {
 
       if (response.status === 201) {
         toast.success("Gig created successfully!")
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("refresh-notification"));
+        }
         setFormData({
           title: "",
           description: "",
