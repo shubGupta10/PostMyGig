@@ -3,7 +3,7 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CalendarDays, Clock, Flag, Eye, Briefcase, Plus } from "lucide-react"
+import { CalendarDays, Clock, Flag, Eye, Briefcase, Plus, MessageSquare } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { useRouter } from "next/navigation"
 import type { Project } from "@/app/dashboard/types"
@@ -66,14 +66,24 @@ export function ProjectCard({ project }: { project: Project }) {
       </CardContent>
 
       <CardFooter className="p-5 sm:p-6 pt-4 sm:pt-5 flex-none mt-auto border-t border-border">
-        <Button
-          variant="secondary"
-          onClick={() => router.push(`/open-gig/${project._id}`)}
-          className="w-full justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer"
-        >
-          <Eye className="h-4 w-4 mr-2" />
-          View Details
-        </Button>
+        {project.AcceptedFreelancerEmail ? (
+          <Button
+            onClick={() => router.push(`/projects/${project._id}/huddle`)}
+            className="w-full justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer bg-primary text-primary-foreground"
+          >
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Open Project Huddle
+          </Button>
+        ) : (
+          <Button
+            variant="secondary"
+            onClick={() => router.push(`/open-gig/${project._id}`)}
+            className="w-full justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer"
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            View Details
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )

@@ -26,11 +26,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Project not found" }, { status: 404 });
     }
 
-    if (!pingData) {
-      return NextResponse.json({ message: "Ping not found" }, { status: 404 });
-    }
+    const posterEmail = pingData?.posterEmail || projectData.createdBy
+    const applyerEmail = pingData?.userEmail || projectData.AcceptedFreelancerEmail
 
-    const { posterEmail, userEmail: applyerEmail } = pingData;
+    if (!posterEmail || !applyerEmail) {
+      return NextResponse.json({ message: "Chat participants not found" }, { status: 404 });
+    }
 
     const [posterData, applyerData] = await Promise.all([
       userModel.findOne({ email: posterEmail }).select("name email").lean(),

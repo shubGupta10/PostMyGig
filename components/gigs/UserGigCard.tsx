@@ -1,6 +1,6 @@
 "use client"
 
-import { Eye, Trash2, RefreshCw, Calendar, Clock, DollarSign, Activity } from "lucide-react"
+import { Eye, Trash2, RefreshCw, Calendar, Clock, DollarSign, Activity, MessageSquare } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
@@ -48,10 +48,6 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
     })
   }
 
-  const isExpired = (expiresAt: string): boolean => {
-    return new Date(expiresAt) < new Date()
-  }
-
   return (
     <AccordionItem
       value={project._id}
@@ -59,7 +55,7 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
     >
       <AccordionTrigger className="p-5 sm:p-6 hover:no-underline hover:bg-muted transition-colors">
         <div className="flex items-center justify-between w-full gap-3 sm:gap-6 pr-2 sm:pr-4">
-          
+
           {/* Left Column: Title & Status */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0 text-left">
             <h3 className="text-base sm:text-lg font-bold text-foreground truncate">
@@ -125,12 +121,26 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
           )}
 
           {/* Accepted Freelancer */}
+          {/* Accepted Freelancer */}
           {project.AcceptedFreelancerEmail && (
-            <div className="bg-muted rounded-xl p-4 border border-border">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Accepted Freelancer</p>
-              <p className="text-sm font-medium text-foreground">{project.AcceptedFreelancerEmail}</p>
+            <div className="bg-muted rounded-xl p-4 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Accepted Freelancer</p>
+                <p className="text-sm font-medium text-foreground">{project.AcceptedFreelancerEmail}</p>
+              </div>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  router.push(`/projects/${project._id}/huddle`)
+                }}
+                className="bg-primary text-primary-foreground font-semibold text-xs h-10 px-4 rounded-xl shadow-xs cursor-pointer flex items-center gap-2 shrink-0"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span>Open Project Huddle</span>
+              </Button>
             </div>
           )}
+
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">

@@ -19,8 +19,12 @@ export function HeaderTitle() {
     title = "Profile"
   } else if (pathname.startsWith("/user-gigs")) {
     title = "Manage Gigs"
-  } else if (pathname.startsWith("/chat-history") || pathname.startsWith("/chat")) {
+  } else if (pathname.startsWith("/user/application-history")) {
+    title = "Application History"
+  } else if (pathname.startsWith("/chat-history")) {
     title = "Messages"
+  } else if (pathname.startsWith("/chat")) {
+    title = "Chat"
   } else if (pathname.startsWith("/add-gigs")) {
     title = "Post a Gig"
   } else if (pathname.startsWith("/auth/login")) {

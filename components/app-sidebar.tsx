@@ -38,7 +38,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
   const isAdmin = userRole === "admin"
 
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar variant="inset" collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -47,8 +47,8 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-transparent">
                   <Image unoptimized src="/AppIcon.png" alt="App Icon" width={32} height={32} />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-bold text-lg text-foreground">
+                <div className="grid flex-1 text-left leading-tight">
+                  <span className="truncate font-bold text-lg text-foreground">
                     PostMy<span className="text-primary">Gig</span>
                   </span>
                 </div>
@@ -60,7 +60,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel className="tracking-normal">Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {/* Client Navigation */}
@@ -106,7 +106,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
 
         {session && (
           <SidebarGroup>
-            <SidebarGroupLabel>Personal</SidebarGroupLabel>
+            <SidebarGroupLabel className="tracking-normal">Personal</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
@@ -155,7 +155,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
 
         {session && isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupLabel className="tracking-normal">Admin</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>

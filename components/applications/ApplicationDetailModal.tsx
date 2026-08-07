@@ -106,21 +106,17 @@ export function ApplicationDetailModal({
             <XCircle className="w-4 h-4 mr-2" /> Reject Application
           </Button>
           {application.status === "accepted" ? (
-            <>
-              {onContact && (
-                <Button onClick={() => onContact(application.applicant?.email || "")} className="bg-primary text-primary-foreground font-semibold">
-                  <User2 className="w-4 h-4 mr-2" /> Contact
-                </Button>
-              )}
-              <Button onClick={() => (window.location.href = `/chat/?projectId=${application.projectId}`)} className="bg-primary text-primary-foreground font-semibold">
-                <Contact2 className="w-4 h-4 mr-2" /> Chat
-              </Button>
-            </>
+            <Button
+              onClick={() => (window.location.href = `/projects/${application.projectId}/huddle`)}
+              className="bg-primary text-primary-foreground font-semibold h-10 px-5 rounded-xl cursor-pointer shadow-xs"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" /> Open Project Huddle
+            </Button>
           ) : (
             <Button
               onClick={() => onAccept(application._id, application.applicant?.email || "")}
               disabled={loading}
-              className="bg-primary text-primary-foreground font-semibold"
+              className="bg-primary text-primary-foreground font-semibold h-10 px-5 rounded-xl cursor-pointer shadow-xs"
             >
               <Check className="w-4 h-4 mr-2" /> Accept Application
             </Button>
