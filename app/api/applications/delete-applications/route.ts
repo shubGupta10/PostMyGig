@@ -13,13 +13,16 @@ export async function DELETE(req: NextRequest) {
         const { applicationId } = await req.json();
         if (!applicationId) return NextResponse.json({ message: "Application ID is required" }, { status: 400 });
 
-        const ping = await PingModel.findByIdAndDelete(applicationId);
+        const ping = await PingModel.findByIdAndUpdate(
+            applicationId,
+            { status: "rejected" },
+            { new: true }
+        );
         if (!ping) return NextResponse.json({ message: "Application not found" }, { status: 404 });
 
         const userEmail = ping.userEmail;
         const gigId = ping.projectId;
 
-        // Run both unrelated database queries at the exact same time
         const [userData, gigData] = await Promise.all([
             userModel.findOne({ email: userEmail }).lean(),
             ProjectModel.findById(gigId).lean()
@@ -48,7 +51,7 @@ export async function DELETE(req: NextRequest) {
                     type: "ping_rejected",
                     title: "Application Status Update",
                     message: `Your pitch for "${gigData?.title || 'Gig'}" was updated.`,
-                    link: `/view-gigs`,
+                    link: `/user/application-history`,
                 })
             }
         })

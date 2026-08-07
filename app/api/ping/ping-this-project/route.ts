@@ -73,8 +73,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Project not found" }, { status: 404 });
     }
     if (existingPing) {
+      const isRejected = existingPing.status === "rejected";
       return NextResponse.json(
-        { message: "You have already applied for this project." },
+        { message: isRejected ? "Your application for this project was previously declined" : "You have already applied for this project" },
         { status: 400 }
       );
     }

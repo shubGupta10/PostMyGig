@@ -126,6 +126,16 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
                   </SidebarMenuItem>
                 )}
 
+                {/* Freelancers have Application History */}
+                {userRole === "freelancer" && (
+                  <SidebarMenuItem>
+                    <SidebarNavLink href="/user/application-history">
+                      <FileText className="size-4" />
+                      <span>Application History</span>
+                    </SidebarNavLink>
+                  </SidebarMenuItem>
+                )}
+
                 <SidebarMenuItem>
                   <SidebarNavLink href="/chat-history">
                     <MessageCircleCodeIcon className="size-4" />

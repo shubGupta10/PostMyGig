@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
                 type: "ping_accepted",
                 title: "Application Accepted!",
                 message: `Your pitch for "${fetchGigTitle?.title || 'Gig'}" was accepted by the client.`,
-                link: `/open-gig/${gigId}`,
+                link: `/user/application-history`,
             })
         })
 
