@@ -15,7 +15,7 @@ export interface Project extends Document {
   budget: string;
   displayContactLinks: boolean;
   AcceptedFreelancerEmail?: string;
-  status: 'active' | 'accepted' | 'expired' | 'completed' | "rejected";
+  status: 'active' | 'assigned' | 'expired' | 'completed' | "rejected";
   expiresAt?: Date;
   reportCount: number;
   isFlagged: boolean;
@@ -61,7 +61,7 @@ const projectSchema = new Schema<Project>(
     },
     status: {
       type: String,
-      enum: ['active', 'archived', 'expired', 'completed', 'rejected'],
+      enum: ['active', 'assigned', 'expired', 'completed', 'rejected'],
       default: 'active',
     },
     expiresAt: {

@@ -35,7 +35,7 @@ export async function getGigs(page = 1, limit = 9, search = "", skill = "", sort
         const currentDate = new Date();
         const query: Record<string, any> = {
             expiresAt: { $gt: currentDate },
-            status: { $nin: ["accepted", "completed", "expired"] }
+            status: { $nin: ["assigned", "completed", "expired"] }
         };
 
         if (search) {

@@ -144,6 +144,7 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
                     message: p.message || "",
                     status: p.status || "pending",
                     createdAt: p.createdAt ? new Date(p.createdAt).toISOString() : new Date().toISOString(),
+                    updatedAt: p.updatedAt ? new Date(p.updatedAt).toISOString() : undefined,
                     projectDetails: p.projectDetails
                         ? {
                             title: p.projectDetails.title,

@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
     // Get total count
     const totalCount = await ProjectModel.countDocuments({
       expiresAt: { $gt: currentDate },
-      status: { $nin: ["accepted", "completed", "expired"] }
+      status: { $nin: ["assigned", "completed", "expired"] }
     })
 
     const totalPages = Math.ceil(totalCount / limit)

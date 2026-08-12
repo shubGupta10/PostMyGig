@@ -34,6 +34,7 @@ export interface AppliedPingHistory {
   message?: string;
   status: "pending" | "accepted" | "rejected";
   createdAt: string;
+  updatedAt?: string;
   projectDetails?: {
     title?: string;
     category?: string;

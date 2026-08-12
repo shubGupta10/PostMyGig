@@ -50,11 +50,11 @@ export async function POST(req: NextRequest) {
     const alreadySent = await redis.get(redisKey);
 
     if (alreadySent) {
-      // Return full data even if invitation already sent
       return NextResponse.json({
         message: "Invitation already sent recently",
         posterData,
         applyerData,
+        projectStatus: projectData.status,
       }, { status: 200 });
     }
 
@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
       message: "Invitation sent successfully",
       posterData,
       applyerData,
+      projectStatus: projectData.status,
     }, { status: 200 });
 
   } catch (error) {

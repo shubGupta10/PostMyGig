@@ -27,6 +27,17 @@ import { getInitials } from "@/lib/helpers"
 import { SidebarAutoCollapser } from "./chat/SidebarAutoCollapser"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface Message {
   message: string
@@ -54,8 +65,9 @@ interface UserData {
     profilePhoto: string
     role: string
     skills: string[]
-    location: string
+    location: string,
   }
+  projectStatus: string;
 }
 
 interface ChatSystemProps {
@@ -77,6 +89,8 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
   const [chatPartnerName, setChatPartnerName] = useState<string>("")
   const [showScrollButton, setShowScrollButton] = useState<boolean>(false)
   const [historyLoaded, setHistoryLoaded] = useState<boolean>(false)
+  const [projectStatus, setProjectStatus] = useState<string>("");
+  const [isCompleting, setIsCompleting] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -130,6 +144,7 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
 
         const data: UserData = await response.json()
         setUserData(data)
+        setProjectStatus(data.projectStatus);
 
         const posterId = data.posterData._id
         const applyerId = data.applyerData._id
@@ -275,6 +290,25 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
     }
   }
 
+  const handleCompleteGig = async () => {
+    setIsCompleting(true)
+    try {
+      const res = await fetch("/api/gigs/complete-gig", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gigId: projectId }),
+      })
+      if (!res.ok) throw new Error("Failed to complete gig")
+      setProjectStatus("completed")
+      toast.success("Project marked as completed!")
+    } catch {
+      toast.error("Failed to mark as completed")
+    } finally {
+      setIsCompleting(false)
+    }
+  }
+
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter") {
       e.preventDefault()
@@ -317,6 +351,47 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
             </div>
           </div>
         </div>
+
+        {/* --- MOVED INSIDE THE HEADER WITH CONFIRMATION DIALOG --- */}
+        <div className="flex items-center gap-3">
+          {currentUserRole === "poster" && projectStatus !== "completed" && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  disabled={isCompleting}
+                  className="h-9 px-4 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer shadow-xs"
+                >
+                  <CheckCheck className="w-4 h-4 mr-1.5" />
+                  {isCompleting ? "Completing..." : "Complete Project"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Mark Project as Completed?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to mark this project as completed? This signals that the freelancer has delivered the final work and you are satisfied.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="font-semibold">Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleCompleteGig}
+                    className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
+                  >
+                    Confirm Completion
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+
+          {projectStatus === "completed" && (
+            <div className="flex items-center gap-1.5 text-emerald-600 font-semibold text-xs px-3 py-1.5 bg-emerald-600/10 rounded-lg border border-emerald-600/20">
+              <CheckCheck className="w-4 h-4" /> 
+              Project Completed
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Messages Feed */}
@@ -339,17 +414,15 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
               className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[85%] sm:max-w-[70%] px-4 py-2.5 shadow-xs space-y-1 ${
-                  msg.isOwn
-                    ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
-                    : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border-2 border-border"
-                }`}
+                className={`max-w-[85%] sm:max-w-[70%] px-4 py-2.5 shadow-xs space-y-1 ${msg.isOwn
+                  ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
+                  : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border-2 border-border"
+                  }`}
               >
                 <p className="text-sm leading-relaxed font-normal break-words">{msg.message}</p>
                 <div
-                  className={`flex items-center justify-end gap-1 text-[10px] ${
-                    msg.isOwn ? "text-primary-foreground/80" : "text-secondary-foreground/70"
-                  }`}
+                  className={`flex items-center justify-end gap-1 text-[10px] ${msg.isOwn ? "text-primary-foreground/80" : "text-secondary-foreground/70"
+                    }`}
                 >
                   <span>{msg.timestamp}</span>
                   {msg.isOwn && <CheckCheck className="w-3 h-3" />}

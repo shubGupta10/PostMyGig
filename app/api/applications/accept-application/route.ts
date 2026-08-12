@@ -46,12 +46,14 @@ export async function POST(req: NextRequest) {
 
         //change the status of project in project model
         await ProjectModel.findByIdAndUpdate(gigId, {
-            status: "completed"
+            status: "assigned"
         }, { new: true });
 
         // Invalidate gig caches since its status changed
         try {
             await redis.del(`fetch-open-gig:${gigId}`);
+            await redis.del(`dashboard-data:freelancer:${applicantEmail}`);
+            await redis.del(`dashboard-data:client:${application.posterEmail}`);
             const keys = await redis.keys("fetch-gigs:*");
             if (keys.length > 0) {
                 await redis.del(...keys);
@@ -99,7 +101,7 @@ export async function POST(req: NextRequest) {
                 type: "ping_accepted",
                 title: "Application Accepted!",
                 message: `Your pitch for "${fetchGigTitle?.title || 'Gig'}" was accepted by the client.`,
-                link: `/user/application-history`,
+                link: `/projects/${gigId}/huddle`,
             })
         })
 

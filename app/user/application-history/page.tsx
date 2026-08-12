@@ -20,7 +20,11 @@ export default async function ApplicationHistoryPage() {
   }
 
   const freelancerData = data as FreelancerDashboardData
-  const applications = freelancerData.appliedHistory || []
+  const applications = (freelancerData.appliedHistory || []).sort((a, b) => {
+    const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : new Date(a.createdAt).getTime()
+    const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : new Date(b.createdAt).getTime()
+    return dateB - dateA
+  })
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
