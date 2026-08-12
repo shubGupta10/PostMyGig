@@ -73,8 +73,8 @@ export default function Hero() {
 
         {/* Headline Section */}
         <div className="text-center space-y-6 sm:space-y-8 max-w-5xl mx-auto px-2">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold text-accent-foreground leading-tight sm:leading-[1.1] tracking-tight" style={{ fontFamily: "var(--font-serif)" }}>
-            <span>Share Gigs You Can't Take,</span> <br className="hidden sm:block" />
+          <h1 className="text-balance text-3xl sm:text-5xl lg:text-6xl xl:text-[4.5rem] font-bold text-accent-foreground leading-tight sm:leading-[1.1] tracking-tight" style={{ fontFamily: "var(--font-serif)" }}>
+            <span>Share Gigs <br className="block sm:hidden" /> You Can't Take,</span> <br className="hidden sm:block" />
             <span className="text-primary block sm:inline-block sm:mt-2">Find Work You Love</span>
           </h1>
           <p className="text-base sm:text-xl font-normal text-muted-foreground max-w-2xl mx-auto leading-relaxed">

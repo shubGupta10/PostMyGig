@@ -87,8 +87,15 @@ export function AnimatedNavFramer() {
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             <DarkModeToggle />
+            <Button
+              variant="ghost"
+              onClick={() => router.push("/auth/login")}
+              className="text-sm font-semibold h-10 px-4 rounded-full"
+            >
+              Log in
+            </Button>
             <Button
               onClick={() => router.push("/view-gigs")}
               className="bg-primary hover:opacity-90 text-primary-foreground text-sm font-semibold h-10 px-5 rounded-full shadow-sm whitespace-nowrap"
@@ -144,8 +151,18 @@ export function AnimatedNavFramer() {
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
 
-              {/* Bottom Middle: Get Started CTA */}
-              <div className="pt-4 mt-2 border-t border-border/60 flex items-center justify-center">
+              {/* Bottom Middle: Actions */}
+              <div className="pt-4 mt-2 border-t border-border/60 flex flex-col items-center justify-center gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    router.push("/auth/login");
+                  }}
+                  className="w-full max-w-xs text-sm font-semibold h-11 rounded-full shadow-sm"
+                >
+                  Log in
+                </Button>
                 <Button
                   onClick={() => {
                     setMobileMenuOpen(false);
