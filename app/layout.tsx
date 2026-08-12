@@ -2,7 +2,6 @@ import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProviderWrapper from "../components/SessionProviderWrapper";
-import Footer from "@/components/Footer";
 import SmallFooter from "@/components/SmallFooter";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BackendWarmer } from "@/components/BackendWarmer";
@@ -17,10 +16,10 @@ import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
-import Navbar from "@/components/Navbar";
 import { AddGigButton } from "@/components/gigs/AddGigButton";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { NotificationBell } from "@/components/notification/NotificationBell";
+import { PublicLayoutWrapper } from "@/components/PublicLayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -175,15 +174,11 @@ export default async function RootLayout({
                 </SidebarProvider>
               </TooltipProvider>
             ) : (
-              <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <main className="flex-1 flex flex-col pt-20 sm:pt-24">
-                  <Analytics />
-                  <Suspense>{children}</Suspense>
-                  <Toaster />
-                </main>
-                <Footer />
-              </div>
+              <PublicLayoutWrapper>
+                <Analytics />
+                <Suspense>{children}</Suspense>
+                <Toaster />
+              </PublicLayoutWrapper>
             )}
           </ThemeProvider>
         </SessionProviderWrapper>

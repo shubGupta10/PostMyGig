@@ -180,44 +180,90 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-background flex items-center justify-center p-4 sm:p-6 py-6 sm:py-12">
-      <div className="w-full max-w-6xl bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
-        <div className="flex min-h-[600px] sm:min-h-[700px]">
-          {/* Left Panel - Form */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-5 sm:p-8 lg:p-12">
-            <div className="max-w-md w-full">
+    <div className="flex min-h-screen">
+      {/* Left Panel - Form */}
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-16 xl:p-24 bg-background">
+        <div className="max-w-md w-full">
               {/* Rate Limit Banner */}
               <RateLimitBanner />
 
               {/* Header */}
-              <div className="mb-8 flex flex-col items-center text-center">
-                <div className="mb-6 flex items-center justify-center">
-                  <Image unoptimized src="/AppIcon.png" alt="Logo" width={48} height={48} className="size-12 rounded-xl" />
-                </div>
-                <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-3">Welcome back! 👋</h1>
-                <p className="text-muted-foreground text-sm sm:text-lg">Enter to get unlimited access to data & information.</p>
+              <div className="mb-6 flex flex-col items-center text-center">
+                <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-2">Welcome back! 👋</h1>
+                <p className="text-muted-foreground text-sm sm:text-base">Enter to get unlimited access to data & information.</p>
               </div>
 
               {/* Error Alert */}
               {error && (
                 <Alert
-                  variant="destructive"
-                  className={`mb-6 ${rateLimitInfo.isLimited
-                    ? "border-border bg-accent"
-                    : "border-destructive bg-destructive/10"
-                    } animate-in fade-in-50 duration-300 rounded-xl`}
+                  variant={rateLimitInfo.isLimited ? "default" : "destructive"}
+                  className={`mb-6 animate-in fade-in-50 duration-300 rounded-xl ${rateLimitInfo.isLimited ? "border-border bg-accent" : ""}`}
                 >
                   {rateLimitInfo.isLimited ? (
-                    <ShieldAlert className="h-5 w-5 text-destructive" />
+                    <ShieldAlert className="h-5 w-5 text-foreground" />
                   ) : (
-                    <AlertCircle className="h-5 w-5 text-destructive" />
+                    <AlertCircle className="h-5 w-5" />
                   )}
-                  <AlertDescription className={`${rateLimitInfo.isLimited ? "text-destructive" : "text-destructive"
-                    } ml-2 font-medium`}>
+                  <AlertDescription className="ml-2 font-medium">
                     {error}
                   </AlertDescription>
                 </Alert>
               )}
+
+              {/* Social Login Buttons */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 mt-4">
+                <Button
+                  onClick={handleGoogleSignIn}
+                  variant="outline"
+                  className={`h-12 sm:h-14 border-2 ${rateLimitInfo.isLimited
+                    ? "border-border bg-muted cursor-not-allowed"
+                    : "border-border hover:border-primary hover:bg-accent"
+                    } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
+                  disabled={isLoading || rateLimitInfo.isLimited}
+                >
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    />
+                  </svg>
+                  Google
+                </Button>
+                <Button
+                  onClick={handleGitHubSignIn}
+                  variant="outline"
+                  className={`h-12 sm:h-14 border-2 ${rateLimitInfo.isLimited
+                    ? "border-border bg-muted cursor-not-allowed"
+                    : "border-border hover:border-muted-foreground hover:bg-muted"
+                    } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
+                  disabled={isLoading || rateLimitInfo.isLimited}
+                >
+                  <Github className="mr-2 h-5 w-5" />
+                  GitHub
+                </Button>
+              </div>
+
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full border-border" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-background text-muted-foreground font-medium">Or, continue with email</span>
+                </div>
+              </div>
 
               {/* Email/Password Form */}
               <div className="space-y-6">
@@ -312,63 +358,8 @@ export default function LoginPage() {
                 </Button>
               </div>
 
-              {/* Divider */}
-              <div className="relative my-8">
-                <div className="absolute inset-0 flex items-center">
-                  <Separator className="w-full border-border" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-card text-muted-foreground font-medium">Or, Login with</span>
-                </div>
-              </div>
-
-              {/* Social Login Buttons */}
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-8">
-                <Button
-                  onClick={handleGoogleSignIn}
-                  variant="outline"
-                  className={`h-12 sm:h-14 border-2 ${rateLimitInfo.isLimited
-                    ? "border-border bg-muted cursor-not-allowed"
-                    : "border-border hover:border-primary hover:bg-primary/5"
-                    } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
-                  disabled={isLoading || rateLimitInfo.isLimited}
-                >
-                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                    <path
-                      fill="#4285F4"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    />
-                    <path
-                      fill="#EA4335"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    />
-                  </svg>
-                  Google
-                </Button>
-                <Button
-                  onClick={handleGitHubSignIn}
-                  variant="outline"
-                  className={`h-12 sm:h-14 border-2 ${rateLimitInfo.isLimited
-                    ? "border-border bg-muted cursor-not-allowed"
-                    : "border-border hover:border-muted-foreground hover:bg-muted"
-                    } rounded-xl font-semibold text-foreground transition-all duration-200 shadow-sm`}
-                  disabled={isLoading || rateLimitInfo.isLimited}
-                >
-                  <Github className="mr-2 h-5 w-5" />
-                  GitHub
-                </Button>
-              </div>
-
               {/* Register Link */}
-              <p className="text-center text-muted-foreground">
+              <p className="text-center text-muted-foreground mt-8">
                 Don't have an account?{" "}
                 <a
                   href={callbackUrlParam ? `/auth/register?callbackUrl=${encodeURIComponent(callbackUrlParam)}` : "/auth/register"}
@@ -377,38 +368,35 @@ export default function LoginPage() {
                   Register here
                 </a>
               </p>
-
             </div>
           </div>
 
           {/* Right Panel - Image */}
-          <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
-            {/* Overlay for better text readability */}
-            <div className="absolute inset-0 bg-primary/20 z-10"></div>
-
+          <div className="hidden lg:block lg:w-1/2 relative overflow-hidden bg-zinc-900">
             {/* Background Image */}
-            <div className="h-full w-full bg-[url('https://images.pexels.com/photos/3987110/pexels-photo-3987110.jpeg?auto=compress&cs=tinysrgb&w=600')] bg-cover bg-center"></div>
+            <div className="absolute inset-0 h-full w-full bg-[url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1470&auto=format&fit=crop')] bg-cover bg-center blur-sm scale-105"></div>
+
+            {/* Dark Overlay for Text Readability */}
+            <div className="absolute inset-0 bg-black/40 z-10"></div>
 
             {/* Content Overlay */}
-            <div className="absolute inset-0 flex flex-col justify-center items-center text-primary-foreground p-12 text-center z-20">
+            <div className="absolute inset-0 flex flex-col justify-center items-center p-12 text-center z-20">
               <div className="max-w-md">
-                <div className="w-20 h-20 bg-muted text-muted-foreground rounded-2xl flex items-center justify-center mx-auto mb-8 backdrop-blur-sm">
-                  <Briefcase className="w-10 h-10 text-primary-foreground" />
+                <div className="w-20 h-20 bg-background rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-sm">
+                  <Briefcase className="w-10 h-10 text-foreground" />
                 </div>
 
-                <h2 className="text-3xl font-bold mb-6 leading-tight">
+                <h2 className="text-3xl font-bold mb-6 leading-tight text-white">
                   Share & Find Freelance
-                  <span className="text-accent-foreground"> Projects Easily</span>
+                  <span className="block mt-2 text-zinc-200">Projects Easily</span>
                 </h2>
 
-                <p className="text-lg text-primary-foreground/90 mb-8 leading-relaxed">
+                <p className="text-lg text-zinc-300 font-medium leading-relaxed">
                   Post projects, share extra work, or find gigs. Connect securely via WhatsApp or email, built for India and beyond.
                 </p>
               </div>
             </div>
           </div>
-        </div>
-      </div>
     </div>
   )
 }
