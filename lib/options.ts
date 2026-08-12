@@ -83,7 +83,7 @@ export const authOptions: NextAuthOptions = {
             }
 
             // Fetch fresh user data from database when session is updated or onboarding is incomplete
-            if (trigger === "update" || (token.email && (!token.role || !token.onboardingCompleted || !token.subscription))) {
+            if (trigger === "update" || (token.email && (!token.role || token.onboardingCompleted === undefined || !token.subscription))) {
                 try {
                     await ConnectoDatabase();
                     const dbUser = await userModel.findOne({ email: token.email });
