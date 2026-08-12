@@ -28,16 +28,16 @@ export async function POST(req: NextRequest) {
         application.status = "accepted";
         await application.save();
 
-        //delete the rest freelancers pings upon selecting one application 
-        const resultDelete = await PingModel.deleteMany({
-            userEmail: { $ne: applicantEmail }, // delete pings where userEmail is NOT the selected freelancer's email
-            projectId: gigId
-        });
-        console.log("Email", applicantEmail);
-        console.log("Gig", gigId);
-
-        console.log("Here is result delete", resultDelete);
-
+        //reject the rest freelancers pings upon selecting one application 
+        await PingModel.updateMany(
+            {
+                userEmail: { $ne: applicantEmail },
+                projectId: gigId
+            },
+            {
+                $set: { status: "rejected" }
+            }
+        );
 
         //update freelancer email in ProjectModel
         await ProjectModel.findByIdAndUpdate(gigId, {

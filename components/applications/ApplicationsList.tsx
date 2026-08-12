@@ -13,6 +13,7 @@ import {
   acceptApplicationService,
   deleteApplicationService,
   fetchContactDetailsService,
+  revokeApplicationService
 } from "@/app/(pages)/applications/view-applications/services/applicationsService"
 
 export function ApplicationsList() {
@@ -50,6 +51,21 @@ export function ApplicationsList() {
       setLoading(false)
     }
   }
+
+  const handleRevoke = async () => {
+    setLoading(true)
+    try {
+      await revokeApplicationService(gigIdFromSearchParams!)
+      toast.success("Acceptance revoked successfully")
+      await fetchApplications()
+      setSelectedApplicant(null)
+    } catch {
+      toast.error("Failed to revoke application")
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   const handleDeleteApplication = async () => {
     if (!selectedApplicant) return
@@ -121,6 +137,7 @@ export function ApplicationsList() {
           onAccept={handleAccept}
           onDelete={handleDeleteApplication}
           onContact={handleContactApplicant}
+          onRevoke={handleRevoke}
         />
       )}
 

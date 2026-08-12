@@ -58,3 +58,15 @@ export async function fetchContactDetailsService(applicantEmail: string): Promis
     contactLinks: data.contactDetails.contactLinks || [],
   }
 }
+
+export async function revokeApplicationService(gigId: string): Promise<void> {
+  const response = await fetch("/api/applications/revoke-application", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ gigId }),
+  })
+  if (!response.ok) throw new Error("Failed to revoke application")
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("refresh-notification"))
+  }
+}

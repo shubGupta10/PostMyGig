@@ -3,6 +3,18 @@ import { X, MessageSquare, Star, ExternalLink, FileText, XCircle, Check, Mail, C
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import type React from "react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 
 interface Props {
   application: Application
@@ -11,10 +23,11 @@ interface Props {
   onAccept: (id: string, email: string) => void
   onDelete: () => void
   onContact?: (email: string) => void
+  onRevoke: () => void
 }
 
 export function ApplicationDetailModal({
-  application, loading, onClose, onAccept, onDelete, onContact,
+  application, loading, onClose, onAccept, onDelete, onContact, onRevoke
 }: Props) {
 
   return (
@@ -105,13 +118,44 @@ export function ApplicationDetailModal({
             className="bg-destructive text-destructive-foreground border-destructive font-semibold">
             <XCircle className="w-4 h-4 mr-2" /> Reject Application
           </Button>
+
           {application.status === "accepted" ? (
-            <Button
-              onClick={() => (window.location.href = `/projects/${application.projectId}/huddle`)}
-              className="bg-primary text-primary-foreground font-semibold h-10 px-5 rounded-xl cursor-pointer shadow-xs"
-            >
-              <MessageSquare className="w-4 h-4 mr-2" /> Open Project Huddle
-            </Button>
+            <>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    disabled={loading}
+                    variant="destructive"
+                    className="font-semibold h-10 px-5 rounded-xl cursor-pointer shadow-xs"
+                  >
+                    <XCircle className="w-4 h-4 mr-2" /> Revoke Acceptance
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will remove this freelancer from the project and reopen the gig so you can view or accept other applicants.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="font-semibold">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={onRevoke}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-semibold"
+                    >
+                      Yes, Revoke
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Button
+                onClick={() => (window.location.href = `/projects/${application.projectId}/huddle`)}
+                className="bg-primary text-primary-foreground font-semibold h-10 px-5 rounded-xl cursor-pointer shadow-xs"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" /> Open Project Huddle
+              </Button>
+            </>
           ) : (
             <Button
               onClick={() => onAccept(application._id, application.applicant?.email || "")}
