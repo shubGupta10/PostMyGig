@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown, User, LogOut, Shield, User2Icon, MessageCircleCodeIcon, MessageSquare } from "lucide-react"
+import { ChevronDown, User, LogOut, Shield, User2Icon, MessageCircleCodeIcon, MessageSquare, Briefcase, FileText } from "lucide-react"
 
 interface UserDropdownProps {
   session: Session | null
@@ -77,17 +77,26 @@ export function UserDropdown({ session }: UserDropdownProps) {
         
         <DropdownMenuItem onClick={() => router.push(`/user/profile/${user?.id}`)} className="cursor-pointer">
           <User className="mr-2 h-4 w-4" />
-          Profile
+          Profile Settings
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={() => router.push("/user-gigs")} className="cursor-pointer">
-          <User2Icon className="mr-2 h-4 w-4" />
-          Your Gigs
-        </DropdownMenuItem>
+        {user?.role === "client" && (
+          <DropdownMenuItem onClick={() => router.push("/my-jobs")} className="cursor-pointer">
+            <Briefcase className="mr-2 h-4 w-4" />
+            My Jobs
+          </DropdownMenuItem>
+        )}
+
+        {user?.role === "freelancer" && (
+          <DropdownMenuItem onClick={() => router.push("/user/proposals")} className="cursor-pointer">
+            <FileText className="mr-2 h-4 w-4" />
+            My Proposals
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuItem onClick={() => router.push("/chat-history")} className="cursor-pointer">
           <MessageCircleCodeIcon className="mr-2 h-4 w-4" />
-          Your Chats
+          Messages
         </DropdownMenuItem>
 
         <DropdownMenuItem onClick={() => router.push("/user/feedback")} className="cursor-pointer">

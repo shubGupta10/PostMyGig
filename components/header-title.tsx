@@ -10,17 +10,17 @@ export function HeaderTitle() {
   if (pathname === "/dashboard") {
     title = "Dashboard"
   } else if (pathname.startsWith("/view-gigs")) {
-    title = "Gigs"
+    title = "Find Work"
   } else if (pathname.startsWith("/activity")) {
     title = "Activity"
   } else if (pathname.startsWith("/user/admin/dashboard")) {
     title = "Admin Dashboard"
   } else if (pathname.startsWith("/user/profile")) {
     title = "Profile"
-  } else if (pathname.startsWith("/user-gigs")) {
-    title = "Manage Gigs"
-  } else if (pathname.startsWith("/user/application-history")) {
-    title = "Application History"
+  } else if (pathname.startsWith("/my-jobs")) {
+    title = "My Jobs"
+  } else if (pathname.startsWith("/user/proposals")) {
+    title = "My Proposals"
   } else if (pathname.startsWith("/chat-history")) {
     title = "Messages"
   } else if (pathname.startsWith("/chat")) {

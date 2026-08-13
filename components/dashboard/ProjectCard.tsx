@@ -67,13 +67,23 @@ export function ProjectCard({ project }: { project: Project }) {
 
       <CardFooter className="p-5 sm:p-6 pt-4 sm:pt-5 flex-none mt-auto border-t border-border">
         {project.AcceptedFreelancerEmail ? (
-          <Button
-            onClick={() => router.push(`/projects/${project._id}/huddle`)}
-            className="w-full justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer bg-primary text-primary-foreground"
-          >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Open Project Huddle
-          </Button>
+          <div className="flex gap-2 w-full">
+            <Button
+              onClick={() => router.push(`/projects/${project._id}/huddle`)}
+              className="flex-1 justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer bg-primary text-primary-foreground"
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Open Project Huddle
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => router.push(`/open-gig/${project._id}`)}
+              className="px-3 justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer shrink-0"
+              title="View Gig Details"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+          </div>
         ) : (
           <Button
             variant="secondary"

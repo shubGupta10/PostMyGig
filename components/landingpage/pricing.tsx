@@ -3,8 +3,8 @@ import Link from "next/link"
 
 export default function LandingPricing() {
   const freePoints = [
-    "2 Gig postings per month (Clients)",
-    "5 Pitch pings per month (Freelancers)",
+    "15 Gig postings per month (Clients)",
+    "30 Pitch pings per month (Freelancers)",
     "Standard search placement",
     "In-app & Email notifications",
   ]

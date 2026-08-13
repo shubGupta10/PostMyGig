@@ -51,7 +51,7 @@ export async function DELETE(req: NextRequest) {
                     type: "ping_rejected",
                     title: "Application Status Update",
                     message: `Your pitch for "${gigData?.title || 'Gig'}" was updated.`,
-                    link: `/user/application-history`,
+                    link: `/user/proposals`,
                 })
             }
         })

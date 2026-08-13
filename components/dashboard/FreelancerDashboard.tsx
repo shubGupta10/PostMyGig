@@ -59,16 +59,16 @@ export function FreelancerDashboard({ data }: { data: FreelancerDashboardData })
                 <UsageMeter stats={data.usageStats} label="Pings" />
             )}
 
-            {/* Application History Section */}
+            {/* My Proposals Section */}
             <div className="space-y-4 sm:space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
                     <div>
-                        <h2 className="text-xl font-semibold tracking-tight text-foreground">Application History</h2>
+                        <h2 className="text-xl font-semibold tracking-tight text-foreground">My Proposals</h2>
                     </div>
                     {data.appliedHistory && data.appliedHistory.length > 5 && (
                         <Button
                             variant="ghost"
-                            onClick={() => router.push("/user/application-history")}
+                            onClick={() => router.push("/user/proposals")}
                             className="text-xs font-medium text-muted-foreground hover:text-foreground p-0 h-auto cursor-pointer"
                         >
                             View All History ({data.appliedHistory.length})

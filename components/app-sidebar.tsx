@@ -91,7 +91,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
               <SidebarMenuItem>
                 <SidebarNavLink href="/view-gigs">
                   <Briefcase className="size-4" />
-                  <span>Browse Gigs</span>
+                  <span>Find Work</span>
                 </SidebarNavLink>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -112,26 +112,26 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 <SidebarMenuItem>
                   <SidebarNavLink href={`/user/profile/${session.user.id}`}>
                     <User className="size-4" />
-                    <span>Profile</span>
+                    <span>Profile Settings</span>
                   </SidebarNavLink>
                 </SidebarMenuItem>
 
                 {/* Only clients have posted gigs to manage */}
                 {userRole === "client" && (
                   <SidebarMenuItem>
-                    <SidebarNavLink href="/user-gigs">
-                      <User2Icon className="size-4" />
-                      <span>Manage Gigs</span>
+                    <SidebarNavLink href="/my-jobs">
+                      <Briefcase className="size-4" />
+                      <span>My Jobs</span>
                     </SidebarNavLink>
                   </SidebarMenuItem>
                 )}
 
-                {/* Freelancers have Application History */}
+                {/* Freelancers have My Proposals */}
                 {userRole === "freelancer" && (
                   <SidebarMenuItem>
-                    <SidebarNavLink href="/user/application-history">
+                    <SidebarNavLink href="/user/proposals">
                       <FileText className="size-4" />
-                      <span>Application History</span>
+                      <span>My Proposals</span>
                     </SidebarNavLink>
                   </SidebarMenuItem>
                 )}

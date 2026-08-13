@@ -8,7 +8,7 @@ import type { FreelancerDashboardData } from "@/app/dashboard/types"
 import { redirect } from "next/navigation"
 
 export const metadata = {
-  title: "Application History | PostMyGig",
+  title: "My Proposals | PostMyGig",
   description: "View all your submitted project applications and their status",
 }
 

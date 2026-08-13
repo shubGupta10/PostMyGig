@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type { UserGig } from "@/app/(pages)/(gig)/(userGigs)/user-gigs/types"
+import type { UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
 
 interface UserGigCardProps {
   project: UserGig

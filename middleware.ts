@@ -62,7 +62,9 @@ export default withAuth(
                     "/view-gigs",
                     "/api/gigs/fetch-gigs",
                     "/auth/verify-code",
-                    "/activity"
+                    "/activity",
+                    "/open-gig",
+                    "/api/gigs/open-gigs"
                 ];
 
                 const isPublic = publicRoutes.some(route =>

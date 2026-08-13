@@ -6,7 +6,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/useAuthStore"
 import { Session } from "next-auth"
-import { Menu, X, LogOut, User, User2Icon, MessageCircleCodeIcon, MessageSquare, Shield } from "lucide-react"
+import { Menu, X, LogOut, User, User2Icon, MessageCircleCodeIcon, MessageSquare, Shield, Briefcase, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DarkModeToggle } from "@/components/DarkModeToggle"
 import { publicNavItems, authenticatedNavItems, adminNavItems } from "@/config/navigation"
@@ -78,15 +78,23 @@ export function MobileNav({ session }: MobileNavProps) {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => handleNavigation(`/user/profile/${session.user?.id}`)}>
               <User className="mr-2 h-4 w-4" />
-              Profile
+              Profile Settings
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleNavigation("/user-gigs")}>
-              <User2Icon className="mr-2 h-4 w-4" />
-              Your Gigs
-            </DropdownMenuItem>
+            {session.user?.role === "client" && (
+              <DropdownMenuItem onClick={() => handleNavigation("/my-jobs")}>
+                <Briefcase className="mr-2 h-4 w-4" />
+                My Jobs
+              </DropdownMenuItem>
+            )}
+            {session.user?.role === "freelancer" && (
+              <DropdownMenuItem onClick={() => handleNavigation("/user/proposals")}>
+                <FileText className="mr-2 h-4 w-4" />
+                My Proposals
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={() => handleNavigation("/chat-history")}>
               <MessageCircleCodeIcon className="mr-2 h-4 w-4" />
-              Your Chats
+              Messages
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleNavigation("/user/feedback")}>
               <MessageSquare className="mr-2 h-4 w-4" />

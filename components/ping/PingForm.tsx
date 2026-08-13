@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import FeedbackDialog from "@/components/FeedbackDialog"
+import { ApplicationSuccessModal } from "@/components/ping/ApplicationSuccessModal"
 import { submitPingService } from "@/app/(pages)/ping/ping-project/services/pingService"
 import type { PingFormData } from "@/app/(pages)/ping/ping-project/types"
 
@@ -33,7 +33,7 @@ export function PingForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   useEffect(() => {
     if (data?.user?.email) {
@@ -55,7 +55,7 @@ export function PingForm() {
       const message = await submitPingService(formData)
       setSuccess(message)
       setFormData((prev) => ({ ...prev, message: "", bestWorkLink: "", bestWorkDescription: "" }))
-      setShowFeedbackDialog(true)
+      setShowSuccessModal(true)
       toast.success("Application Submitted")
     } catch (err: any) {
       setError(err.message || "An error occurred while submitting your application")
@@ -195,12 +195,9 @@ export function PingForm() {
         </div>
       </form>
 
-      <FeedbackDialog
-        open={showFeedbackDialog}
-        onClose={() => {
-          setShowFeedbackDialog(false)
-          router.push("/application-submitted")
-        }}
+      <ApplicationSuccessModal
+        open={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
       />
     </div>
   )

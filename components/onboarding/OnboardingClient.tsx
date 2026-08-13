@@ -127,7 +127,7 @@ export default function OnboardingClient() {
           </div>
 
           <p className="text-xs text-muted-foreground font-medium">
-            Browse gigs & pitch work
+            Find work & pitch projects
           </p>
         </div>
       </div>

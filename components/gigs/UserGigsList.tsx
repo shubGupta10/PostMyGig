@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Accordion } from "@/components/ui/accordion"
-import type { UserGig } from "@/app/(pages)/(gig)/(userGigs)/user-gigs/types"
+import type { UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
 
 interface UserGigsListProps {
   initialProjects: UserGig[]

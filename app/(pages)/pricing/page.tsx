@@ -69,8 +69,8 @@ export default function PricingPage() {
                         </CardHeader>
 
                         <CardContent className="p-0 flex-1 space-y-3 pt-4 border-t border-border">
-                            <FeatureItem text="2 Gig postings per month (Clients)" />
-                            <FeatureItem text="5 Pitch pings per month (Freelancers)" />
+                            <FeatureItem text="15 Gig postings per month (Clients)" />
+                            <FeatureItem text="30 Pitch pings per month (Freelancers)" />
                             <FeatureItem text="Standard search placement" />
                             <FeatureItem text="In-app & Email notifications" />
                         </CardContent>
