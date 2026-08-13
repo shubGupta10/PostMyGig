@@ -2,7 +2,7 @@ export interface SocialImageOptions {
   title: string;
   description?: string;
   badge?: string;
-  type?: "site" | "gig";
+  type?: "site" | "gig" | "profile";
 }
 
 const DEFAULT_ORIGIN = "https://www.postmygig.vercel.app";

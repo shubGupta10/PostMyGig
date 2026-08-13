@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
     title: user.name,
     description: summary,
     badge: 'Freelancer',
-    type: 'gig',
+    type: 'profile',
   });
   const canonicalUrl = new URL(`/user/profile/${userId}`, 'https://www.postmygig.vercel.app').toString();
 

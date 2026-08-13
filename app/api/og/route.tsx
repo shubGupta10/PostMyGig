@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
   const badge = searchParams.get("badge") || "PostMyGig";
   const type = searchParams.get("type") || "gig";
 
-  const bgStart = type === "site" ? "#f7f3ee" : "#f4efe9";
-  const bgEnd = type === "site" ? "#efe7df" : "#e5ddd5";
+  const bgStart = type === "profile" ? "#eff6ff" : type === "site" ? "#f7f3ee" : "#f4efe9";
+  const bgEnd = type === "profile" ? "#dbeafe" : type === "site" ? "#efe7df" : "#e5ddd5";
 
   return new ImageResponse(
     (
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
               fontWeight: 600,
             }}
           >
-            {type === "site" ? "Freelance marketplace" : "Open gig"}
+            {type === "profile" ? "Freelancer Profile" : type === "site" ? "Freelance marketplace" : "Open gig"}
           </div>
 
           <div
