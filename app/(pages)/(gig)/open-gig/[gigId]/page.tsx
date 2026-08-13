@@ -7,6 +7,46 @@ import { getServerSession } from "next-auth/next"
 import { notFound } from "next/navigation"
 import { authOptions } from "@/lib/options"
 import { isGigAvailableForApplication, getDisabledButtonMessage } from "@/components/gigs/open-gig/utils"
+import { Metadata } from "next"
+
+export async function generateMetadata({ params }: { params: Promise<{ gigId: string }> }): Promise<Metadata> {
+  const { gigId } = await params
+  const cookieStore = await cookies()
+  const cookieString = cookieStore.toString()
+
+  const { gig, error } = await fetchGigDetails(gigId, cookieString)
+
+  if (error || !gig) {
+    return {
+      title: 'Gig Not Found | PostMyGig',
+    }
+  }
+
+  const ogImageUrl = `https://postmygig.vercel.app/og-image.png`
+
+  return {
+    title: `${gig.title} | PostMyGig`,
+    description: gig.description.substring(0, 160),
+    openGraph: {
+      title: `${gig.title} | PostMyGig`,
+      description: `${gig.budget ? `Budget: ₹${gig.budget} • ` : ''}Skills: ${gig.skillsRequired.slice(0, 3).join(', ')}`,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: gig.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${gig.title} | PostMyGig`,
+      description: `${gig.budget ? `Budget: ₹${gig.budget} • ` : ''}Skills: ${gig.skillsRequired.slice(0, 3).join(', ')}`,
+      images: [ogImageUrl],
+    },
+  }
+}
 
 export default async function OpenGig({ params }: { params: Promise<{ gigId: string }> }) {
   const { gigId } = await params;

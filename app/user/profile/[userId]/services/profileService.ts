@@ -47,3 +47,30 @@ export async function fetchUserProfile(): Promise<UserData> {
     throw new Error(error instanceof Error ? error.message : "Failed to load profile data.")
   }
 }
+
+export async function fetchPublicUserProfile(userId: string): Promise<UserData | null> {
+  try {
+    await ConnectoDatabase()
+    
+    const cacheKey = `fetch-public-user-profile:${userId}`
+    const cachedUser = await redis.get(cacheKey)
+
+    if (typeof cachedUser === "string") {
+      return JSON.parse(cachedUser) as UserData
+    }
+
+    const foundUser = await userModel.findById(userId).select("-password -__v").lean()
+    
+    if (!foundUser) {
+      return null
+    }
+
+    const serializedUser = JSON.parse(JSON.stringify(foundUser)) as UserData
+    await redis.set(cacheKey, JSON.stringify(serializedUser), { ex: 3600 })
+
+    return serializedUser
+  } catch (error) {
+    console.error("Failed to fetch public user profile:", error)
+    return null
+  }
+}
