@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import ProjectModel from "@/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
+import userModel from "@/models/UserModel";
 
 export async function POST(req: NextRequest) {
     try {
@@ -29,6 +30,35 @@ export async function POST(req: NextRequest) {
             }
         } catch (e) {
             console.warn("Failed to invalidate cache", e);
+        }
+
+        const THRESHOLD = 3;
+
+        // Check Client
+        if (project.createdBy) {
+            const clientGigCount = await ProjectModel.countDocuments({
+                createdBy: project.createdBy,
+                status: "completed"
+            });
+            if (clientGigCount >= THRESHOLD) {
+                await userModel.findOneAndUpdate(
+                    { email: project.createdBy, verificationStatus: { $nin: ['pending', 'approved'] }, isVerified: { $ne: true } },
+                    { $set: { verificationStatus: 'pending' } }
+                );
+            }
+        }
+
+        if (project.AcceptedFreelancerEmail) {
+            const freelancerGigCount = await ProjectModel.countDocuments({
+                AcceptedFreelancerEmail: project.AcceptedFreelancerEmail,
+                status: "completed"
+            });
+            if (freelancerGigCount >= THRESHOLD) {
+                await userModel.findOneAndUpdate(
+                    { email: project.AcceptedFreelancerEmail, verificationStatus: { $nin: ['pending', 'approved'] }, isVerified: { $ne: true } },
+                    { $set: { verificationStatus: 'pending' } }
+                );
+            }
         }
 
         return NextResponse.json({

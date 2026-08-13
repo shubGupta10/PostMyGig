@@ -10,6 +10,7 @@ declare module "next-auth" {
       profilePhoto: string;
       activityPublic: boolean;
       onboardingCompleted: boolean;
+      isAdmin: boolean;
       subscription?: SubscriptionSnapshot;
     } & DefaultSession["user"];
   }
@@ -19,11 +20,12 @@ declare module "next-auth" {
     role: string;
     profilePhoto: string;
     onboardingCompleted?: boolean;
+    isAdmin?: boolean;
     subscription?: SubscriptionSnapshot;
   }
 }
 
-// THIS BLOCK ADDS `subscription` TO `token.` IN VS CODE
+
 declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
@@ -31,6 +33,7 @@ declare module "next-auth/jwt" {
     role?: string;
     activityPublic?: boolean;
     onboardingCompleted?: boolean;
+    isAdmin?: boolean;
     subscription?: SubscriptionSnapshot;
   }
 }

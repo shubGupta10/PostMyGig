@@ -21,6 +21,9 @@ interface User extends Document {
   reportCount?: number;
   activityPublic?: boolean;
   isBanned?: boolean;
+  isVerified?: boolean;
+  verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected';
+  isAdmin?: boolean;
   subscriptionSnapshot?: SubscriptionSnapshot;
   createdAt?: string;
   updatedAt?: string;
@@ -86,6 +89,19 @@ const userSchema = new Schema<User>({
   isBanned: {
     type: Boolean,
     default: false
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationStatus: {
+    type: String,
+    enum: ['none', 'pending', 'approved', 'rejected'],
+    default: 'none',
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
   },
   activityPublic: {
     type: Boolean,

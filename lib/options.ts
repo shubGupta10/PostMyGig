@@ -43,6 +43,7 @@ export const authOptions: NextAuthOptions = {
                         profilePhoto: user.profilePhoto as string,
                         provider: user.provider,
                         role: user.role || 'freelancer',
+                        isAdmin: (user as any).isAdmin || false,
                         activityPublic: user.activityPublic,
                         onboardingCompleted: user.onboardingCompleted ?? false,
                     }
@@ -73,6 +74,7 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.provider = account?.provider;
                 token.role = (user as any).role;
+                token.isAdmin = (user as any).isAdmin;
                 token.activityPublic = (user as any).activityPublic;
                 token.onboardingCompleted = (user as any).onboardingCompleted ?? false;
                 token.subscription = (user as any).subscription || (user as any).subscriptionSnapshot || {
@@ -90,6 +92,7 @@ export const authOptions: NextAuthOptions = {
                     if (dbUser) {
                         token.id = dbUser.id.toString();
                         token.role = dbUser.role || 'freelancer';
+                        token.isAdmin = dbUser.isAdmin || false;
                         token.provider = dbUser.provider;
                         token.activityPublic = dbUser.activityPublic;
                         token.onboardingCompleted = dbUser.onboardingCompleted ?? false;
@@ -111,6 +114,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.id as string;
                 session.user.provider = token.provider as string;
                 session.user.role = token.role as string;
+                session.user.isAdmin = (token.isAdmin as boolean) || false;
                 session.user.activityPublic = token.activityPublic as boolean;
                 session.user.onboardingCompleted = (token.onboardingCompleted as boolean) ?? false;
                 session.user.subscription = (token.subscription as any) || {
@@ -126,6 +130,7 @@ export const authOptions: NextAuthOptions = {
                         const dbUser = await userModel.findOne({ email: session.user.email });
                         if (dbUser) {
                             session.user.role = dbUser.role || 'freelancer';
+                            session.user.isAdmin = dbUser.isAdmin || false;
                             session.user.id = dbUser.id.toString();
                             session.user.provider = dbUser.provider;
                             session.user.activityPublic = dbUser.activityPublic as boolean;
@@ -165,6 +170,7 @@ export const authOptions: NextAuthOptions = {
                         // Set role in user object for OAuth login
                         if (updatedUser) {
                             (user as any).role = updatedUser.role || 'freelancer';
+                            (user as any).isAdmin = updatedUser.isAdmin || false;
                             user.id = updatedUser.id.toString();
                             (user as any).activityPublic = updatedUser.activityPublic;
                             (user as any).onboardingCompleted = updatedUser.onboardingCompleted ?? false;
@@ -182,6 +188,7 @@ export const authOptions: NextAuthOptions = {
 
                         // Set role in user object for new OAuth user
                         (user as any).role = savedUser.role || 'freelancer';
+                        (user as any).isAdmin = savedUser.isAdmin || false;
                         user.id = savedUser.id.toString();
                         (user as any).activityPublic = savedUser.activityPublic;
                         (user as any).onboardingCompleted = false;

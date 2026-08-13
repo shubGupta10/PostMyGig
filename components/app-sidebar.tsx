@@ -35,7 +35,7 @@ import { SidebarNavLink } from "./sidebar-nav-link"
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const session = await getServerSession(authOptions)
   const userRole = session?.user?.role || "freelancer"
-  const isAdmin = userRole === "admin"
+  const isAdmin = (session?.user as any)?.isAdmin === true
 
   return (
     <Sidebar variant="inset" collapsible="icon" {...props}>

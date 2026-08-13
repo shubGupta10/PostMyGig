@@ -41,6 +41,8 @@ import {
   Clock,
   Filter,
   MailIcon,
+  CheckCircle,
+  XCircle,
 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -57,6 +59,7 @@ interface UserType {
   skills: string[]
   contactLinks: Array<{ label: string; url: string; _id: string }>
   isBanned: boolean
+  isVerified: boolean
   reportCount: number
   createdAt: string
   updatedAt: string
@@ -113,6 +116,21 @@ function AdminDashboard() {
   const [feedbackTypeFilter, setFeedbackTypeFilter] = useState("all")
   const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null)
   const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null)
+  const [verificationRequests, setVerificationRequests] = useState<any[]>([])
+
+  const fetchVerificationReqs = async () => {
+    try {
+      const res = await fetch("/api/user/admin/fetch-verification-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminEmail: user?.email }),
+      })
+      const data = await res.json()
+      setVerificationRequests(data.users || [])
+    } catch (error) {
+      console.error("Failed to fetch verification requests", error)
+    }
+  }
 
   const fetchData = async () => {
     try {
@@ -164,6 +182,53 @@ function AdminDashboard() {
     }
   }
 
+  const handleToggleVerify = async (userId: string, currentStatus: boolean) => {
+    try {
+      const response = await fetch("/api/user/admin/verify-user", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          adminEmail: user?.email,
+          targetUserId: userId,
+          isVerified: !currentStatus,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        toast.success(result.message || "Verification status updated")
+        await fetchData()
+      } else {
+        throw new Error(result.message || "Failed to update verification status")
+      }
+    } catch (error) {
+      console.error("Failed to update verification status", error)
+      toast.error("Failed to update verification status")
+    }
+  }
+
+  const handleResolveVerification = async (userId: string, action: 'approve' | 'reject') => {
+    try {
+      const res = await fetch("/api/user/admin/resolve-verification", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminEmail: user?.email, targetUserId: userId, action }),
+      })
+      if (res.ok) {
+        toast.success(`User verification ${action}d`)
+        fetchVerificationReqs()
+        fetchData()
+      } else {
+        toast.error("Failed to resolve verification")
+      }
+    } catch (error) {
+      toast.error("Error resolving verification")
+    }
+  }
+
   const handleDeleteFeedback = async (feedbackId: string) => {
     try {
       setDeletingFeedbackId(feedbackId)
@@ -197,6 +262,7 @@ function AdminDashboard() {
   useEffect(() => {
     if (status === "authenticated" && user?.email) {
       fetchData()
+      fetchVerificationReqs()
     }
   }, [status, user?.email])
 
@@ -397,10 +463,11 @@ function AdminDashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="users">User Management</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="feedback">Feedback ({feedbackStats.total})</TabsTrigger>
+            <TabsTrigger value="verification">Verification Requests</TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="space-y-6">
@@ -507,6 +574,9 @@ function AdminDashboard() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem>View Profile</DropdownMenuItem>
                                 <DropdownMenuItem>Send Message</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleToggleVerify(user._id, user.isVerified || false)}>
+                                  {user.isVerified ? "Revoke Verification" : "Verify User"}
+                                </DropdownMenuItem>
                                 <DropdownMenuItem className="text-destructive">
                                   {user.isBanned ? "Unban User" : "Ban User"}
                                 </DropdownMenuItem>
@@ -766,6 +836,60 @@ function AdminDashboard() {
                           Clear Filters
                         </Button>
                       )}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="verification" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Verification Requests</CardTitle>
+                <CardDescription>Review users who have completed 3 gigs and approve their verified status.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {verificationRequests.length > 0 ? (
+                    verificationRequests.map((req) => (
+                      <Card key={req._id} className="border border-border p-4">
+                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                          <div className="flex items-start space-x-4">
+                            <Avatar className="h-10 w-10 border border-muted">
+                              <AvatarImage src={req.profilePhoto || ""} />
+                              <AvatarFallback>{req.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold">{req.name}</h4>
+                                <Badge variant="outline">{req.role}</Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">{req.email}</p>
+                              <div className="mt-4">
+                                <p className="text-sm font-medium mb-2">Completed Gigs ({req.completedGigs?.length || 0}):</p>
+                                <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                                  {req.completedGigs?.map((gig: any) => (
+                                    <li key={gig._id}>{gig.title} - <span className="text-xs">{gig.budget}</span></li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline" className="text-green-600 border-green-600 hover:bg-green-50" onClick={() => handleResolveVerification(req._id, 'approve')}>
+                              <CheckCircle className="h-4 w-4 mr-2" /> Approve
+                            </Button>
+                            <Button size="sm" variant="outline" className="text-destructive border-destructive hover:bg-destructive/10" onClick={() => handleResolveVerification(req._id, 'reject')}>
+                              <XCircle className="h-4 w-4 mr-2" /> Reject
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No pending verification requests.
                     </div>
                   )}
                 </div>

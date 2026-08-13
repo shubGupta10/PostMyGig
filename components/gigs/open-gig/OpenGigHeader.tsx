@@ -2,8 +2,10 @@
 
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, User, CheckCircle, ArrowLeft, Eye, Users } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Calendar, Clock, User, CheckCircle, ArrowLeft, Eye, Users, Info } from "lucide-react"
 import type { Gig, Owner } from "@/app/(pages)/(gig)/types"
 import { getStatusConfig, getTimeAgo, getDaysUntilExpiry } from "./utils"
 
@@ -77,7 +79,23 @@ export function OpenGigHeader({ gig, owner, isPinged, canApply, disabledMessage 
                 <User className="w-5 h-5 text-primary" />
                 <div>
                   <span className="text-sm text-muted-foreground block">Posted by</span>
-                  <span className="font-semibold text-foreground">{owner?.name}</span>
+                  {owner?.id ? (
+                    <Link href={`/user/profile/${owner.id}`} className="font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-1.5 group">
+                      {owner?.name}
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Click to view client's full profile and history.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </Link>
+                  ) : (
+                    <span className="font-semibold text-foreground">{owner?.name || "Unknown"}</span>
+                  )}
                 </div>
               </div>
             </div>

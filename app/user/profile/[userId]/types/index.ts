@@ -19,4 +19,7 @@ export interface UserData {
   role: "freelancer" | "client" | "admin"
   skills: string[]
   activityPublic?: boolean
+  isVerified: boolean
+  openGigs?: any[]
+  completedGigs?: any[]
 }

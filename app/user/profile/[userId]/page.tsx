@@ -1,8 +1,10 @@
 import { fetchUserProfile } from "./services/profileService"
 import { ProfileActions } from "@/components/profile/ProfileActions"
+import { GigCard } from "@/components/gigs/GigCard"
 import {
   User, Mail, MapPin, Calendar, Shield, AlertTriangle, ExternalLink,
   Star, Activity, LinkIcon, UserCheck, Clock, Settings,
+  ShieldCheck,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/helpers"
@@ -68,8 +70,13 @@ function getRoleConfig(role: string) {
   }
 }
 
-export default async function ProfilePage() {
-  const userData = await fetchUserProfile()
+export default async function ProfilePage({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params
+  const userData = await fetchPublicUserProfile(userId)
+  
+  if (!userData) {
+    return <div className="p-8 text-center text-xl text-muted-foreground">User not found</div>
+  }
   const roleConfig = getRoleConfig(userData.role || "user")
   const RoleIcon = roleConfig.icon
 
@@ -101,32 +108,39 @@ export default async function ProfilePage() {
               </div>
               {/* Info */}
               <div className="flex-1 text-center sm:text-left pb-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{userData.name}</h1>
-                <div className="flex flex-col sm:flex-row items-center sm:justify-start gap-3 mt-2">
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mb-2">
+                  <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">{userData.name}</h1>
+                  {userData.isVerified && (
+                    <span title="Verified by PostMyGig" className="flex items-center mt-1 sm:mt-1.5">
+                      <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-blue-500 drop-shadow-sm" fill="currentColor" stroke="white" />
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col sm:flex-row items-center sm:justify-start gap-4 mt-3">
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
                     <Mail className="w-4 h-4" />
                     <span>{userData.email}</span>
                   </div>
                   {userData.location && (
-                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
                       <MapPin className="w-4 h-4" />
                       <span>{userData.location}</span>
                     </div>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-3">
-                  <Badge variant="outline" className="bg-muted text-foreground border-border font-medium text-xs">
-                    <Calendar className="w-3 h-3 mr-1" />
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-5">
+                  <Badge variant="outline" className="bg-muted/50 text-foreground border-border/50 font-medium px-3 py-1 text-xs">
+                    <Calendar className="w-3.5 h-3.5 mr-1.5" />
                     Joined {formatDate(userData.createdAt)}
                   </Badge>
                   {userData.isBanned && (
-                    <Badge variant="outline" className="bg-destructive text-destructive-foreground border-destructive font-medium text-xs">
-                      <AlertTriangle className="w-3 h-3 mr-1" />
+                    <Badge variant="outline" className="bg-destructive/10 text-destructive-foreground border-destructive/20 font-medium px-3 py-1 text-xs">
+                      <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
                       Banned
                     </Badge>
                   )}
-                  <Badge variant="outline" className="bg-muted text-foreground border-border font-medium text-xs">
-                    <Activity className="w-3 h-3 mr-1" />
+                  <Badge variant="outline" className="bg-muted/50 text-foreground border-border/50 font-medium px-3 py-1 text-xs">
+                    <Activity className="w-3.5 h-3.5 mr-1.5" />
                     {userData.provider || "Unknown"} Account
                   </Badge>
                 </div>
@@ -199,6 +213,30 @@ export default async function ProfilePage() {
                 )}
               </div>
             </div>
+
+            {/* Open Gigs */}
+            {userData.openGigs && userData.openGigs.length > 0 && (
+              <div className="pt-2">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                  Open Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.openGigs.length}</span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  {userData.openGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
+                </div>
+              </div>
+            )}
+            
+            {/* Completed Gigs */}
+            {userData.completedGigs && userData.completedGigs.length > 0 && (
+              <div className="pt-2">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                  Completed Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.completedGigs.length}</span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  {userData.completedGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
+                </div>
+              </div>
+            )}
 
           </div>
 

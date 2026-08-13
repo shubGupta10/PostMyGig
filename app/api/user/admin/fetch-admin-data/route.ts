@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
             }, { status: 404 });
         }
 
-        if (fetchCurrentUser.role !== 'admin') {
+        if (fetchCurrentUser.isAdmin !== true) {
             return NextResponse.json({
                 message: "Only Admin is allowed to this route"
             }, { status: 403 })

@@ -73,6 +73,11 @@ export async function POST(req: NextRequest) {
     const owner = gig.ownerInfo?.[0];
     delete gig.ownerInfo;
 
+    let totalGigsPosted = 0;
+    if (owner?.email) {
+      totalGigsPosted = await ProjectModel.countDocuments({ createdBy: owner.email });
+    };
+
     const responseData = {
       message: "Gig found",
       gig: gig,
@@ -80,6 +85,9 @@ export async function POST(req: NextRequest) {
         id: owner?._id,
         name: owner?.name,
         email: owner?.email,
+        isVerified: owner?.isVerified,
+        createdAt: owner?.createdAt,
+        totalGigsPosted: totalGigsPosted
       }
     };
 

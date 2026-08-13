@@ -4,7 +4,8 @@ import { useState } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
-import { DollarSign, Calendar, Clock, CheckCircle, Pen, Trash2 } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { DollarSign, Calendar, Clock, CheckCircle, Pen, Trash2, ShieldCheck, Info } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -137,6 +138,48 @@ export function OpenGigSidebar({ gig, owner, isPinged, canApply, disabledMessage
 
           {/* Call to Action */}
           <div className="mt-8 space-y-4">
+            {/* About the Client */}
+            {owner && (
+              <div className="mt-8 pt-6 border-t border-border">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                  About the Client
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-muted-foreground">Verification</span>
+                    {owner.isVerified ? (
+                      <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-none font-bold">
+                        <ShieldCheck className="w-3.5 h-3.5 mr-1" />
+                        Verified
+                      </Badge>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Unverified</span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-muted-foreground">Member Since</span>
+                    <span className="text-sm font-semibold">{owner.createdAt ? new Date(owner.createdAt).getFullYear() : 'Unknown'}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
+                      Gigs Posted
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="w-3.5 h-3.5 cursor-help text-muted-foreground/70 hover:text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">The total number of gigs this client has posted on the platform.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </span>
+                    <span className="text-sm font-semibold">{owner.totalGigsPosted || 0}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {user?.email !== gig.createdBy ? (
               <>
                 {canApply ? (
