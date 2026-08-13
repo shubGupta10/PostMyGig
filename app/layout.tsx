@@ -31,6 +31,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteOgImage = "https://www.postmygig.vercel.app/api/og?title=PostMyGig&type=site&badge=PostMyGig&description=Freelance%20gigs%2C%20direct%20chat%2C%20and%20fast%20hiring.";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.postmygig.vercel.app"),
   title: "PostMyGig – Find & Share Freelance Gigs for Free",
@@ -55,7 +57,7 @@ export const metadata: Metadata = {
     siteName: "PostMyGig",
     images: [
       {
-        url: "https://postmygig.vercel.app/og-image.png",
+        url: siteOgImage,
         width: 1200,
         height: 630,
         alt: "PostMyGig – Freelance Gig Sharing Platform",
@@ -69,7 +71,7 @@ export const metadata: Metadata = {
     title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut.",
-    images: ["https://postmygig.vercel.app/twitter-image.png"],
+    images: [siteOgImage],
     creator: "@postmygig",
   },
   icons: {
@@ -103,13 +105,13 @@ export default async function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <meta property="og:title" content="PostMyGig – Find & Share Freelance Gigs for Free" />
         <meta property="og:description" content="Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays." />
-        <meta property="og:image" content="https://postmygig.vercel.app/og-image.png" />
+        <meta property="og:image" content={siteOgImage} />
         <meta property="og:url" content="https://postmygig.vercel.app" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="PostMyGig – Find & Share Freelance Gigs" />
         <meta name="twitter:description" content="List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut." />
-        <meta name="twitter:image" content="https://postmygig.vercel.app/twitter-image.png" />
+        <meta name="twitter:image" content={siteOgImage} />
         <meta name="twitter:creator" content="@postmygig" />
 
         <script type="application/ld+json" dangerouslySetInnerHTML={{

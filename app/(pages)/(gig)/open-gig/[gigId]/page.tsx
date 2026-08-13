@@ -8,6 +8,7 @@ import { notFound } from "next/navigation"
 import { authOptions } from "@/lib/options"
 import { isGigAvailableForApplication, getDisabledButtonMessage } from "@/components/gigs/open-gig/utils"
 import { Metadata } from "next"
+import { buildSocialImageUrl } from "@/lib/social-preview"
 
 export async function generateMetadata({ params }: { params: Promise<{ gigId: string }> }): Promise<Metadata> {
   const { gigId } = await params
@@ -22,14 +23,24 @@ export async function generateMetadata({ params }: { params: Promise<{ gigId: st
     }
   }
 
-  const ogImageUrl = `https://postmygig.vercel.app/og-image.png`
+  const summary = `${gig.budget ? `Budget: ₹${gig.budget} • ` : ''}Skills: ${gig.skillsRequired.slice(0, 3).join(', ')}`;
+  const ogImageUrl = buildSocialImageUrl({
+    title: gig.title,
+    description: summary,
+    badge: "Open Gig",
+    type: "gig",
+  });
+  const canonicalUrl = new URL(`/open-gig/${gigId}`, "https://www.postmygig.vercel.app").toString();
 
   return {
     title: `${gig.title} | PostMyGig`,
     description: gig.description.substring(0, 160),
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${gig.title} | PostMyGig`,
-      description: `${gig.budget ? `Budget: ₹${gig.budget} • ` : ''}Skills: ${gig.skillsRequired.slice(0, 3).join(', ')}`,
+      description: summary,
       images: [
         {
           url: ogImageUrl,
@@ -38,12 +49,15 @@ export async function generateMetadata({ params }: { params: Promise<{ gigId: st
           alt: gig.title,
         },
       ],
+      type: "website",
+      url: canonicalUrl,
     },
     twitter: {
       card: "summary_large_image",
       title: `${gig.title} | PostMyGig`,
-      description: `${gig.budget ? `Budget: ₹${gig.budget} • ` : ''}Skills: ${gig.skillsRequired.slice(0, 3).join(', ')}`,
+      description: summary,
       images: [ogImageUrl],
+      creator: "@postmygig",
     },
   }
 }

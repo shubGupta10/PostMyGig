@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/helpers"
 import { Metadata } from "next"
 import { fetchPublicUserProfile } from "./services/profileService"
+import { buildSocialImageUrl } from "@/lib/social-preview"
 
 export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }): Promise<Metadata> {
   const { userId } = await params
@@ -19,14 +20,24 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
     }
   }
 
-  const ogImageUrl = `https://postmygig.vercel.app/og-image.png`
+  const summary = user.skills && user.skills.length > 0 ? `Skills: ${user.skills.slice(0, 3).join(', ')}` : 'Freelancer on PostMyGig';
+  const ogImageUrl = buildSocialImageUrl({
+    title: user.name,
+    description: summary,
+    badge: 'Freelancer',
+    type: 'gig',
+  });
+  const canonicalUrl = new URL(`/user/profile/${userId}`, 'https://www.postmygig.vercel.app').toString();
 
   return {
     title: `${user.name} | PostMyGig`,
     description: user.bio ? user.bio.substring(0, 160) : `Check out ${user.name}'s profile on PostMyGig.`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${user.name} | PostMyGig`,
-      description: user.skills && user.skills.length > 0 ? `Skills: ${user.skills.slice(0, 3).join(', ')}` : 'Freelancer on PostMyGig',
+      description: summary,
       images: [
         {
           url: ogImageUrl,
@@ -35,12 +46,15 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
           alt: user.name,
         },
       ],
+      type: 'website',
+      url: canonicalUrl,
     },
     twitter: {
       card: "summary_large_image",
       title: `${user.name} | PostMyGig`,
-      description: user.skills && user.skills.length > 0 ? `Skills: ${user.skills.slice(0, 3).join(', ')}` : 'Freelancer on PostMyGig',
+      description: summary,
       images: [ogImageUrl],
+      creator: "@postmygig",
     },
   }
 }
