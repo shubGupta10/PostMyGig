@@ -163,7 +163,7 @@ export default function SettingsPage() {
         )}
 
         {successMessage && (
-          <div className="bg-green-500/10 text-green-600 text-sm font-medium px-4 py-3 rounded-xl border border-green-500/20">
+          <div className="bg-primary/10 text-primary text-sm font-medium px-4 py-3 rounded-xl border border-primary/20">
             {successMessage}
           </div>
         )}

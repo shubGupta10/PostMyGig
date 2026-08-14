@@ -88,12 +88,27 @@ export function GigCard({ gig }: GigCardProps) {
   return (
     <div className="group bg-card rounded-2xl border-2 border-border shadow-sm hover:border-primary transition-colors flex flex-col h-full overflow-hidden">
       <div className="p-5 flex flex-col h-full gap-4">
-        {/* Header: Date and Share */}
+
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="bg-muted text-muted-foreground font-medium text-xs px-2.5 py-1 border border-border">
               Posted {getTimeAgo(gig.createdAt)}
             </Badge>
+
+            {gig.status && (
+              <Badge
+                variant="outline"
+                className={`font-medium text-xs px-2.5 py-1 capitalize ${
+                  gig.status.toLowerCase() === 'active' || gig.status.toLowerCase() === 'open'
+                    ? 'bg-primary text-primary-foreground border-transparent'
+                    : gig.status.toLowerCase() === 'completed'
+                      ? 'bg-secondary text-secondary-foreground border-border'
+                      : 'bg-muted text-foreground border-border'
+                }`}
+              >
+                {gig.status}
+              </Badge>
+            )}
 
             {gig.isFlagged && (
               <Badge variant="outline" className="bg-accent text-accent-foreground border-accent font-medium text-xs px-2.5 py-1">
@@ -149,25 +164,6 @@ export function GigCard({ gig }: GigCardProps) {
           <p className="text-sm text-muted-foreground line-clamp-2">
             {gig.description}
           </p>
-        </div>
-
-        {/* Skills */}
-        <div className="space-y-2 mt-2">
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            Required Skills
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {gig.skillsRequired.slice(0, 3).map((skill, index) => (
-              <span key={index} className="bg-secondary text-secondary-foreground rounded-xl px-3 py-1 font-semibold text-xs">
-                {skill.trim()}
-              </span>
-            ))}
-            {gig.skillsRequired.length > 3 && (
-              <span className="bg-muted text-muted-foreground border border-border rounded-xl px-3 py-1 font-semibold text-xs">
-                +{gig.skillsRequired.length - 3} more
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Footer: CTA */}

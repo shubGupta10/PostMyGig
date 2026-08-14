@@ -73,7 +73,7 @@ function getRoleConfig(role: string) {
 export default async function ProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params
   const userData = await fetchPublicUserProfile(userId)
-  
+
   if (!userData) {
     return <div className="p-8 text-center text-xl text-muted-foreground">User not found</div>
   }
@@ -260,29 +260,24 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
 
         {/* Third Section: Gigs (Full Width) */}
         <div className="space-y-6 mt-8">
-          {/* Open Gigs */}
-          {userData.openGigs && userData.openGigs.length > 0 && (
-            <div className="pt-2">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
-                Open Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.openGigs.length}</span>
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {userData.openGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
+          {(() => {
+            const allGigs = [...(userData.openGigs || []), ...(userData.completedGigs || [])].sort((a, b) => {
+              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            })
+
+            if (allGigs.length === 0) return null
+
+            return (
+              <div className="pt-2">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                  Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{allGigs.length}</span>
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                  {allGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
+                </div>
               </div>
-            </div>
-          )}
-          
-          {/* Completed Gigs */}
-          {userData.completedGigs && userData.completedGigs.length > 0 && (
-            <div className="pt-2">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
-                Completed Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.completedGigs.length}</span>
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {userData.completedGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
-              </div>
-            </div>
-          )}
+            )
+          })()}
         </div>
       </div>
     </div>
