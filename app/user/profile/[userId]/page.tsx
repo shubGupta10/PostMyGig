@@ -117,10 +117,12 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row items-center sm:justify-start gap-4 mt-3">
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-                    <Mail className="w-4 h-4" />
-                    <span>{userData.email}</span>
-                  </div>
+                  {userData.email && (
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
+                      <Mail className="w-4 h-4" />
+                      <span>{userData.email}</span>
+                    </div>
+                  )}
                   {userData.location && (
                     <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
                       <MapPin className="w-4 h-4" />
@@ -139,10 +141,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
                       Banned
                     </Badge>
                   )}
-                  <Badge variant="outline" className="bg-muted/50 text-foreground border-border/50 font-medium px-3 py-1 text-xs">
-                    <Activity className="w-3.5 h-3.5 mr-1.5" />
-                    {userData.provider || "Unknown"} Account
-                  </Badge>
+
                 </div>
               </div>
             </div>
@@ -214,29 +213,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
               </div>
             </div>
 
-            {/* Open Gigs */}
-            {userData.openGigs && userData.openGigs.length > 0 && (
-              <div className="pt-2">
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
-                  Open Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.openGigs.length}</span>
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {userData.openGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
-                </div>
-              </div>
-            )}
-            
-            {/* Completed Gigs */}
-            {userData.completedGigs && userData.completedGigs.length > 0 && (
-              <div className="pt-2">
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
-                  Completed Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.completedGigs.length}</span>
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {userData.completedGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
-                </div>
-              </div>
-            )}
+
 
           </div>
 
@@ -248,10 +225,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
               <div className="p-6">
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">Account Details</p>
                 <div className="space-y-0 divide-y divide-border">
-                  <div className="py-3">
-                    <p className="text-xs text-muted-foreground mb-1">Provider</p>
-                    <p className="text-foreground font-semibold text-sm capitalize">{userData.provider || "Not available"}</p>
-                  </div>
+
                   <div className="py-3">
                     <p className="text-xs text-muted-foreground mb-1">Member Since</p>
                     <div className="flex items-center gap-2">
@@ -274,12 +248,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
                     <p className="text-xs text-muted-foreground mb-1">Reports</p>
                     <p className="text-foreground font-semibold text-sm">{userData.reportCount ?? 0}</p>
                   </div>
-                  <div className="pt-3">
-                    <p className="text-xs text-muted-foreground mb-1">User ID</p>
-                    <p className="text-foreground font-mono text-xs bg-muted rounded-lg px-3 py-2 border border-border truncate">
-                      {userData._id}
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -288,6 +256,33 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
             <ProfileActions userData={userData} />
 
           </div>
+        </div>
+
+        {/* Third Section: Gigs (Full Width) */}
+        <div className="space-y-6 mt-8">
+          {/* Open Gigs */}
+          {userData.openGigs && userData.openGigs.length > 0 && (
+            <div className="pt-2">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                Open Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.openGigs.length}</span>
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                {userData.openGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
+              </div>
+            </div>
+          )}
+          
+          {/* Completed Gigs */}
+          {userData.completedGigs && userData.completedGigs.length > 0 && (
+            <div className="pt-2">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                Completed Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.completedGigs.length}</span>
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                {userData.completedGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

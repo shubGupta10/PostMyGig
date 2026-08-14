@@ -14,6 +14,7 @@ import {
   Send,
   Activity,
   Shield,
+  Settings,
 } from "lucide-react"
 
 import {
@@ -112,7 +113,13 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 <SidebarMenuItem>
                   <SidebarNavLink href={`/user/profile/${session.user.id}`}>
                     <User className="size-4" />
-                    <span>Profile Settings</span>
+                    <span>My Profile</span>
+                  </SidebarNavLink>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarNavLink href={`/user/settings`}>
+                    <Settings className="size-4" />
+                    <span>Privacy Settings</span>
                   </SidebarNavLink>
                 </SidebarMenuItem>
 

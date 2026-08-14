@@ -51,7 +51,7 @@ export async function fetchPublicUserProfile(userId: string): Promise<UserData |
   try {
     await ConnectoDatabase()
 
-    const cacheKey = `fetch-public-user-profile-v5:${userId}`
+    const cacheKey = `fetch-public-user-profile-v7:${userId}`
     const cachedUser = await redis.get(cacheKey)
 
     if (typeof cachedUser === "string") {
@@ -146,9 +146,21 @@ export async function fetchPublicUserProfile(userId: string): Promise<UserData |
       return null;
     }
 
+    // Enforce privacy settings
+    if (foundUser.showEmail !== true) {
+      delete foundUser.email;
+    }
+    if (foundUser.showContactLinks === false) {
+      delete foundUser.contactLinks;
+    }
+    if (foundUser.activityPublic === false) {
+      delete foundUser.openGigs;
+      delete foundUser.completedGigs;
+    }
+
     const serializedUser = JSON.parse(JSON.stringify(foundUser)) as UserData;
     await redis.set(cacheKey, JSON.stringify(serializedUser), { ex: 3600 });
-    
+
     return serializedUser;
   } catch (error) {
     console.error("Failed to fetch public user profile:", error)

@@ -16,6 +16,8 @@ interface UserData {
   updatedAt: string
   isBanned: boolean
   location: string
+  showEmail?: boolean;
+  showContactLinks?: boolean;
   profilePhoto: string
   provider: string
   reportCount: number
@@ -29,14 +31,14 @@ interface UserState {
   userData: UserData | null
   loading: boolean
   error: string | null
-  
+
   // Actions
   setUserData: (userData: UserData) => void
   updateUserData: (updates: Partial<UserData>) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
   clearUserData: () => void
-  
+
   // API Actions
   fetchUserData: (userId: string) => Promise<void>
   updateActivityPublic: (activityPublic: boolean) => Promise<boolean>
@@ -52,27 +54,27 @@ export const useUserStore = create<UserState>()(
         error: null,
 
         // Basic Actions
-        setUserData: (userData) => 
+        setUserData: (userData) =>
           set({ userData, error: null }, false, 'setUserData'),
 
-        updateUserData: (updates) => 
+        updateUserData: (updates) =>
           set((state) => ({
             userData: state.userData ? { ...state.userData, ...updates } : null
           }), false, 'updateUserData'),
 
-        setLoading: (loading) => 
+        setLoading: (loading) =>
           set({ loading }, false, 'setLoading'),
 
-        setError: (error) => 
+        setError: (error) =>
           set({ error }, false, 'setError'),
 
-        clearUserData: () => 
+        clearUserData: () =>
           set({ userData: null, error: null, loading: false }, false, 'clearUserData'),
 
         // API Actions
         fetchUserData: async (userId: string) => {
           set({ loading: true, error: null }, false, 'fetchUserData/start')
-          
+
           try {
             const response = await fetch("/api/user/profile", {
               method: "POST",
@@ -85,22 +87,22 @@ export const useUserStore = create<UserState>()(
             const data = await response.json()
 
             if (response.status === 200) {
-              set({ 
-                userData: data.user, 
-                loading: false, 
-                error: null 
+              set({
+                userData: data.user,
+                loading: false,
+                error: null
               }, false, 'fetchUserData/success')
             } else {
-              set({ 
-                loading: false, 
-                error: data.message || "Failed to fetch user data" 
+              set({
+                loading: false,
+                error: data.message || "Failed to fetch user data"
               }, false, 'fetchUserData/error')
             }
           } catch (error) {
             console.error("Error fetching user data:", error)
-            set({ 
-              loading: false, 
-              error: "Network error occurred" 
+            set({
+              loading: false,
+              error: "Network error occurred"
             }, false, 'fetchUserData/networkError')
           }
         },
@@ -128,7 +130,7 @@ export const useUserStore = create<UserState>()(
                   activityPublic
                 } : null
               }), false, 'updateActivityPublic/success')
-              
+
               return true
             } else {
               console.error("Failed to update activity visibility:", data.message || "Unknown error")
@@ -144,8 +146,8 @@ export const useUserStore = create<UserState>()(
       }),
       {
         name: 'user-store', // localStorage key
-        partialize: (state) => ({ 
-          userData: state.userData 
+        partialize: (state) => ({
+          userData: state.userData
         }), // Only persist userData, not loading/error states
       }
     ),

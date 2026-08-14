@@ -19,6 +19,8 @@ export interface UserData {
   role: "freelancer" | "client" | "admin"
   skills: string[]
   activityPublic?: boolean
+  showEmail?: boolean
+  showContactLinks?: boolean
   isVerified: boolean
   openGigs?: any[]
   completedGigs?: any[]

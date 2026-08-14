@@ -31,6 +31,8 @@ export function HeaderTitle() {
     title = "Sign In"
   } else if (pathname.startsWith("/auth/register")) {
     title = "Create Account"
+  } else if (pathname.startsWith("/user/settings")) {
+    title = "Settings"
   }
 
   return (

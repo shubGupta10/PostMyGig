@@ -20,6 +20,8 @@ interface User extends Document {
   contactLinks?: ContactLinks[];
   reportCount?: number;
   activityPublic?: boolean;
+  showEmail?: boolean;
+  showContactLinks?: boolean;
   isBanned?: boolean;
   isVerified?: boolean;
   verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected';
@@ -86,26 +88,34 @@ const userSchema = new Schema<User>({
     type: Number,
     default: 0
   },
+  activityPublic: {
+    type: Boolean,
+    default: true
+  },
+  showEmail: {
+    type: Boolean,
+    default: false
+  },
+  showContactLinks: {
+    type: Boolean,
+    default: true
+  },
   isBanned: {
     type: Boolean,
     default: false
   },
   isVerified: {
     type: Boolean,
-    default: false,
+    default: false
   },
   verificationStatus: {
     type: String,
     enum: ['none', 'pending', 'approved', 'rejected'],
-    default: 'none',
+    default: 'none'
   },
   isAdmin: {
     type: Boolean,
-    default: false,
-  },
-  activityPublic: {
-    type: Boolean,
-    default: true,
+    default: false
   },
   subscriptionSnapshot: {
     plan: {
