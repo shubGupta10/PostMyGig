@@ -24,6 +24,8 @@ interface UserData {
   role: "freelancer" | "client" | "admin"
   skills: string[]
   activityPublic?: boolean
+  verificationStatus?: "none" | "pending" | "approved" | "rejected";
+  completedGigCount?: number;
 }
 
 interface UserState {

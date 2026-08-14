@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import userModel from "@/models/UserModel";
 import redis from "@/lib/redis";
 import { ConnectoDatabase } from "@/lib/db";
+import ProjectModel from "@/models/ProjectModel";
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,12 +33,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    await redis.set(cacheKey, JSON.stringify(foundUser), { ex: 3600 });
+    const completedGigCount = await ProjectModel.countDocuments({
+      $or: [
+        { createdBy: foundUser.email, status: "completed" },
+        { AcceptedFreelancerEmail: foundUser.email, status: "completed" }
+      ]
+    });
+
+    const userWithDetails = {
+      ...foundUser,
+      completedGigCount
+    }
+
+    await redis.set(cacheKey, JSON.stringify(userWithDetails), { ex: 3600 });
 
     return NextResponse.json(
       {
         message: "User profile fetched successfully",
-        user: foundUser,
+        user: userWithDetails,
       },
       { status: 200 }
     );

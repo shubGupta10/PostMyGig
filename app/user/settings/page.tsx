@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, Save, Activity, Mail, LinkIcon, LogOut, Trash2, AlertTriangle } from "lucide-react"
+import { Loader2, Save, Activity, Mail, LinkIcon, LogOut, Trash2, AlertTriangle, Award, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import {
@@ -28,10 +28,39 @@ export default function SettingsPage() {
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [dataLoaded, setDataLoaded] = useState(false)
-  
+
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
+  const [requestingVerification, setRequestVerification] = useState(false);
+
+  const handleRequestVerification = async () => {
+    setRequestVerification(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const res = await fetch("/api/user/request-verification", {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Failed to request verification");
+      }
+
+      if (user?.id) {
+        await fetchUserData(user.id);
+      }
+      setSuccessMessage("Verification request submitted successfully!")
+      setTimeout(() => setSuccessMessage(null), 3000)
+    } catch (err: any) {
+      setError(err.message || "An error occurred")
+    } finally {
+      setRequestVerification(false)
+    }
+  }
 
   // Form state
   const [settings, setSettings] = useState({
@@ -98,7 +127,7 @@ export default function SettingsPage() {
       if (user?.id) {
         await fetchUserData(user.id)
       }
-      
+
       setInitialSettings(settings)
 
       setSuccessMessage("Privacy settings updated successfully")
@@ -145,7 +174,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10">
       <div className="max-w-7xl mx-auto space-y-6">
-        
+
         {/* Actions Row */}
         {isDirty && (
           <div className="flex justify-end mb-4">
@@ -168,6 +197,90 @@ export default function SettingsPage() {
           </div>
         )}
 
+        {/* Premium Account Verification Section */}
+        <div className="space-y-4 mb-8">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">
+            Account Verification
+          </p>
+
+          <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 premium-gradient p-6 shadow-sm transition-all hover:border-primary/40">
+            {/* Decorative background element */}
+            <div className="absolute -right-8 -top-8 opacity-5 pointer-events-none">
+              <Award className="w-48 h-48 text-primary" />
+            </div>
+
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-start gap-5 w-full">
+                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
+                  <Award className="w-7 h-7 text-primary" />
+                </div>
+
+                <div className="space-y-1 w-full max-w-lg">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-bold text-foreground">Verified Badge</h3>
+                    {userData?.verificationStatus === 'approved' && (
+                      <span className="bg-green-500/10 text-green-600 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-green-500/20">
+                        Verified
+                      </span>
+                    )}
+                    {userData?.verificationStatus === 'pending' && (
+                      <span className="bg-yellow-500/10 text-yellow-600 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-yellow-500/20">
+                        Under Review
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {userData?.verificationStatus === 'approved'
+                      ? "Your account has been verified. The verified badge is now displayed on your profile."
+                      : userData?.verificationStatus === 'pending'
+                        ? "Our team is currently reviewing your account. This usually takes 24-48 hours."
+                        : "Stand out to clients by earning a verified badge. Complete 3 gigs to unlock the ability to request a review."}
+                  </p>
+
+                  {/* Progress Bar for Eligible/Not Eligible */}
+                  {userData?.verificationStatus !== 'approved' && userData?.verificationStatus !== 'pending' && (
+                    <div className="mt-5 pt-1">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs font-semibold text-foreground">Eligibility Progress</span>
+                        <span className="text-xs font-bold text-primary">
+                          {Math.min(userData?.completedGigCount || 0, 3)} / 3 Gigs
+                        </span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
+                          style={{ width: `${Math.min(((userData?.completedGigCount || 0) / 3) * 100, 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {userData?.verificationStatus !== 'approved' && userData?.verificationStatus !== 'pending' && (
+                <div className="shrink-0 mt-4 md:mt-0">
+                  <Button
+                    onClick={handleRequestVerification}
+                    disabled={requestingVerification || (userData?.completedGigCount || 0) < 3}
+                    className={`h-12 px-6 rounded-xl font-semibold shadow-sm transition-all w-full md:w-auto ${(userData?.completedGigCount || 0) >= 3
+                      ? "bg-primary text-primary-foreground hover:opacity-90"
+                      : "bg-muted text-muted-foreground border-2 border-border/50"
+                      }`}
+                  >
+                    {requestingVerification ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Requesting...</>
+                    ) : (
+                      <><ShieldCheck className="w-4 h-4 mr-2" /> Request Verification</>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+
         <div className="space-y-4">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-2">
             Privacy Preferences
@@ -185,9 +298,9 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">Make your open and completed gigs visible to others.</p>
                 </div>
               </div>
-              <Switch 
-                checked={settings.activityPublic} 
-                onCheckedChange={(v) => setSettings({ ...settings, activityPublic: v })} 
+              <Switch
+                checked={settings.activityPublic}
+                onCheckedChange={(v) => setSettings({ ...settings, activityPublic: v })}
               />
             </div>
 
@@ -202,9 +315,9 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">Show your email address on your public profile.</p>
                 </div>
               </div>
-              <Switch 
-                checked={settings.showEmail} 
-                onCheckedChange={(v) => setSettings({ ...settings, showEmail: v })} 
+              <Switch
+                checked={settings.showEmail}
+                onCheckedChange={(v) => setSettings({ ...settings, showEmail: v })}
               />
             </div>
 
@@ -219,9 +332,9 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">Display your portfolio and social media links.</p>
                 </div>
               </div>
-              <Switch 
-                checked={settings.showContactLinks} 
-                onCheckedChange={(v) => setSettings({ ...settings, showContactLinks: v })} 
+              <Switch
+                checked={settings.showContactLinks}
+                onCheckedChange={(v) => setSettings({ ...settings, showContactLinks: v })}
               />
             </div>
           </div>

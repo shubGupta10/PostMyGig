@@ -88,9 +88,9 @@ export function GigCard({ gig, showSkills = true }: GigCardProps) {
 
   return (
     <div className="group bg-card rounded-2xl border-2 border-border shadow-sm hover:border-primary transition-colors flex flex-col h-full overflow-hidden">
-      <div className="p-5 flex flex-col h-full gap-4">
+      <div className="p-6 flex flex-col h-full">
 
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-2 mb-4">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="bg-muted text-muted-foreground font-medium text-xs px-2.5 py-1 border border-border">
               Posted {getTimeAgo(gig.createdAt)}
@@ -145,7 +145,7 @@ export function GigCard({ gig, showSkills = true }: GigCardProps) {
         </div>
 
         {/* Title and Description */}
-        <div className="space-y-1.5 flex-grow">
+        <div className="space-y-2 mb-6">
           <h2 className="text-lg sm:text-xl font-semibold text-foreground line-clamp-2">{gig.title}</h2>
           <p className="text-sm text-muted-foreground line-clamp-2">
             {gig.description}
@@ -154,7 +154,7 @@ export function GigCard({ gig, showSkills = true }: GigCardProps) {
 
         {/* Skills */}
         {showSkills && gig.skillsRequired && gig.skillsRequired.length > 0 && (
-          <div>
+          <div className="mt-auto mb-6">
             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
               Required Skills
             </p>
@@ -174,7 +174,7 @@ export function GigCard({ gig, showSkills = true }: GigCardProps) {
         )}
 
         {/* Footer: CTA */}
-        <div>
+        <div className={!showSkills || !gig.skillsRequired || gig.skillsRequired.length === 0 ? "mt-auto" : ""}>
           <button onClick={() => router.push(`/open-gig/${gig._id}`)} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-xl font-semibold transition-colors shadow-sm text-sm cursor-pointer">
             <Eye className="w-4 h-4" />
             <span>View Details</span>
