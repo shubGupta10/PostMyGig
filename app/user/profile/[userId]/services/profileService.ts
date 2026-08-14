@@ -5,6 +5,7 @@ import ProjectModel from "@/models/ProjectModel"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/options"
 import type { UserData } from "../types"
+import mongoose from "mongoose"
 
 export async function fetchUserProfile(): Promise<UserData> {
   const session = await getServerSession(authOptions)
@@ -17,7 +18,6 @@ export async function fetchUserProfile(): Promise<UserData> {
     await ConnectoDatabase()
     const userId = session.user.id
 
-    // Check if the user exists
     const fetchSessionUser = await userModel.findById(userId)
     if (!fetchSessionUser) {
       throw new Error("User not found.")
@@ -36,10 +36,8 @@ export async function fetchUserProfile(): Promise<UserData> {
       throw new Error("User profile not found.")
     }
 
-    // Deep serialize to convert ALL nested ObjectIds (e.g. contactLinks._id, skills etc.)
     const serializedUser = JSON.parse(JSON.stringify(foundUser)) as UserData
 
-    // Cache the user profile for 1 hour
     await redis.set(cacheKey, JSON.stringify(serializedUser), { ex: 3600 })
 
     return serializedUser
@@ -53,31 +51,105 @@ export async function fetchPublicUserProfile(userId: string): Promise<UserData |
   try {
     await ConnectoDatabase()
 
-    const cacheKey = `fetch-public-user-profile-v3:${userId}`
+    const cacheKey = `fetch-public-user-profile-v5:${userId}`
     const cachedUser = await redis.get(cacheKey)
 
     if (typeof cachedUser === "string") {
       return JSON.parse(cachedUser) as UserData
     }
 
-    const foundUser = await userModel.findById(userId).select("-password -__v").lean()
+    const [foundUser] = await userModel.aggregate([
+      // Stage 1: Find the user
+      {
+        $match: { _id: new mongoose.Types.ObjectId(userId) },
+      },
+      // Stage 2: Fetch Open Gigs
+      {
+        $lookup: {
+          from: "projects",
+          let: { userEmail: "$email" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$createdBy", "$$userEmail"] },
+                    { $eq: ["$status", "active"] }
+                  ]
+                }
+              }
+            },
+            { $sort: { createdAt: -1 } }
+          ],
+          as: "openGigs"
+        }
+      },
+      // Stage 3: Fetch Client Completed Gigs
+      {
+        $lookup: {
+          from: "projects",
+          let: { userEmail: "$email" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$createdBy", "$$userEmail"] },
+                    { $eq: ["$status", "completed"] }
+                  ]
+                }
+              }
+            },
+            { $sort: { createdAt: -1 } }
+          ],
+          as: "clientCompleted"
+        }
+      },
+      // Stage 4: Fetch Freelancer Completed Gigs
+      {
+        $lookup: {
+          from: "projects",
+          let: { userEmail: "$email" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$AcceptedFreelancerEmail", "$$userEmail"] },
+                    { $eq: ["$status", "completed"] }
+                  ]
+                }
+              }
+            },
+            { $sort: { createdAt: -1 } }
+          ],
+          as: "freelancerCompleted"
+        }
+      },
+      // Stage 5: Merge arrays & Cleanup
+      {
+        $addFields: {
+          completedGigs: { $concatArrays: ["$clientCompleted", "$freelancerCompleted"] }
+        }
+      },
+      {
+        $project: {
+          password: 0,
+          __v: 0,
+          clientCompleted: 0,
+          freelancerCompleted: 0
+        }
+      }
+    ]);
 
     if (!foundUser) {
-      return null
+      return null;
     }
 
-    const serializedUser = JSON.parse(JSON.stringify(foundUser)) as UserData
-
-    const rawOpenGigs = await ProjectModel.find({ createdBy: serializedUser.email, status: 'open' }).sort({ createdAt: -1 }).lean();
-    serializedUser.openGigs = JSON.parse(JSON.stringify(rawOpenGigs));
-
-    const clientCompleted = await ProjectModel.find({ createdBy: serializedUser.email, status: 'completed' }).sort({ createdAt: -1 }).lean();
-    const freelancerCompleted = await ProjectModel.find({ AcceptedFreelancerEmail: serializedUser.email, status: 'completed' }).sort({ createdAt: -1 }).lean();
-    serializedUser.completedGigs = JSON.parse(JSON.stringify([...clientCompleted, ...freelancerCompleted]));
-    await redis.set(cacheKey, JSON.stringify(serializedUser), { ex: 3600 })
-
-
-    return serializedUser
+    const serializedUser = JSON.parse(JSON.stringify(foundUser)) as UserData;
+    await redis.set(cacheKey, JSON.stringify(serializedUser), { ex: 3600 });
+    
+    return serializedUser;
   } catch (error) {
     console.error("Failed to fetch public user profile:", error)
     return null
