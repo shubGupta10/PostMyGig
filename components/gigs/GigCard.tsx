@@ -154,7 +154,7 @@ export function GigCard({ gig, showSkills = true }: GigCardProps) {
 
         {/* Skills */}
         {showSkills && gig.skillsRequired && gig.skillsRequired.length > 0 && (
-          <div className="mt-4">
+          <div>
             <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
               Required Skills
             </p>
@@ -174,7 +174,7 @@ export function GigCard({ gig, showSkills = true }: GigCardProps) {
         )}
 
         {/* Footer: CTA */}
-        <div className="mt-5">
+        <div>
           <button onClick={() => router.push(`/open-gig/${gig._id}`)} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-xl font-semibold transition-colors shadow-sm text-sm cursor-pointer">
             <Eye className="w-4 h-4" />
             <span>View Details</span>
