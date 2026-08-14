@@ -272,7 +272,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
                   Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{allGigs.length}</span>
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                  {allGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
+                  {allGigs.map(gig => <GigCard key={gig._id} gig={gig} showSkills={false} />)}
                 </div>
               </div>
             )

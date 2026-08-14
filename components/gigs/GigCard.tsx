@@ -18,9 +18,10 @@ import { useCallback, useMemo } from "react"
 
 interface GigCardProps {
   gig: Gig
+  showSkills?: boolean
 }
 
-export function GigCard({ gig }: GigCardProps) {
+export function GigCard({ gig, showSkills = true }: GigCardProps) {
   const router = useRouter()
 
   const getShareUrl = useCallback((gigId: string) => {
@@ -95,21 +96,6 @@ export function GigCard({ gig }: GigCardProps) {
               Posted {getTimeAgo(gig.createdAt)}
             </Badge>
 
-            {gig.status && (
-              <Badge
-                variant="outline"
-                className={`font-medium text-xs px-2.5 py-1 capitalize ${
-                  gig.status.toLowerCase() === 'active' || gig.status.toLowerCase() === 'open'
-                    ? 'bg-primary text-primary-foreground border-transparent'
-                    : gig.status.toLowerCase() === 'completed'
-                      ? 'bg-secondary text-secondary-foreground border-border'
-                      : 'bg-muted text-foreground border-border'
-                }`}
-              >
-                {gig.status}
-              </Badge>
-            )}
-
             {gig.isFlagged && (
               <Badge variant="outline" className="bg-accent text-accent-foreground border-accent font-medium text-xs px-2.5 py-1">
                 Flagged
@@ -166,10 +152,30 @@ export function GigCard({ gig }: GigCardProps) {
           </p>
         </div>
 
-        {/* Footer: CTA */}
-        <div className="mt-4">
+        {/* Skills */}
+        {showSkills && gig.skillsRequired && gig.skillsRequired.length > 0 && (
+          <div className="mt-4">
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
+              Required Skills
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {gig.skillsRequired.slice(0, 3).map((skill, index) => (
+                <span key={index} className="bg-secondary text-secondary-foreground text-xs font-semibold px-3 py-1.5 rounded-xl border border-transparent">
+                  {skill}
+                </span>
+              ))}
+              {gig.skillsRequired.length > 3 && (
+                <span className="bg-muted text-muted-foreground text-xs font-semibold px-3 py-1.5 rounded-xl border border-transparent">
+                  +{gig.skillsRequired.length - 3} more
+                </span>
+              )}
+            </div>
+          </div>
+        )}
 
-          <button onClick={() => router.push(`/open-gig/${gig._id}`)} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold transition-colors shadow-sm text-sm cursor-pointer">
+        {/* Footer: CTA */}
+        <div className="mt-5">
+          <button onClick={() => router.push(`/open-gig/${gig._id}`)} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-xl font-semibold transition-colors shadow-sm text-sm cursor-pointer">
             <Eye className="w-4 h-4" />
             <span>View Details</span>
           </button>
