@@ -252,7 +252,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
               </div>
             </div>
 
-            {/* Interactive Client Section */}
             <ProfileActions userData={userData} />
 
           </div>

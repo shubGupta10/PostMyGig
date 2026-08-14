@@ -17,7 +17,6 @@ export function ProfileActions({ userData }: { userData: UserData }) {
     StoreUserDataIntoStore(userData)
   }, [userData, StoreUserDataIntoStore])
 
-  // SECURITY: Only render these actions if the logged-in user is the owner of this profile
   if (session.status !== "authenticated" || session.data?.user?.id !== userData._id) {
     return null
   }
@@ -33,7 +32,7 @@ export function ProfileActions({ userData }: { userData: UserData }) {
             <Edit className="w-4 h-4 mr-2" />
             Edit Profile
           </Button>
-          
+
           <Button onClick={() => router.push(`/user/settings`)} variant="outline" className="w-full border-border text-foreground hover:bg-muted font-semibold h-11">
             <Settings className="w-4 h-4 mr-2" />
             Settings
