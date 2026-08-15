@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       }, { status: 200 });
     }
 
-    const allProjects = await ProjectModel.find({ createdBy: userEmail }).lean();
+    const allProjects = await ProjectModel.find({ createdBy: userEmail }).sort({ createdAt: -1 }).lean();
 
     if (!allProjects?.length) {
       return NextResponse.json({
