@@ -17,30 +17,60 @@ export async function POST(req: NextRequest) {
     }
 
     const userEmail = session.user.email;
-    const cacheKey = `user-projects:${userEmail}`;
+
+    const body = await req.json().catch(() => ({}));
+    const page = Math.max(1, parseInt(body.page) || 1);
+    const limit = Math.max(1, parseInt(body.limit) || 6);
+    const skip = (page - 1) * limit;
+
+    const cacheKey = `user-projects:${userEmail}:${page}:${limit}`;
 
     const cached = await redis.get(cacheKey);
     if (cached) {
       const parsed = typeof cached === "string" ? JSON.parse(cached) : cached;
       return NextResponse.json({
         message: "Fetched from cache",
-        projects: parsed,
+        projects: parsed.projects,
+        pagination: parsed.pagination,
       }, { status: 200 });
     }
 
-    const allProjects = await ProjectModel.find({ createdBy: userEmail }).sort({ createdAt: -1 }).lean();
+    const [projects, totalCount] = await Promise.all([
+      ProjectModel.find({ createdBy: userEmail })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      ProjectModel.countDocuments({ createdBy: userEmail })
+    ])
 
-    if (!allProjects?.length) {
+    if (!projects?.length) {
       return NextResponse.json({
         message: "User does not have any projects",
       }, { status: 200 });
     }
 
-    await redis.set(cacheKey, JSON.stringify(allProjects), { ex: 600 });
+    const totalPages = Math.ceil(totalCount / limit);
+    const pagination = {
+      page,
+      limit,
+      totalCount,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    }
+
+    const dataToCache = {
+      projects,
+      pagination
+    }
+
+    await redis.set(cacheKey, JSON.stringify(dataToCache), { ex: 600 });
 
     return NextResponse.json({
       message: "Projects fetched successfully",
-      projects: allProjects,
+      projects,
+      pagination,
     }, { status: 200 });
 
   } catch (error: any) {

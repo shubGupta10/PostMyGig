@@ -2,11 +2,18 @@ import { cookies } from "next/headers"
 import { fetchUserGigs } from "./services"
 import { UserGigsList } from "@/components/gigs/UserGigsList"
 
-export default async function UserGigsPage() {
-  const cookieStore = cookies()
-  const cookieString = cookieStore.toString()
+interface PageProps {
+  searchParams: Promise<{ page?: string }>
+}
 
-  const result = await fetchUserGigs(cookieString)
+export default async function UserGigsPage({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const currentPage = Math.max(1, parseInt(resolvedSearchParams.page || "1", 10));
+
+  const cookieStore = cookies()
+  const cookieString = cookieStore.toString();
+
+  const result = await fetchUserGigs(cookieString, currentPage, 6);
 
   if (result.error) {
     throw new Error(result.error)
@@ -15,7 +22,7 @@ export default async function UserGigsPage() {
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10">
       <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        <UserGigsList initialProjects={result.gigs} />
+        <UserGigsList initialProjects={result.gigs} pagination={result.pagination} />
       </div>
     </div>
   )

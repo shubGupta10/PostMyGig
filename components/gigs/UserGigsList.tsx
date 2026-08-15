@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Plus, Briefcase } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -16,18 +16,25 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Accordion } from "@/components/ui/accordion"
-import type { UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
+import type { PaginationInfo, UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination"
 
 interface UserGigsListProps {
   initialProjects: UserGig[]
+  pagination: PaginationInfo | null
 }
 
-export function UserGigsList({ initialProjects }: UserGigsListProps) {
+export function UserGigsList({ initialProjects, pagination }: UserGigsListProps) {
+
   const [projects, setProjects] = useState<UserGig[]>(initialProjects)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
   const [projectToDelete, setProjectToDelete] = useState<UserGig | null>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    setProjects(initialProjects)
+  }, [initialProjects])
 
   const openDeleteDialog = (project: UserGig) => {
     setProjectToDelete(project)
@@ -51,6 +58,7 @@ export function UserGigsList({ initialProjects }: UserGigsListProps) {
 
       setProjects(projects.filter((p) => p._id !== gigId))
       toast.success("Project deleted successfully")
+      router.refresh()
     } catch (error) {
       toast.error("Error deleting project")
       console.error(error)
@@ -92,6 +100,42 @@ export function UserGigsList({ initialProjects }: UserGigsListProps) {
           />
         ))}
       </Accordion>
+
+      {pagination && pagination.totalPages > 1 && (
+        <div className="mt-8 pt-6 border-t border-border">
+          <Pagination>
+            <PaginationContent>
+
+              {/* Previous button */}
+              <PaginationItem>
+                <PaginationPrevious
+                  href={pagination.hasPrevPage ? `?page=${pagination.page - 1}` : undefined}
+                  className={!pagination.hasPrevPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                />
+              </PaginationItem>
+
+              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink
+                    href={`?page=${pageNum}`}
+                    isActive={pageNum === pagination.page}
+                  >
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              {/* next button */}
+              <PaginationItem>
+                <PaginationNext
+                  href={pagination.hasNextPage ? `?page=${pagination.page + 1}` : undefined}
+                  className={!pagination.hasNextPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-card text-card-foreground border border-border">

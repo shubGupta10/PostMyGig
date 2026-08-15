@@ -1,8 +1,13 @@
-import type { UserGig } from "../types"
+import type { FetchUserGigsResult, UserGig } from "../types"
 
-export async function fetchUserGigs(cookieString: string = ""): Promise<{ gigs: UserGig[]; error: string | null; noProjects: boolean }> {
-  const result = {
+export async function fetchUserGigs(
+  cookieString: string = "",
+  page: number = 1,
+  limit: number = 6
+): Promise<FetchUserGigsResult> {
+  const result: FetchUserGigsResult = {
     gigs: [] as UserGig[],
+    pagination: null,
     error: null as string | null,
     noProjects: false,
   }
@@ -12,7 +17,7 @@ export async function fetchUserGigs(cookieString: string = ""): Promise<{ gigs: 
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     }
-    
+
     if (cookieString) {
       headers["Cookie"] = cookieString
     }
@@ -20,7 +25,7 @@ export async function fetchUserGigs(cookieString: string = ""): Promise<{ gigs: 
     const response = await fetch(`${baseUrl}/api/gigs/fetch-all-user-gigs`, {
       method: "POST",
       headers,
-      cache: "no-store",
+      body: JSON.stringify({ page, limit }),
     })
 
     if (response.status === 204) {
@@ -34,9 +39,10 @@ export async function fetchUserGigs(cookieString: string = ""): Promise<{ gigs: 
     }
 
     const data = await response.json()
-    
+
     if (data.projects) {
       result.gigs = data.projects
+      result.pagination = data.pagination || null
       result.noProjects = data.projects.length === 0
     } else {
       result.noProjects = true

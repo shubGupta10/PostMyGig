@@ -9,3 +9,19 @@ export interface UserGig {
   expiresAt: string
   AcceptedFreelancerEmail?: string
 }
+
+export interface PaginationInfo {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface FetchUserGigsResult {
+  gigs: UserGig[]
+  pagination: PaginationInfo | null
+  error: string | null
+  noProjects: boolean
+}
