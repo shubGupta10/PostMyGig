@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import resend from "@/lib/resend";
 import { EmailSender } from "@/lib/email/send";
 import redis from "@/lib/redis";
 import { ConnectoDatabase } from "@/lib/db";
 import userModel from "@/models/UserModel";
-import { postMyGigNewGigsTemplate } from "@/lib/email/templates";
+import { postMyGigWelcomeBackTemplate } from "@/lib/email/templates";
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -20,7 +20,7 @@ const getAllUsers = async () => {
 
         const userData = fetchAllUsers.map(user => ({
             email: user.email,
-            name: user.name
+            name: user.name || "there"
         }));
 
         return { success: true, data: userData };
@@ -30,70 +30,91 @@ const getAllUsers = async () => {
     }
 };
 
-//wait function
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const sendEmailsInBatches = async (users: { email: string, name: string }[], batchSize = 2, delayMs = 1000) => {
+    let sentCount = 0;
+
     for (let i = 0; i < users.length; i += batchSize) {
         const batch = users.slice(i, i + batchSize);
 
         await Promise.all(batch.map(async (user) => {
             try {
+                // Check if user already received the welcome back email
+                const alreadySent = await redis.sismember("postmygig:welcome-back-sent", user.email);
+                if (alreadySent) {
+                    return;
+                }
+
+                const emailHtml = postMyGigWelcomeBackTemplate(user.name);
+                const subject = "PostMyGig Platform Update: Welcome Back";
+
                 if (NODE_ENV === 'production') {
                     const { error } = await resend.emails.send({
                         from: 'PostMyGig <hello@postmygig.vercel.app>',
                         to: user.email,
-                        subject: 'New Gigs on PostMyGig!',
-                        html: postMyGigNewGigsTemplate(user.name)
+                        subject,
+                        html: emailHtml
                     });
 
                     if (error) {
                         console.warn('[Resend Failed] Falling back to Nodemailer:', error);
-
                         await EmailSender({
                             to: user.email,
-                            subject: 'New Gigs on PostMyGig!',
-                            html: postMyGigNewGigsTemplate(user.name)
+                            subject,
+                            html: emailHtml
                         });
                     }
                 } else {
                     await EmailSender({
                         to: user.email,
-                        subject: 'New Gigs on PostMyGig!',
-                        html: postMyGigNewGigsTemplate(user.name)
+                        subject,
+                        html: emailHtml
                     });
                 }
+
+                // Mark user as sent in Redis set
+                await redis.sadd("postmygig:welcome-back-sent", user.email);
+                sentCount++;
             } catch (err) {
-                console.error('Error sending email:', err);
+                console.error(`Error sending welcome email to ${user.email}:`, err);
             }
         }));
 
-        // Wait 1 second between each batch to respect Resend's rate limit
         await wait(delayMs);
     }
+
+    return sentCount;
 };
 
+export async function POST(req: NextRequest) {
+    try {
+        const authHeader = req.headers.get("authorization");
+        const cronSecret = process.env.CRON_SECRET;
 
-export async function POST() {
-    const redisKey = 'postmygig:last-email-sent';
-    const isCoolDown = await redis.get(redisKey);
+        if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
 
-    // If cooldown exists, skip sending
-    if (isCoolDown) {
-        return NextResponse.json({ message: 'Email cooldown active, skipping send.' });
+        const { success, data: users } = await getAllUsers();
+
+        if (!success || users.length === 0) {
+            return NextResponse.json({ message: 'No users found.' }, { status: 404 });
+        }
+
+        const sentCount = await sendEmailsInBatches(users);
+
+        return NextResponse.json({
+            message: 'Welcome back broadcast completed successfully.',
+            totalUsers: users.length,
+            sentCount
+        }, { status: 200 });
+
+    } catch (error: any) {
+        console.error("Welcome back broadcast error:", error);
+        return NextResponse.json({
+            message: "Broadcast failed",
+            error: error.message
+        }, { status: 500 });
     }
-
-    const { success, data: users } = await getAllUsers();
-
-    if (!success || users.length === 0) {
-        return NextResponse.json({ message: 'No users found.' }, { status: 404 });
-    }
-
-    // batch send emails safely
-    await sendEmailsInBatches(users);
-
-    // Set cooldown TTL for 7 days (1 week)
-    await redis.set(redisKey, 'sent', { ex: 60 * 60 * 24 * 7 });
-
-    return NextResponse.json({ message: 'Emails sent successfully.' });
 }

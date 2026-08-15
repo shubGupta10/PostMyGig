@@ -371,3 +371,81 @@ export const postMyGigExpiredTemplate = ({
     </div>
   `;
 };
+
+export const postMyGigWelcomeBackTemplate = (userName: string) => {
+  const exploreUrl = `${LIVE_URL}/view-gigs`;
+  const postGigUrl = `${LIVE_URL}/add-gigs`;
+
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #111111; color: #eeeeee; padding: 40px 20px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #191919; border: 1px solid #2e2e2e; padding: 36px 32px; border-radius: 16px;">
+        
+        <div style="margin-bottom: 28px;">
+          <h2 style="font-size: 14px; font-weight: 700; color: #ffe0c2; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 12px 0;">
+            Platform Update
+          </h2>
+          <h1 style="font-size: 24px; font-weight: 700; color: #ffffff; line-height: 1.3; margin: 0;">
+            Welcome back to PostMyGig
+          </h1>
+        </div>
+
+        <p style="font-size: 15px; color: #cccccc; line-height: 1.6; margin: 0 0 20px 0;">
+          Hello ${userName || "there"},
+        </p>
+
+        <p style="font-size: 15px; color: #cccccc; line-height: 1.6; margin: 0 0 24px 0;">
+          We have made significant improvements to the PostMyGig platform to deliver a faster, more reliable experience for hiring and discovering freelance opportunities.
+        </p>
+
+        <div style="background-color: #141414; border: 1px solid #282828; border-radius: 12px; padding: 24px; margin-bottom: 28px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: #ffffff; margin: 0 0 16px 0;">
+            Key Improvements
+          </h3>
+
+          <div style="margin-bottom: 16px;">
+            <p style="font-size: 14px; font-weight: 600; color: #ffe0c2; margin: 0 0 4px 0;">
+              Verified Active Listings
+            </p>
+            <p style="font-size: 13px; color: #909090; line-height: 1.5; margin: 0;">
+              All project postings now operate on a 45-day active cycle, ensuring you only see current and relevant opportunities.
+            </p>
+          </div>
+
+          <div style="margin-bottom: 16px;">
+            <p style="font-size: 14px; font-weight: 600; color: #ffe0c2; margin: 0 0 4px 0;">
+              Direct Collaboration Hub
+            </p>
+            <p style="font-size: 13px; color: #909090; line-height: 1.5; margin: 0;">
+              Project Huddle enables direct, streamlined communication between clients and accepted freelancers.
+            </p>
+          </div>
+
+          <div>
+            <p style="font-size: 14px; font-weight: 600; color: #ffe0c2; margin: 0 0 4px 0;">
+              Streamlined Application Management
+            </p>
+            <p style="font-size: 13px; color: #909090; line-height: 1.5; margin: 0;">
+              Enhanced tracking for proposals, applicant screening, and real-time status notifications.
+            </p>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 32px;">
+          <a href="${exploreUrl}" style="background-color: #ffe0c2; color: #432115; font-weight: 700; font-size: 14px; padding: 12px 28px; text-decoration: none; border-radius: 10px; display: inline-block; margin-right: 12px;">
+            Explore Open Gigs
+          </a>
+          <a href="${postGigUrl}" style="background-color: #262626; color: #ffffff; border: 1px solid #3a3a3a; font-weight: 600; font-size: 14px; padding: 12px 28px; text-decoration: none; border-radius: 10px; display: inline-block;">
+            Post a Project
+          </a>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #282828; margin: 28px 0;" />
+
+        <p style="font-size: 12px; color: #707070; line-height: 1.5; text-align: center; margin: 0;">
+          PostMyGig • Freelance Platform for Developers and Creators<br />
+          You received this update because you have an account on PostMyGig.
+        </p>
+      </div>
+    </div>
+  `;
+};
