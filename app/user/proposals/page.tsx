@@ -6,25 +6,29 @@ import { Eye, Briefcase, Calendar, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import type { FreelancerDashboardData } from "@/app/dashboard/types"
 import { redirect } from "next/navigation"
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 
 export const metadata = {
   title: "My Proposals | PostMyGig",
   description: "View all your submitted project applications and their status",
 }
 
-export default async function ApplicationHistoryPage() {
-  const { data, error } = await getDashboardDetails()
+interface PageProps {
+  searchParams: Promise<{ page?: string }>
+}
+
+export default async function ApplicationHistoryPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const currentPage = Math.max(1, parseInt(params.page || "1", 10));
+  const { data, error } = await getDashboardDetails(currentPage, 6);
 
   if (error || !data) {
     redirect("/auth/login")
   }
 
   const freelancerData = data as FreelancerDashboardData
-  const applications = (freelancerData.appliedHistory || []).sort((a, b) => {
-    const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : new Date(a.createdAt).getTime()
-    const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : new Date(b.createdAt).getTime()
-    return dateB - dateA
-  })
+  const applications = freelancerData.appliedHistory || []
+  const pagination = freelancerData.pagination
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -110,10 +114,44 @@ export default async function ApplicationHistoryPage() {
                     </Link>
                   </Button>
                 )}
-
-
               </div>
             ))}
+
+            {pagination && pagination.totalPages > 1 && (
+              <div className="mt-8 pt-6 border-t border-border">
+                <Pagination>
+                  <PaginationContent>
+                    {/* previous button */}
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href={pagination.hasPrevPage ? `?page=${pagination.page - 1}` : undefined}
+                        className={!pagination.hasPrevPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                      />
+                    </PaginationItem>
+
+                    {/* number page links */}
+                    {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
+                      <PaginationItem key={pageNum}>
+                        <PaginationLink
+                          href={`?page=${pageNum}`}
+                          isActive={pageNum === pagination.page}
+                        >
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    {/* next button */}
+                    <PaginationItem>
+                      <PaginationNext
+                        href={pagination.hasNextPage ? `?page=${pagination.page + 1}` : undefined}
+                        className={!pagination.hasNextPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </div>
         )}
       </div>

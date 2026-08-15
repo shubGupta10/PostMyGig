@@ -5,12 +5,11 @@ import { authOptions } from "@/lib/options";
 import redis from "@/lib/redis";
 import ProjectModel from "@/models/ProjectModel";
 import PingModel from "@/models/PingSchema";
-import userModel from "@/models/UserModel";
 import { getUserUsageStats } from "@/lib/subscription/engine";
 import { ACTION_TYPES } from "@/lib/subscription/config/subscriptions";
 import { after } from "next/server";
 
-export async function getDashboardDetails(): Promise<FetchDashboardResult> {
+export async function getDashboardDetails(page: number = 1, limit: number = 6): Promise<FetchDashboardResult> {
     try {
         await ConnectoDatabase();
         const session = await getServerSession(authOptions);
@@ -24,8 +23,9 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
         }
 
         const userEmail = session.user.email;
+        const skip = (page - 1) * limit;
         const userRole = session.user.role || "freelancer";
-        const cacheKey = `dashboard-data:${userRole}:${userEmail}`;
+        const cacheKey = `dashboard-data:${userRole}:${userEmail}:page:${page}:${limit}`;
 
         // 1. Try Redis Cache
         try {
@@ -93,6 +93,8 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
                 PingModel.aggregate([
                     { $match: { userEmail } },
                     { $sort: { createdAt: -1 } },
+                    { $skip: skip },
+                    { $limit: limit },
                     {
                         $addFields: {
                             projectObjectId: { $toObjectId: "$projectId" }
@@ -122,6 +124,16 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
                 if (group._id === "pending") pendingPingsCount = group.count;
                 if (group._id === "rejected") rejectedPingsCount = group.count;
             });
+
+            const totalPages = Math.ceil(totalPingsSent / limit);
+            const pagination = {
+                page,
+                limit,
+                totalCount: totalPingsSent,
+                totalPages,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1,
+            }
 
             const usageStats = await getUserUsageStats(
                 session.user.id,
@@ -153,6 +165,7 @@ export async function getDashboardDetails(): Promise<FetchDashboardResult> {
                         }
                         : undefined,
                 })),
+                pagination,
                 usageStats,
             };
         }

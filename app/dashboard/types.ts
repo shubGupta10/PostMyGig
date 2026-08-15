@@ -43,6 +43,7 @@ export interface AppliedPingHistory {
 }
 
 import type { UserUsageStats } from "@/lib/subscription/types";
+import { PaginationInfo } from "../(pages)/(gig)/my-jobs/types";
 
 export interface ClientDashboardData {
   role: "client";
@@ -61,6 +62,7 @@ export interface FreelancerDashboardData {
   pendingPingsCount: number;
   rejectedPingsCount: number;
   appliedHistory: AppliedPingHistory[];
+  pagination?: PaginationInfo;
   usageStats?: UserUsageStats;
 }
 

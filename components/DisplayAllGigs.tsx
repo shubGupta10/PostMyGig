@@ -5,6 +5,7 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
+  PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
@@ -40,7 +41,7 @@ export default async function DisplayAllGigs({ page = 1, search = "", skill = ""
     if (search) params.set("search", search)
     if (skill) params.set("skill", skill)
     if (sort && sort !== "newest") params.set("sort", sort)
-    
+
     const queryString = params.toString()
     return queryString ? `?${queryString}` : "?"
   }
@@ -62,20 +63,26 @@ export default async function DisplayAllGigs({ page = 1, search = "", skill = ""
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious 
-                    href={hasPrevPage ? buildPageUrl(currentPage - 1) : undefined} 
+                  <PaginationPrevious
+                    href={hasPrevPage ? buildPageUrl(currentPage - 1) : undefined}
                     className={!hasPrevPage ? "pointer-events-none opacity-50" : ""}
                   />
                 </PaginationItem>
-                
-                <PaginationItem>
-                  <span className="text-sm font-medium text-muted-foreground mx-4">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                </PaginationItem>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <PaginationItem key={pageNum}>
+                    <PaginationLink
+                      href={buildPageUrl(pageNum)}
+                      isActive={pageNum === currentPage}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
 
                 <PaginationItem>
-                  <PaginationNext 
+                  <PaginationNext
                     href={hasNextPage ? buildPageUrl(currentPage + 1) : undefined}
                     className={!hasNextPage ? "pointer-events-none opacity-50" : ""}
                   />
