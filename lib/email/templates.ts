@@ -334,3 +334,40 @@ export const postMyGigNewGigsTemplate = (userName: string) => {
     </div>
   `;
 };
+
+export const postMyGigExpiredTemplate = ({
+  creatorEmail,
+  gigTitle,
+  gigId,
+}: {
+  creatorEmail: string;
+  gigTitle: string;
+  gigId: string;
+}) => {
+  const renewUrl = `${LIVE_URL}/my-jobs`;
+
+  return `
+    <div style="font-family: Arial, sans-serif; background-color: #0d0f12; color: #f8fafc; padding: 32px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #181b20; border: 1px solid #282d35; padding: 28px; border-radius: 16px;">
+        <h2 style="font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 12px;">
+          ⏳ Your Gig Has Expired
+        </h2>
+        <p style="font-size: 15px; color: #94a3b8; line-height: 1.6; margin-bottom: 20px;">
+          Hello, your gig <strong>"${gigTitle}"</strong> has reached its 45-day active period and has been marked as <strong>expired</strong>.
+        </p>
+        <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6; margin-bottom: 24px;">
+          Are you still looking for freelancers? You can view candidate applications or relist your gig anytime from your dashboard.
+        </p>
+        <div style="text-align: center; margin-bottom: 24px;">
+          <a href="${renewUrl}" style="background-color: #f59e0b; color: #000000; font-weight: 700; font-size: 14px; padding: 12px 28px; text-decoration: none; border-radius: 10px; display: inline-block;">
+            Go to My Gigs Dashboard
+          </a>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #282d35; margin: 24px 0;" />
+        <p style="font-size: 12px; color: #64748b; text-align: center;">
+          PostMyGig • Empowering Independent Developers & Creators
+        </p>
+      </div>
+    </div>
+  `;
+};

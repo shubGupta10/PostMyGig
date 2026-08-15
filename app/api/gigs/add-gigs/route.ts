@@ -79,6 +79,14 @@ export async function POST(req: NextRequest) {
       }, { status: 403 })
     }
 
+    const now = new Date();
+    const maxAllowedExpiry = new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000);
+    const inputExpiry = new Date(expiresAt);
+
+    const finalExpiry = (isNaN(inputExpiry.getTime()) || inputExpiry <= now || inputExpiry > maxAllowedExpiry)
+      ? maxAllowedExpiry
+      : inputExpiry;
+
     const newGig = new ProjectModel({
       title: title.trim(),
       description: description.trim(),
@@ -86,7 +94,7 @@ export async function POST(req: NextRequest) {
       skillsRequired: skillsRequired.map((skill) => skill.trim()).filter((skill) => skill.length > 0),
       contact: cleanContact,
       status: "active",
-      expiresAt: new Date(expiresAt),
+      expiresAt: finalExpiry,
       budget: budget.trim(),
       displayContactLinks: displayContactLinks === true,
     })
@@ -99,6 +107,10 @@ export async function POST(req: NextRequest) {
       if (keys.length > 0) {
         await redis.del(...keys);
       }
+      const userKeys = await redis.keys(`user-projects:${session.user.email}:*`);
+      if (userKeys.length > 0) {
+        await redis.del(...userKeys);
+      }
       console.log("Invalidated dynamic gig caches");
     } catch (redisError) {
       console.warn("Failed to invalidate Redis cache:", redisError);
@@ -106,7 +118,6 @@ export async function POST(req: NextRequest) {
 
 
     after(async () => {
-      //save activity
       if (session.user.activityPublic === true) {
         await Activity.create({
           userId: session.user.id,
@@ -120,7 +131,6 @@ export async function POST(req: NextRequest) {
         await redis.del("real-time-activity-data");
       }
 
-      // Dispatch in-app notification to client
       await dispatchNotification({
         recipientEmail: session.user.email!,
         type: "system_alert",

@@ -6,6 +6,9 @@ import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
+import { useState } from "react"
+import { toast } from "sonner"
+import { MouseEvent } from "react"
 
 interface UserGigCardProps {
   project: UserGig
@@ -14,7 +17,8 @@ interface UserGigCardProps {
 }
 
 export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps) {
-  const router = useRouter()
+  const router = useRouter();
+  const [renewing, setRenewing] = useState(false);
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -28,6 +32,12 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
         return (
           <Badge className="bg-primary text-primary-foreground border-primary border font-medium flex items-center gap-1.5 px-2.5 py-1">
             <Activity className="w-3 h-3" /> Active
+          </Badge>
+        )
+      case "expired":
+        return (
+          <Badge className="bg-destructive/15 text-destructive border-destructive/30 border font-medium flex items-center gap-1.5 px-2.5 py-1">
+            <Clock className="w-3 h-3" /> Expired
           </Badge>
         )
       case "pending":
@@ -48,6 +58,24 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
     })
   }
 
+  const handleRenew = async (e: MouseEvent) => {
+    e.stopPropagation();
+    try {
+      setRenewing(true);
+      const res = await fetch("/api/gigs/renew-gig", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gigId: project._id }),
+      });
+      if (!res.ok) throw new Error("Failed to renew");
+      toast.success("Gig renewed for 45 days!");
+      router.refresh();
+    } catch (err) {
+      toast.error("Failed to renew gig");
+    } finally {
+      setRenewing(false);
+    }
+  };
   return (
     <AccordionItem
       value={project._id}
@@ -121,7 +149,6 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
           )}
 
           {/* Accepted Freelancer */}
-          {/* Accepted Freelancer */}
           {project.AcceptedFreelancerEmail && (
             <div className="bg-muted rounded-xl p-4 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
@@ -141,9 +168,19 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
             </div>
           )}
 
-
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+            {project.status === "expired" && (
+              <Button
+                onClick={handleRenew}
+                disabled={renewing}
+                className="bg-primary text-primary-foreground font-semibold flex items-center gap-2"
+              >
+                <RefreshCw className={`size-4 ${renewing ? "animate-spin" : ""}`} />
+                <span>{renewing ? "Renewing..." : "Renew"}</span>
+              </Button>
+            )}
+
             <Button
               variant="outline"
               onClick={(e) => {
