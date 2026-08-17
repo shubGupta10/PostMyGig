@@ -23,6 +23,11 @@ export async function POST(req: NextRequest) {
         const now = new Date();
         const nowIso = now.toISOString();
 
+        const allActiveProjects = await ProjectModel.find(
+            {},
+            "title status expiresAt createdAt createdBy"
+        ).lean();
+
         const expiredProjects = await ProjectModel.find({
             status: "active",
             $or: [
@@ -35,6 +40,16 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({
                 message: "No Projects to expire",
                 count: 0,
+                serverTime: nowIso,
+                totalProjectsInDb: allActiveProjects.length,
+                dbProjectsSummary: allActiveProjects.map((p: any) => ({
+                    id: p._id,
+                    title: p.title,
+                    status: p.status,
+                    createdAt: p.createdAt,
+                    expiresAt: p.expiresAt,
+                    isPast: p.expiresAt ? new Date(p.expiresAt) < now : null,
+                })),
             }, { status: 200 });
         }
 
