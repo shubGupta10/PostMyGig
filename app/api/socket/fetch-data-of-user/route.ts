@@ -18,24 +18,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Project ID is required" }, { status: 400 });
     }
 
-    const [projectData, pingData] = await Promise.all([
-      ProjectModel.findById(projectId).lean(),
-      PingModel.findOne({ projectId }).lean(),
-    ])
+    const projectData = await ProjectModel.findById(projectId).lean();
     if (!projectData) {
       return NextResponse.json({ message: "Project not found" }, { status: 404 });
     }
 
-    const posterEmail = pingData?.posterEmail || projectData.createdBy
-    const applyerEmail = pingData?.userEmail || projectData.AcceptedFreelancerEmail
+    const posterEmail = projectData.createdBy;
+
+    let applyerEmail = projectData.AcceptedFreelancerEmail;
+
+    if (!applyerEmail) {
+      const acceptedPing = await PingModel.findOne({ projectId, status: "accepted" }).lean();
+      applyerEmail = acceptedPing?.userEmail;
+    }
+
+    if (!applyerEmail) {
+      const activePing = await PingModel.findOne({ projectId, status: { $ne: "rejected" } }).lean();
+      applyerEmail = activePing?.userEmail;
+    }
 
     if (!posterEmail || !applyerEmail) {
       return NextResponse.json({ message: "Chat participants not found" }, { status: 404 });
     }
 
     const [posterData, applyerData] = await Promise.all([
-      userModel.findOne({ email: posterEmail }).select("name email").lean(),
-      userModel.findOne({ email: applyerEmail }).select("name email").lean(),
+      userModel.findOne({ email: posterEmail }).select("name email profilePhoto bio role skills location").lean(),
+      userModel.findOne({ email: applyerEmail }).select("name email profilePhoto bio role skills location").lean(),
     ]);
 
     if (!posterData) {
@@ -59,7 +67,7 @@ export async function POST(req: NextRequest) {
     }
 
     after(async () => {
-      // Send email
+      // Send email notification to the accepted freelancer
       const { error } = await resend.emails.send({
         from: 'PostMyGig <hello@postmygig.vercel.app>',
         to: applyerData.email,
@@ -70,7 +78,7 @@ export async function POST(req: NextRequest) {
           projectId,
           projectName: projectData.title,
         }),
-      })
+      });
 
       if (error) {
         await EmailSender({
@@ -84,10 +92,9 @@ export async function POST(req: NextRequest) {
           }),
         });
       }
-    })
+    });
 
-
-    await redis.set(redisKey, "true", { ex: 172800 }); //48 hours
+    await redis.set(redisKey, "true", { ex: 172800 }); // 48 hours
 
     return NextResponse.json({
       message: "Invitation sent successfully",
