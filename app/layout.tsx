@@ -31,10 +31,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteOgImage = "https://www.postmygig.vercel.app/api/og?title=PostMyGig&type=site&badge=PostMyGig&description=Freelance%20gigs%2C%20direct%20chat%2C%20and%20fast%20hiring.";
+import { getBaseUrl } from "@/lib/social-preview";
+
+const baseUrl = getBaseUrl();
+const siteOgImage = `${baseUrl}/api/og?title=PostMyGig&type=site&badge=PostMyGig&description=Freelance%20gigs%2C%20direct%20chat%2C%20and%20fast%20hiring.`;
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.postmygig.vercel.app"),
+  metadataBase: new URL(baseUrl),
   title: "PostMyGig – Find & Share Freelance Gigs for Free",
   description:
     "Share freelance gigs you can't take, or find new projects to work on. Easy, free, and direct connections via chat. No middlemen.",
@@ -53,11 +56,11 @@ export const metadata: Metadata = {
     title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays.",
-    url: "https://postmygig.vercel.app",
+    url: baseUrl,
     siteName: "PostMyGig",
     images: [
       {
-        url: siteOgImage,
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "PostMyGig – Freelance Gig Sharing Platform",
@@ -71,7 +74,7 @@ export const metadata: Metadata = {
     title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut.",
-    images: [siteOgImage],
+    images: ["/og-image.png"],
     creator: "@postmygig",
   },
   icons: {
@@ -91,38 +94,18 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta
-          name="description"
-          content="Share freelance gigs you can't take, or find new projects to work on. Easy, free, and direct connections via chat. No middlemen."
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "PostMyGig",
+              "url": baseUrl,
+              "logo": `${baseUrl}/favicon.ico`,
+            }),
+          }}
         />
-        <meta
-          name="keywords"
-          content="freelance gigs, share freelance work, post freelance projects, find freelance opportunities, gig board for freelancers, collaborate on freelance tasks"
-        />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <meta property="og:title" content="PostMyGig – Find & Share Freelance Gigs for Free" />
-        <meta property="og:description" content="Post extra freelance work or pick up gigs from others. Direct, fast, and free. No platform fees, no delays." />
-        <meta property="og:image" content={siteOgImage} />
-        <meta property="og:url" content="https://postmygig.vercel.app" />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="PostMyGig – Find & Share Freelance Gigs" />
-        <meta name="twitter:description" content="List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut." />
-        <meta name="twitter:image" content={siteOgImage} />
-        <meta name="twitter:creator" content="@postmygig" />
-
-        <script type="application/ld+json" dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "PostMyGig",
-            "url": "https://www.postmygig.vercel.app",
-            "logo": "https://www.postmygig.vercel.app/favicon.ico"
-          })
-        }} />
 
         <Script
           src="https://cloud.umami.is/script.js"

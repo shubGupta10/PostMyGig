@@ -8,12 +8,9 @@ export async function GET(request: NextRequest) {
   const title = searchParams.get("title") || "PostMyGig";
   const description =
     searchParams.get("description") ||
-    "Freelance gigs, direct chat, and fast hiring.";
-  const badge = searchParams.get("badge") || "PostMyGig";
+    "Find & share freelance gigs with zero middlemen.";
+  const badge = searchParams.get("badge") || "Open Gig";
   const type = searchParams.get("type") || "gig";
-
-  const bgStart = type === "profile" ? "#eff6ff" : type === "site" ? "#f7f3ee" : "#f4efe9";
-  const bgEnd = type === "profile" ? "#dbeafe" : type === "site" ? "#efe7df" : "#e5ddd5";
 
   return new ImageResponse(
     (
@@ -24,140 +21,161 @@ export async function GET(request: NextRequest) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "52px 56px",
-          background: `linear-gradient(135deg, ${bgStart} 0%, ${bgEnd} 100%)`,
-          color: "#1c1917",
-          fontFamily: "sans-serif",
+          padding: "48px 56px",
+          background: "#0c0c0e",
+          color: "#f4f4f5",
+          fontFamily: "system-ui, -apple-system, sans-serif",
+          position: "relative",
         }}
       >
+        {/* Inner Card Framing */}
         <div
           style={{
+            position: "absolute",
+            inset: "24px",
+            border: "1.5px solid #26262a",
+            borderRadius: "24px",
+            background: "linear-gradient(180deg, rgba(26,26,30,0.7) 0%, rgba(16,16,18,0.9) 100%)",
             display: "flex",
-            alignItems: "center",
+            flexDirection: "column",
             justifyContent: "space-between",
-            width: "100%",
+            padding: "40px 48px",
           }}
         >
+          {/* Top Bar: Brand & Category Badge */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 12,
-              fontSize: 24,
-              fontWeight: 700,
+              justifyContent: "space-between",
+              width: "100%",
             }}
           >
             <div
               style={{
-                width: 28,
-                height: 28,
-                borderRadius: 8,
-                background: "linear-gradient(135deg, #6b4f3a 0%, #b38b6d 100%)",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontSize: 16,
-                fontWeight: 800,
+                gap: 14,
               }}
             >
-              P
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  background: "#ffe0c2",
+                  color: "#2a150c",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 22,
+                  fontWeight: 900,
+                }}
+              >
+                P
+              </div>
+              <span
+                style={{
+                  fontSize: 26,
+                  fontWeight: 800,
+                  letterSpacing: "-0.02em",
+                  color: "#ffffff",
+                }}
+              >
+                PostMyGig
+              </span>
             </div>
-            <span>{badge}</span>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "8px 18px",
+                borderRadius: 999,
+                background: type === "profile" ? "rgba(59, 130, 246, 0.15)" : "rgba(255, 224, 194, 0.12)",
+                border: type === "profile" ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(255, 224, 194, 0.25)",
+                color: type === "profile" ? "#93c5fd" : "#ffe0c2",
+                fontSize: 14,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+              }}
+            >
+              {badge}
+            </div>
           </div>
 
+          {/* Center Content: Title and Meta */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 18,
+              maxWidth: 960,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 54,
+                lineHeight: 1.15,
+                fontWeight: 800,
+                color: "#ffffff",
+                letterSpacing: "-0.035em",
+              }}
+            >
+              {title}
+            </div>
+
+            <div
+              style={{
+                fontSize: 24,
+                lineHeight: 1.4,
+                color: "#a1a1aa",
+                fontWeight: 500,
+              }}
+            >
+              {description}
+            </div>
+          </div>
+
+          {/* Bottom Bar: URL & CTA */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 10,
-              fontSize: 20,
-              opacity: 0.75,
+              justifyContent: "space-between",
+              width: "100%",
+              paddingTop: 24,
+              borderTop: "1px solid #232328",
             }}
           >
-            <div style={{ width: 10, height: 10, borderRadius: 999, background: "#c9916e" }} />
-            <div style={{ width: 10, height: 10, borderRadius: 999, background: "#d3b39d" }} />
-            <div style={{ width: 10, height: 10, borderRadius: 999, background: "#e7d7c4" }} />
-          </div>
-        </div>
+            <span
+              style={{
+                fontSize: 18,
+                color: "#71717a",
+                fontWeight: 600,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              postmygig.vercel.app
+            </span>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            gap: 18,
-            width: "100%",
-          }}
-        >
-          <div
-            style={{
-              display: "inline-flex",
-              alignSelf: "flex-start",
-              borderRadius: 999,
-              border: "1px solid rgba(0,0,0,0.12)",
-              background: "rgba(255,255,255,0.35)",
-              padding: "8px 14px",
-              fontSize: 18,
-              fontWeight: 600,
-            }}
-          >
-            {type === "profile" ? "Freelancer Profile" : type === "site" ? "Freelance marketplace" : "Open gig"}
-          </div>
-
-          <div
-            style={{
-              fontSize: 60,
-              lineHeight: 1.03,
-              fontWeight: 800,
-              maxWidth: 860,
-              letterSpacing: "-0.06em",
-            }}
-          >
-            {title}
-          </div>
-
-          <div
-            style={{
-              maxWidth: 760,
-              fontSize: 28,
-              lineHeight: 1.35,
-              color: "rgba(28,25,23,0.8)",
-            }}
-          >
-            {description}
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            paddingTop: 18,
-            borderTop: "1px solid rgba(28,25,23,0.12)",
-            fontSize: 22,
-            fontWeight: 600,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ color: "rgba(28,25,23,0.7)" }}>postmygig.vercel.app</span>
-          </div>
-
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "10px 18px",
-              borderRadius: 12,
-              background: "rgba(255,255,255,0.5)",
-              border: "1px solid rgba(0,0,0,0.08)",
-            }}
-          >
-            <span>Open</span>
-            <span style={{ fontSize: 18, color: "#8a5f3d" }}>→</span>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 22px",
+                borderRadius: 14,
+                background: "#ffe0c2",
+                color: "#2a150c",
+                fontSize: 16,
+                fontWeight: 700,
+              }}
+            >
+              <span>Direct Chat & Apply</span>
+              <span style={{ fontSize: 18 }}>→</span>
+            </div>
           </div>
         </div>
       </div>

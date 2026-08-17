@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/helpers"
 import { Metadata } from "next"
 import { fetchPublicUserProfile } from "./services/profileService"
-import { buildSocialImageUrl } from "@/lib/social-preview"
+import { buildSocialImageUrl, getBaseUrl } from "@/lib/social-preview"
 
 export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }): Promise<Metadata> {
   const { userId } = await params
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ userId: s
     badge: 'Freelancer',
     type: 'profile',
   });
-  const canonicalUrl = new URL(`/user/profile/${userId}`, 'https://www.postmygig.vercel.app').toString();
+  const canonicalUrl = `${getBaseUrl()}/user/profile/${userId}`;
 
   return {
     title: `${user.name} | PostMyGig`,

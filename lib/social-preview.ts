@@ -5,7 +5,20 @@ export interface SocialImageOptions {
   type?: "site" | "gig" | "profile";
 }
 
-const DEFAULT_ORIGIN = "https://www.postmygig.vercel.app";
+export const DEFAULT_ORIGIN = "https://postmygig.vercel.app";
+
+export function getBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_LIVE_URL && !process.env.NEXT_PUBLIC_LIVE_URL.includes("localhost")) {
+    return process.env.NEXT_PUBLIC_LIVE_URL.replace(/\/$/, "");
+  }
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return DEFAULT_ORIGIN;
+}
 
 function clampText(value: string, maxLength: number) {
   if (!value) return "";
@@ -19,7 +32,7 @@ export function buildSocialImageUrl({
   badge = "PostMyGig",
   type = "gig",
 }: SocialImageOptions) {
-  const origin = process.env.NEXT_PUBLIC_LIVE_URL || DEFAULT_ORIGIN;
+  const origin = getBaseUrl();
   const params = new URLSearchParams({
     title: clampText(title, 52),
     description: clampText(description, 120),
@@ -27,5 +40,5 @@ export function buildSocialImageUrl({
     type,
   });
 
-  return new URL(`/api/og?${params.toString()}`, origin).toString();
+  return `${origin}/api/og?${params.toString()}`;
 }

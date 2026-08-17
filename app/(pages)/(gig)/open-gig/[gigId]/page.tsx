@@ -8,7 +8,7 @@ import { notFound } from "next/navigation"
 import { authOptions } from "@/lib/options"
 import { isGigAvailableForApplication, getDisabledButtonMessage } from "@/components/gigs/open-gig/utils"
 import { Metadata } from "next"
-import { buildSocialImageUrl } from "@/lib/social-preview"
+import { buildSocialImageUrl, getBaseUrl } from "@/lib/social-preview"
 
 export async function generateMetadata({ params }: { params: Promise<{ gigId: string }> }): Promise<Metadata> {
   const { gigId } = await params
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ gigId: st
     badge: "Open Gig",
     type: "gig",
   });
-  const canonicalUrl = new URL(`/open-gig/${gigId}`, "https://www.postmygig.vercel.app").toString();
+  const canonicalUrl = `${getBaseUrl()}/open-gig/${gigId}`;
 
   return {
     title: `${gig.title} | PostMyGig`,
