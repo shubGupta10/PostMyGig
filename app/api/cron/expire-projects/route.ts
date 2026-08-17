@@ -21,10 +21,14 @@ export async function POST(req: NextRequest) {
         await ConnectoDatabase();
 
         const now = new Date();
+        const nowIso = now.toISOString();
 
         const expiredProjects = await ProjectModel.find({
-            expiresAt: { $lt: now },
-            status: "active"
+            status: "active",
+            $or: [
+                { expiresAt: { $lt: now } },
+                { expiresAt: { $type: "string", $lt: nowIso } },
+            ]
         }).lean();
 
         if (!expiredProjects.length) {

@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest) {
             description,
             budget,
             status,
-            expiresAt
+            expiresAt: new Date(expiresAt)
         }, { new: true });
 
         try {
