@@ -29,6 +29,15 @@ interface User extends Document {
   subscriptionSnapshot?: SubscriptionSnapshot;
   createdAt?: string;
   updatedAt?: string;
+  portfolioProjects?: PortfolioProject[];
+}
+
+export interface PortfolioProject {
+  title: string;
+  description: string;
+  tags: string[];
+  liveUrl?: string;
+  githubUrl?: string;
 }
 
 const userSchema = new Schema<User>({
@@ -132,6 +141,18 @@ const userSchema = new Schema<User>({
       type: String,
       default: null,
     },
+  },
+  portfolioProjects: {
+    type: [
+      {
+        title: { type: String, required: true, trim: true },
+        description: { type: String, required: true, trim: true },
+        tags: { type: [String], default: [] },
+        liveUrl: { type: String, default: "" },
+        githubUrl: { type: String, default: "" },
+      }
+    ],
+    default: []
   },
   createdAt: {
     type: String,

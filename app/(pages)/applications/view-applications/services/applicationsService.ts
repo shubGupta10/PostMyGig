@@ -1,19 +1,27 @@
 import type { Application, ContactData } from "../types"
 
 export async function fetchApplicationsService(gigId: string): Promise<{
-  applications: Application[]
+  recommendedApplications: Application[]
+  restApplications: Application[]
   posterEmail: string | null
+  gigDetails?: { title: string; skillsRequired: string[] }
 }> {
   const response = await fetch(`/api/applications/fetch-applications?gigId=${gigId}`)
   const data = await response.json()
 
-  if (!response.ok || !data.data || !Array.isArray(data.data)) {
-    return { applications: [], posterEmail: null }
+  if (!response.ok || !data.data) {
+    return { recommendedApplications: [], restApplications: [], posterEmail: null }
   }
 
+  const recommendedApplications = data.data.recommendedApplications || []
+  const restApplications = data.data.restApplications || []
+  const allApps = [...recommendedApplications, ...restApplications]
+
   return {
-    applications: data.data,
-    posterEmail: data.data.length > 0 ? data.data[0].posterEmail : null,
+    recommendedApplications,
+    restApplications,
+    posterEmail: allApps.length > 0 ? allApps[0].posterEmail : null,
+    gigDetails: data.gigDetails,
   }
 }
 

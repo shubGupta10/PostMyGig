@@ -1,5 +1,5 @@
 import type { Application } from "@/app/(pages)/applications/view-applications/types"
-import { Mail, Eye, Check, Calendar } from "lucide-react"
+import { Mail, Eye, Check, Calendar, Sparkles, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface Props {
@@ -12,111 +12,102 @@ interface Props {
 }
 
 export function ApplicationCard({
-  applicant, index, loading, onView, onAccept, onContact,
+  applicant,
+  index,
+  loading,
+  onView,
+  onAccept,
 }: Props) {
+  const match = applicant.matchDetails
+  const isAccepted = applicant.status === "accepted"
 
   return (
-    <div className="p-5 sm:p-6 border-b border-border last:border-b-0">
-      {/* Desktop layout */}
-      <div className="hidden lg:grid grid-cols-12 gap-6 items-center">
-        {/* Applicant */}
-        <div className="col-span-6 flex items-center gap-4">
+    <div className={`p-5 sm:p-6 transition-colors ${isAccepted ? "bg-primary/5" : "bg-card"}`}>
+      {/* Main Row */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        {/* Left: Avatar & Identity & Skills */}
+        <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
           <div className="relative shrink-0">
-            <div className="w-12 h-12 bg-primary text-primary-foreground rounded-xl flex items-center justify-center overflow-hidden shrink-0">
-
-              {(applicant.applicant?.profilePhoto || (applicant.applicant as any)?.image || (applicant.applicant as any)?.avatar) ? (
+            <div className="w-13 h-13 rounded-2xl bg-primary/10 border-2 border-primary/20 text-primary flex items-center justify-center overflow-hidden font-bold text-lg">
+              {applicant.applicant?.profilePhoto ? (
                 <img
-                  src={applicant.applicant?.profilePhoto || (applicant.applicant as any)?.image || (applicant.applicant as any)?.avatar}
+                  src={applicant.applicant.profilePhoto}
                   alt={applicant.applicant?.name || "Applicant"}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <span className="font-bold">{(applicant.applicant?.name?.[0] || "?").toUpperCase()}</span>
+                <span>{(applicant.applicant?.name?.[0] || "?").toUpperCase()}</span>
               )}
             </div>
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-muted border border-border rounded-full flex items-center justify-center text-foreground text-xs font-bold">
+            <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-background border border-border rounded-full flex items-center justify-center text-foreground text-xs font-bold shadow-xs">
               {index + 1}
             </div>
           </div>
-          <div className="min-w-0">
-            <p className="font-bold text-foreground truncate">{applicant.applicant?.name || applicant.applicant?.email || "Applicant"}</p>
-            {applicant.applicant?.email && (
-              <p className="text-muted-foreground text-sm flex items-center gap-1.5 mt-0.5">
-                <Mail className="w-3.5 h-3.5" /> {applicant.applicant.email}
-              </p>
-            )}
-          </div>
-        </div>
-        {/* Date */}
-        <div className="col-span-3">
-          <p className="font-bold text-foreground text-sm flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5 text-muted-foreground" /> {new Date(applicant.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-          </p>
-        </div>
-        {/* Actions */}
-        <div className="col-span-3 flex items-center gap-2 flex-wrap justify-end">
-          <Button size="sm" variant="outline" onClick={() => onView(applicant)} className="border-border font-semibold">
-            <Eye className="w-4 h-4 mr-1" /> View
-          </Button>
-          {applicant.status !== "accepted" && (
-            <Button
-              size="sm"
-              onClick={() => onAccept(applicant._id, applicant.applicant?.email || "")}
-              disabled={loading}
-              className="bg-primary text-primary-foreground font-semibold disabled:opacity-50"
-            >
-              <Check className="w-4 h-4 mr-1" /> Accept
-            </Button>
-          )}
-        </div>
-      </div>
 
-      {/* Mobile layout */}
-      <div className="lg:hidden space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="relative shrink-0">
-            <div className="w-11 h-11 bg-primary text-primary-foreground rounded-xl flex items-center justify-center overflow-hidden shrink-0">
-              {(applicant.applicant?.profilePhoto || (applicant.applicant as any)?.image || (applicant.applicant as any)?.avatar) ? (
-                <img
-                  src={applicant.applicant?.profilePhoto || (applicant.applicant as any)?.image || (applicant.applicant as any)?.avatar}
-                  alt={applicant.applicant?.name || "Applicant"}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="font-bold text-sm">{(applicant.applicant?.name?.[0] || "?").toUpperCase()}</span>
+          <div className="min-w-0 space-y-1">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h3 className="font-bold text-foreground text-base sm:text-lg truncate">
+                {applicant.applicant?.name || applicant.userEmail}
+              </h3>
+              {isAccepted && (
+                <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/20">
+                  <CheckCircle2 className="w-3 h-3" /> Accepted
+                </span>
+              )}
+              {match && match.score > 0 && (
+                <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                  match.score >= 70
+                    ? "bg-primary text-primary-foreground"
+                    : match.score >= 40
+                    ? "bg-primary/15 text-primary border border-primary/30"
+                    : "bg-muted text-muted-foreground border border-border"
+                }`}>
+                  <Sparkles className="w-3 h-3" /> {match.score}% Match
+                </span>
               )}
             </div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-muted border border-border rounded-full flex items-center justify-center text-foreground text-xs font-bold">
-              {index + 1}
+
+            <div className="flex items-center gap-4 text-xs sm:text-sm text-muted-foreground flex-wrap">
+              <span className="flex items-center gap-1.5 truncate">
+                <Mail className="w-3.5 h-3.5 shrink-0 text-muted-foreground" /> {applicant.applicant?.email || applicant.userEmail}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 shrink-0 text-muted-foreground" /> Applied {new Date(applicant.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </span>
             </div>
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="font-bold text-foreground truncate">{applicant.applicant?.name || applicant.applicant?.email || "Applicant"}</p>
-            {applicant.applicant?.email && (
-              <p className="text-muted-foreground text-sm flex items-center gap-1.5 truncate">
-                <Mail className="w-3 h-3 shrink-0" /> {applicant.applicant.email}
-              </p>
+
+            {/* Matching Skills Pills */}
+            {match?.matchingSkills && match.matchingSkills.length > 0 && (
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                {match.matchingSkills.map((skill, sIdx) => (
+                  <span key={sIdx} className="text-xs font-medium px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground">
+                    {skill}
+                  </span>
+                ))}
+              </div>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <p className="text-muted-foreground text-sm flex items-center gap-1">
-            <Calendar className="w-3 h-3" /> Applied {new Date(applicant.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" onClick={() => onView(applicant)} className="border-border font-semibold flex-1">
-            <Eye className="w-4 h-4 mr-1" /> View
+
+        {/* Right: Action Buttons */}
+        <div className="flex items-center gap-2.5 self-end lg:self-center w-full lg:w-auto mt-2 lg:mt-0 shrink-0">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onView(applicant)}
+            className="flex-1 lg:flex-none h-10 px-4 rounded-xl border-2 border-border font-semibold text-sm hover:bg-muted cursor-pointer"
+          >
+            <Eye className="w-4 h-4 mr-1.5" /> View Details
           </Button>
-          {applicant.status !== "accepted" && (
+          {!isAccepted && (
             <Button
               size="sm"
-              onClick={() => onAccept(applicant._id, applicant.applicant.email)}
+              onClick={() => onAccept(applicant._id, applicant.applicant?.email || applicant.userEmail)}
               disabled={loading}
-              className="bg-primary text-primary-foreground font-semibold flex-1 disabled:opacity-50"
+              className="flex-1 lg:flex-none h-10 px-5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
             >
-              <Check className="w-4 h-4 mr-1" /> Accept
+              <Check className="w-4 h-4 mr-1.5" /> Accept
             </Button>
           )}
         </div>

@@ -5,6 +5,8 @@ import {
   User, Mail, MapPin, Calendar, Shield, AlertTriangle, ExternalLink,
   Star, Activity, LinkIcon, UserCheck, Clock, Settings,
   ShieldCheck,
+  FolderGit2,
+  Code2,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/helpers"
@@ -213,8 +215,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
               </div>
             </div>
 
-
-
           </div>
 
           {/* Right Column */}
@@ -257,27 +257,107 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
           </div>
         </div>
 
-        {/* Third Section: Gigs (Full Width) */}
-        <div className="space-y-6 mt-8">
-          {(() => {
-            const allGigs = [...(userData.openGigs || []), ...(userData.completedGigs || [])].sort((a, b) => {
-              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            })
+        {/* Bottom Section 1: Featured Projects (Full Width Grid matching GigCard style) */}
+        {userData.portfolioProjects && userData.portfolioProjects.length > 0 && (
+          <div className="space-y-6 mt-8">
+            <div className="pt-2">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                Featured Projects <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{userData.portfolioProjects.length}</span>
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 relative">
+                {userData.portfolioProjects.map((project, index) => (
+                  <div
+                    key={index}
+                    className="group bg-card rounded-2xl border-2 border-border shadow-sm hover:border-primary transition-colors flex flex-col h-full overflow-hidden"
+                  >
+                    <div className="p-6 flex flex-col h-full">
+                      {/* Title and Description */}
+                      <div className="space-y-2 mb-6">
+                        <h2 className="text-lg sm:text-xl font-semibold text-foreground line-clamp-2">
+                          {project.title}
+                        </h2>
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                          {project.description}
+                        </p>
+                      </div>
 
-            if (allGigs.length === 0) return null
+                      {/* Tech Stack Skills */}
+                      {project.tags && project.tags.length > 0 && (
+                        <div className="mt-auto mb-6">
+                          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                            Tech Stack
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {project.tags.map((tag, tagIndex) => (
+                              <span
+                                key={tagIndex}
+                                className="bg-secondary text-secondary-foreground text-xs font-semibold px-3 py-1.5 rounded-xl border border-transparent"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
-            return (
-              <div className="pt-2">
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
-                  Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{allGigs.length}</span>
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 relative">
-                  {allGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
-                </div>
+                      {/* Action Buttons */}
+                      {(project.liveUrl || project.githubUrl) && (
+                        <div className={`${project.liveUrl && project.githubUrl ? "grid grid-cols-2 gap-2.5" : "flex"} ${!project.tags || project.tags.length === 0 ? "mt-auto" : ""}`}>
+                          {project.liveUrl && (
+                            <a
+                              href={project.liveUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold transition-opacity shadow-xs text-xs sm:text-sm cursor-pointer hover:opacity-90"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              <span>Live Demo</span>
+                            </a>
+                          )}
+                          {project.githubUrl && (
+                            <a
+                              href={project.githubUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-muted border border-border text-foreground hover:bg-accent rounded-xl font-semibold transition-colors shadow-xs text-xs sm:text-sm cursor-pointer"
+                            >
+                              <Code2 className="w-3.5 h-3.5" />
+                              <span>GitHub</span>
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-            )
-          })()}
-        </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom Section 2: Posted Gigs (Only rendered for Clients) */}
+        {userData.role === "client" && (
+          <div className="space-y-6 mt-8">
+            {(() => {
+              const allGigs = [...(userData.openGigs || []), ...(userData.completedGigs || [])].sort((a, b) => {
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              })
+
+              if (allGigs.length === 0) return null
+
+              return (
+                <div className="pt-2">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
+                    Posted Gigs <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded-full ml-1">{allGigs.length}</span>
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 relative">
+                    {allGigs.map(gig => <GigCard key={gig._id} gig={gig} />)}
+                  </div>
+                </div>
+              )
+            })()}
+          </div>
+        )}
       </div>
     </div>
   )

@@ -4,8 +4,9 @@ import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Users } from "lucide-react"
 import { toast } from "sonner"
-import type { Application, ContactData } from "@/app/(pages)/applications/view-applications/types"
+import type { Application, ContactData, GigDetails } from "@/app/(pages)/applications/view-applications/types"
 import { ApplicationCard } from "@/components/applications/ApplicationCard"
+import { TopRecommendedDeck } from "@/components/applications/TopRecommendedDeck"
 import { ApplicationDetailModal } from "@/components/applications/ApplicationDetailModal"
 import { ContactModal } from "@/components/applications/ContactModal"
 import {
@@ -13,25 +14,36 @@ import {
   acceptApplicationService,
   deleteApplicationService,
   fetchContactDetailsService,
-  revokeApplicationService
+  revokeApplicationService,
 } from "@/app/(pages)/applications/view-applications/services/applicationsService"
 
 export function ApplicationsList() {
   const searchParams = useSearchParams()
   const gigIdFromSearchParams = searchParams.get("gigId")
 
-  const [applications, setApplications] = useState<Application[]>([])
+  const [recommendedApplications, setRecommendedApplications] = useState<Application[]>([])
+  const [restApplications, setRestApplications] = useState<Application[]>([])
+  const [gigDetails, setGigDetails] = useState<GigDetails | null>(null)
   const [selectedApplicant, setSelectedApplicant] = useState<Application | null>(null)
   const [loading, setLoading] = useState(false)
   const [contactDialogOpen, setContactDialogOpen] = useState(false)
   const [contactData, setContactData] = useState<ContactData | null>(null)
 
   const fetchApplications = async () => {
+    if (!gigIdFromSearchParams) return
     try {
-      const { applications: data } = await fetchApplicationsService(gigIdFromSearchParams!)
-      setApplications(data)
+      const {
+        recommendedApplications: recData,
+        restApplications: restData,
+        gigDetails: details,
+      } = await fetchApplicationsService(gigIdFromSearchParams)
+
+      setRecommendedApplications(recData || [])
+      setRestApplications(restData || [])
+      if (details) setGigDetails(details)
     } catch {
-      setApplications([])
+      setRecommendedApplications([])
+      setRestApplications([])
     }
   }
 
@@ -45,6 +57,9 @@ export function ApplicationsList() {
       await acceptApplicationService(applicationId, applicantEmail, gigIdFromSearchParams!)
       toast.success("Applicant accepted successfully")
       await fetchApplications()
+      if (selectedApplicant && selectedApplicant._id === applicationId) {
+        setSelectedApplicant((prev) => (prev ? { ...prev, status: "accepted" } : null))
+      }
     } catch {
       toast.error("Failed to accept applicant")
     } finally {
@@ -65,7 +80,6 @@ export function ApplicationsList() {
       setLoading(false)
     }
   }
-
 
   const handleDeleteApplication = async () => {
     if (!selectedApplicant) return
@@ -92,41 +106,80 @@ export function ApplicationsList() {
     }
   }
 
-
+  const totalCount = recommendedApplications.length + restApplications.length
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">Application Management</h1>
-        <p className="text-sm text-muted-foreground">
-          Gig ID: <span className="font-semibold text-foreground font-mono">{gigIdFromSearchParams}</span>
+    <div className="w-full space-y-14 sm:space-y-16 pb-28">
+      {/* Clean Header */}
+      <div className="space-y-2">
+        <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+          Application <span className="text-primary">Management</span>
+        </h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          {gigDetails?.title ? (
+            <span>Reviewing proposals for <strong className="text-foreground">{gigDetails.title}</strong></span>
+          ) : (
+            <span>Review proposals and discover top-matched talent for your gig</span>
+          )}
         </p>
       </div>
 
-      {/* Applications List */}
-      {applications.length === 0 ? (
-        <div className="bg-muted rounded-xl p-10 text-center border border-border">
-          <Users className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <h3 className="text-foreground font-semibold">No Applications Yet</h3>
-          <p className="text-muted-foreground text-sm mt-1">No one has applied for this project yet.</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {applications.map((applicant, index) => (
-            <div key={applicant._id} className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
-              <ApplicationCard
-                applicant={applicant}
-                index={index}
-                loading={loading}
-                onView={setSelectedApplicant}
-                onAccept={handleAccept}
-                onContact={handleContactApplicant}
-              />
-            </div>
-          ))}
-        </div>
+      {/* SECTION 1: Top Recommended Applications (from backend) */}
+      {recommendedApplications.length > 0 && (
+        <section className="space-y-5">
+          <TopRecommendedDeck
+            topApplicants={recommendedApplications}
+            loading={loading}
+            onView={setSelectedApplicant}
+            onAccept={handleAccept}
+          />
+        </section>
       )}
+
+      {/* SECTION 2: Applications (Rest of the applications) */}
+      <section className="space-y-6 pt-12 sm:pt-16 border-t border-border">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+            Applications ({restApplications.length})
+          </h2>
+        </div>
+
+        {totalCount === 0 ? (
+          <div className="bg-card rounded-2xl p-12 text-center border-2 border-border space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-muted text-muted-foreground mx-auto flex items-center justify-center">
+              <Users className="w-6 h-6" />
+            </div>
+            <h3 className="text-foreground font-bold text-lg">No Applications Yet</h3>
+            <p className="text-muted-foreground text-sm max-w-md mx-auto">
+              No freelancers have submitted proposals for this gig yet.
+            </p>
+          </div>
+        ) : restApplications.length === 0 ? (
+          <div className="bg-card rounded-2xl p-8 text-center border-2 border-border space-y-2">
+            <p className="text-muted-foreground text-sm">
+              All proposals for this gig are featured under <strong>Top Recommendations</strong> above.
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {restApplications.map((applicant, index) => (
+              <div
+                key={applicant._id}
+                className="bg-card rounded-2xl border-2 border-border shadow-xs overflow-hidden hover:border-primary/40 transition-colors"
+              >
+                <ApplicationCard
+                  applicant={applicant}
+                  index={recommendedApplications.length + index}
+                  loading={loading}
+                  onView={setSelectedApplicant}
+                  onAccept={handleAccept}
+                  onContact={handleContactApplicant}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* Detail Modal */}
       {selectedApplicant && (

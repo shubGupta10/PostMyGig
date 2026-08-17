@@ -1,3 +1,4 @@
+import { PortfolioProject } from '@/models/UserModel'
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 
@@ -26,6 +27,7 @@ interface UserData {
   activityPublic?: boolean
   verificationStatus?: "none" | "pending" | "approved" | "rejected";
   completedGigCount?: number;
+  portfolioProjects?: PortfolioProject[];
 }
 
 interface UserState {

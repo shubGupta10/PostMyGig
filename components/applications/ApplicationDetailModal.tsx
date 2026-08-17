@@ -1,8 +1,22 @@
 import type { Application } from "@/app/(pages)/applications/view-applications/types"
-import { X, MessageSquare, Star, ExternalLink, FileText, XCircle, Check, Mail, Calendar, User2, Contact2, Clock } from "lucide-react"
+import {
+  X,
+  MessageSquare,
+  Star,
+  ExternalLink,
+  XCircle,
+  Check,
+  Mail,
+  Calendar,
+  Sparkles,
+  FolderGit2,
+  Github,
+  Code2,
+  User,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import type React from "react"
+import Link from "next/link"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +29,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-
 interface Props {
   application: Application
   loading: boolean
@@ -27,95 +40,258 @@ interface Props {
 }
 
 export function ApplicationDetailModal({
-  application, loading, onClose, onAccept, onDelete, onContact, onRevoke
+  application,
+  loading,
+  onClose,
+  onAccept,
+  onDelete,
+  onRevoke,
 }: Props) {
+  const match = application.matchDetails
+  const portfolioProjects = application.applicant?.portfolioProjects || []
+  const skills = application.applicant?.skills || []
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-card rounded-2xl border-2 border-border shadow-sm max-w-3xl w-full max-h-[90vh] overflow-hidden">
-
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6">
+      <div className="bg-card rounded-3xl border-2 border-border shadow-2xl max-w-5xl w-full max-h-[92vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <div className="flex items-center gap-4 min-w-0 flex-1">
-            <div className="w-12 h-12 bg-primary text-primary-foreground rounded-xl flex items-center justify-center overflow-hidden shrink-0">
-              {(application.applicant?.profilePhoto || (application.applicant as any)?.image || (application.applicant as any)?.avatar) ? (
+        <div className="flex items-center justify-between p-6 sm:p-7 border-b border-border shrink-0 bg-card">
+          <div className="flex items-center gap-4 sm:gap-5 min-w-0 flex-1">
+            <div className="w-16 h-16 bg-primary/10 border-2 border-primary/20 text-primary rounded-2xl flex items-center justify-center overflow-hidden shrink-0 font-bold text-2xl">
+              {application.applicant?.profilePhoto ? (
                 <img
-                  src={application.applicant?.profilePhoto || (application.applicant as any)?.image || (application.applicant as any)?.avatar}
+                  src={application.applicant.profilePhoto}
                   alt={application.applicant?.name || "Applicant"}
                   className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
               ) : (
-                <span className="font-bold text-lg">{(application.applicant?.name?.[0] || "?").toUpperCase()}</span>
+                <span>{(application.applicant?.name?.[0] || "?").toUpperCase()}</span>
               )}
             </div>
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2 mb-1">
-                <h2 className="text-xl font-bold text-foreground truncate">{application.applicant?.name || application.applicant?.email || "Applicant"}</h2>
-                <Badge className="border px-2.5 py-1 capitalize font-medium">{application.status || "Pending"}</Badge>
+              <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+                <h2 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight truncate">
+                  {application.applicant?.name || application.userEmail}
+                </h2>
+                <Badge className="border px-3 py-1 capitalize font-semibold text-xs">
+                  {application.status || "Pending"}
+                </Badge>
+                {match && match.score > 0 && (
+                  <Badge className="bg-primary text-primary-foreground font-bold px-3 py-1 text-xs border-0 shadow-xs">
+                    <Sparkles className="w-3.5 h-3.5 mr-1" /> {match.score}% Match
+                  </Badge>
+                )}
               </div>
-              {application.applicant?.email && (
-                <p className="text-muted-foreground text-sm flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5" /> {application.applicant.email}
-                </p>
-              )}
-              <p className="text-muted-foreground text-sm flex items-center gap-1.5 mt-0.5">
-                <Calendar className="w-3.5 h-3.5" /> Applied on {new Date(application.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-              </p>
+              <div className="flex items-center gap-4 text-muted-foreground text-xs sm:text-sm flex-wrap">
+                <span className="flex items-center gap-1.5">
+                  <Mail className="w-4 h-4 text-muted-foreground" /> {application.applicant?.email || application.userEmail}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-4 h-4 text-muted-foreground" /> Applied on {new Date(application.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                </span>
+              </div>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={onClose} className="h-9 w-9 p-0 border-border shrink-0">
-            <X className="w-4 h-4" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onClose}
+            className="h-10 w-10 p-0 border-2 border-border shrink-0 rounded-xl cursor-pointer hover:bg-muted"
+          >
+            <X className="w-5 h-5" />
           </Button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-220px)] space-y-6">
-          {/* Message */}
-          <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
-              <MessageSquare className="w-3.5 h-3.5" /> Application Message
+        {/* Content Body */}
+        <div className="p-6 sm:p-10 overflow-y-auto space-y-10 sm:space-y-12 flex-1">
+          {/* Profile Quick Link */}
+          {application.applicant?._id && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-muted/60 border border-border">
+              <div className="text-sm text-muted-foreground">
+                Check this candidate's public profile, client reviews, and full project history
+              </div>
+              <Link
+                href={`/user/profile/${application.applicant._id}`}
+                target="_blank"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline shrink-0"
+              >
+                <User className="w-4 h-4" /> Full Public Profile
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          )}
+
+          {/* Candidate Pitch */}
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-primary" /> Candidate Pitch
             </p>
-            <div className="bg-muted rounded-xl p-5 border border-border">
-              <p className="text-foreground leading-relaxed whitespace-pre-wrap">{application.message}</p>
+            <div className="bg-muted/40 rounded-2xl p-7 border-2 border-border">
+              <p className="text-foreground leading-relaxed whitespace-pre-wrap text-base sm:text-lg">
+                {application.message}
+              </p>
             </div>
           </div>
 
-          {/* Portfolio */}
+          {/* Attached Proof of Work */}
           {(application.bestWorkLink || application.bestWorkDescription) && (
-            <div>
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
-                <Star className="w-3.5 h-3.5" /> Portfolio & Previous Work
+            <div className="space-y-3">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                <Star className="w-4 h-4 text-primary" /> Attached Proof of Work
               </p>
-              <div className="space-y-4">
+              <div className="bg-muted/40 rounded-2xl p-7 border-2 border-border space-y-5">
                 {application.bestWorkLink && (
-                  <div className="bg-muted rounded-xl p-5 border border-border">
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                      <ExternalLink className="w-3 h-3" /> Work Link
-                    </p>
-                    <a href={application.bestWorkLink} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-primary font-semibold hover:underline">
-                      <ExternalLink className="w-4 h-4 shrink-0" /> {application.bestWorkLink}
-                    </a>
+                  <div className="space-y-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Project Link:</span>
+                    <div>
+                      <a
+                        href={application.bestWorkLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-primary font-bold hover:underline text-base break-all"
+                      >
+                        <ExternalLink className="w-4 h-4 shrink-0" /> {application.bestWorkLink}
+                      </a>
+                    </div>
                   </div>
                 )}
                 {application.bestWorkDescription && (
-                  <div className="bg-muted rounded-xl p-5 border border-border">
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                      <FileText className="w-3 h-3" /> Work Description
+                  <div className="space-y-2 pt-4 border-t border-border">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Work Details:</span>
+                    <p className="text-foreground leading-relaxed text-sm sm:text-base whitespace-pre-wrap">
+                      {application.bestWorkDescription}
                     </p>
-                    <p className="text-foreground leading-relaxed whitespace-pre-wrap">{application.bestWorkDescription}</p>
                   </div>
                 )}
               </div>
             </div>
           )}
+
+          {/* Candidate Skills */}
+          {skills.length > 0 && (
+            <div className="space-y-3.5">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                Skills & Capabilities ({skills.length})
+              </p>
+              <div className="flex flex-wrap gap-2.5">
+                {skills.map((skill, sIdx) => {
+                  const isMatching = match?.matchingSkills?.some(
+                    (m) => m.toLowerCase() === skill.toLowerCase()
+                  )
+                  return (
+                    <span
+                      key={sIdx}
+                      className={`text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl border ${isMatching
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-secondary text-secondary-foreground border-border"
+                        }`}
+                    >
+                      {isMatching && "✓ "}
+                      {skill}
+                    </span>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Featured Portfolio Projects */}
+          {portfolioProjects.length > 0 && (
+            <div className="space-y-5 pt-2">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2 mb-4">
+                <FolderGit2 className="w-4 h-4 text-primary" />
+                <span>Featured Projects</span>
+                <span className="bg-muted text-muted-foreground px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                  {portfolioProjects.length}
+                </span>
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 relative">
+                {portfolioProjects.map((project, index) => (
+                  <div
+                    key={index}
+                    className="group bg-card rounded-2xl border-2 border-border shadow-sm hover:border-primary transition-colors flex flex-col h-full overflow-hidden"
+                  >
+                    <div className="p-6 flex flex-col h-full">
+                      {/* Title and Description */}
+                      <div className="space-y-2 mb-6">
+                        <h2 className="text-lg sm:text-xl font-semibold text-foreground line-clamp-2">
+                          {project.title}
+                        </h2>
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                          {project.description}
+                        </p>
+                      </div>
+
+                      {/* Tech Stack Skills */}
+                      {project.tags && project.tags.length > 0 && (
+                        <div className="mt-auto mb-6">
+                          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                            Tech Stack
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {project.tags.map((tag, tagIndex) => (
+                              <span
+                                key={tagIndex}
+                                className="bg-secondary text-secondary-foreground text-xs font-semibold px-3 py-1.5 rounded-xl border border-transparent"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      {(project.liveUrl || project.githubUrl) && (
+                        <div className={`${project.liveUrl && project.githubUrl ? "grid grid-cols-2 gap-2.5" : "flex"} ${!project.tags || project.tags.length === 0 ? "mt-auto" : ""}`}>
+                          {project.liveUrl && (
+                            <a
+                              href={project.liveUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-primary text-primary-foreground rounded-xl font-semibold transition-opacity shadow-xs text-xs sm:text-sm cursor-pointer hover:opacity-90"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              <span>Live Demo</span>
+                            </a>
+                          )}
+                          {project.githubUrl && (
+                            <a
+                              href={project.githubUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-muted border border-border text-foreground hover:bg-accent rounded-xl font-semibold transition-colors shadow-xs text-xs sm:text-sm cursor-pointer"
+                            >
+                              <Code2 className="w-3.5 h-3.5" />
+                              <span>GitHub</span>
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Footer */}
-        <div className="flex flex-col sm:flex-row justify-end gap-3 p-6 border-t border-border">
-          <Button variant="outline" onClick={onClose} className="border-border font-semibold">Close</Button>
-          <Button onClick={onDelete} variant="outline" disabled={loading}
-            className="bg-destructive text-destructive-foreground border-destructive font-semibold">
+        {/* Footer Actions */}
+        <div className="flex flex-col sm:flex-row justify-end gap-3 p-6 sm:p-7 border-t border-border shrink-0 bg-card">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="border-2 border-border font-semibold h-12 px-6 rounded-2xl cursor-pointer hover:bg-muted text-sm"
+          >
+            Close
+          </Button>
+          <Button
+            onClick={onDelete}
+            variant="outline"
+            disabled={loading}
+            className="bg-destructive/10 text-destructive border-2 border-destructive/20 font-semibold h-12 px-6 rounded-2xl hover:bg-destructive hover:text-destructive-foreground transition-colors cursor-pointer text-sm"
+          >
             <XCircle className="w-4 h-4 mr-2" /> Reject Application
           </Button>
 
@@ -126,12 +302,12 @@ export function ApplicationDetailModal({
                   <Button
                     disabled={loading}
                     variant="destructive"
-                    className="font-semibold h-10 px-5 rounded-xl cursor-pointer shadow-xs"
+                    className="font-semibold h-12 px-6 rounded-2xl cursor-pointer shadow-xs text-sm"
                   >
                     <XCircle className="w-4 h-4 mr-2" /> Revoke Acceptance
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="rounded-2xl">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -139,10 +315,10 @@ export function ApplicationDetailModal({
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="font-semibold">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel className="font-semibold rounded-xl">Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={onRevoke}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-semibold"
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-semibold rounded-xl cursor-pointer"
                     >
                       Yes, Revoke
                     </AlertDialogAction>
@@ -151,22 +327,21 @@ export function ApplicationDetailModal({
               </AlertDialog>
               <Button
                 onClick={() => (window.location.href = `/projects/${application.projectId}/huddle`)}
-                className="bg-primary text-primary-foreground font-semibold h-10 px-5 rounded-xl cursor-pointer shadow-xs"
+                className="bg-primary text-primary-foreground font-semibold h-12 px-6 rounded-2xl cursor-pointer shadow-xs text-sm"
               >
                 <MessageSquare className="w-4 h-4 mr-2" /> Open Project Huddle
               </Button>
             </>
           ) : (
             <Button
-              onClick={() => onAccept(application._id, application.applicant?.email || "")}
+              onClick={() => onAccept(application._id, application.applicant?.email || application.userEmail)}
               disabled={loading}
-              className="bg-primary text-primary-foreground font-semibold h-10 px-5 rounded-xl cursor-pointer shadow-xs"
+              className="bg-primary text-primary-foreground font-bold h-12 px-7 rounded-2xl cursor-pointer shadow-xs hover:opacity-90 transition-opacity text-sm"
             >
               <Check className="w-4 h-4 mr-2" /> Accept Application
             </Button>
           )}
         </div>
-
       </div>
     </div>
   )

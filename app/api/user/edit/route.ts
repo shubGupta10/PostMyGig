@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
+import redis from "@/lib/redis";
 
 interface ContactLinks {
   label: string;
@@ -21,6 +22,7 @@ export async function PATCH(req: NextRequest) {
       location,
       role,
       skills,
+      portfolioProjects,
     } = body;
 
     if (!userId) {
@@ -49,6 +51,22 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Invalid skills format" }, { status: 400 });
     }
 
+    if (
+      portfolioProjects &&
+      (!Array.isArray(portfolioProjects) ||
+        !portfolioProjects.every(
+          (p) =>
+            typeof p.title === "string" &&
+            typeof p.description === "string" &&
+            Array.isArray(p.tags)
+        ))
+    ) {
+      return NextResponse.json(
+        { error: "Invalid portfolioProjects format" },
+        { status: 400 }
+      );
+    }
+
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
       {
@@ -59,6 +77,7 @@ export async function PATCH(req: NextRequest) {
         location,
         role,
         skills,
+        portfolioProjects: portfolioProjects || [],
         updatedAt: new Date().toISOString(),
       },
       { new: true }
@@ -66,6 +85,17 @@ export async function PATCH(req: NextRequest) {
 
     if (!updatedUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    try {
+      if (updatedUser.email) {
+        await redis.del(`fetch-user-profile:${updatedUser.email}`);
+      }
+      await redis.del(`fetch-user-profile:${userId}`);
+      await redis.del(`fetch-public-user-profile-v7:${userId}`);
+      console.log("Invalidated profile caches for", userId);
+    } catch (cacheErr) {
+      console.warn("Failed to invalidate profile redis cache:", cacheErr);
     }
 
     return NextResponse.json(

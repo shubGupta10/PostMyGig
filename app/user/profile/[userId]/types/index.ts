@@ -1,3 +1,5 @@
+import { PortfolioProject } from "@/models/UserModel"
+
 export interface ContactLinks {
   label: string
   url: string
@@ -24,4 +26,5 @@ export interface UserData {
   isVerified: boolean
   openGigs?: any[]
   completedGigs?: any[]
+  portfolioProjects?: PortfolioProject[]
 }
