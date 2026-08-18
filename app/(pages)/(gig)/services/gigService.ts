@@ -40,15 +40,35 @@ export async function getGigs(page = 1, limit = 9, search = "", skill = "", sort
 
         if (search) {
             const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            query.$or = [
-                { title: { $regex: safeSearch, $options: "i" } },
-                { description: { $regex: safeSearch, $options: "i" } },
-                { skillsRequired: { $regex: safeSearch, $options: "i" } }
-            ]
+            const words = search.trim().split(/\s+/).filter(Boolean).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+            if (words.length > 1) {
+                const phraseRegex = { $regex: safeSearch, $options: "i" };
+                const wordConditions = words.map(w => ({
+                    $or: [
+                        { title: { $regex: w, $options: "i" } },
+                        { description: { $regex: w, $options: "i" } },
+                        { skillsRequired: { $regex: w, $options: "i" } }
+                    ]
+                }));
+
+                query.$or = [
+                    { title: phraseRegex },
+                    { description: phraseRegex },
+                    { skillsRequired: phraseRegex },
+                    { $and: wordConditions }
+                ];
+            } else {
+                query.$or = [
+                    { title: { $regex: safeSearch, $options: "i" } },
+                    { description: { $regex: safeSearch, $options: "i" } },
+                    { skillsRequired: { $regex: safeSearch, $options: "i" } }
+                ];
+            }
         }
         if (skill) {
             const safeSkill = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            query.skillsRequired = { $regex: safeSkill, $options: "i" };
+            query.skillsRequired = { $regex: `^${safeSkill}$`, $options: "i" };
         }
 
         const [gigs, totalCount] = await Promise.all([
