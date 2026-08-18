@@ -570,7 +570,7 @@ export async function seedPlatformDatabase() {
   }
 
   // 2. Seed Gigs distributed across the dynamic clients
-  const createdGigs: { gig: any; creator: any }[] = [];
+  const newlyCreatedGigs: { gig: any; creator: any }[] = [];
   let newGigsCount = 0;
   const clientList = Array.from(userMap.values());
 
@@ -581,14 +581,25 @@ export async function seedPlatformDatabase() {
 
     const expiresAt = new Date(new Date(gigData.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000);
 
-    const seededEmails = Array.from(userMap.keys());
-    let existingGig: any = await ProjectModel.findOne({
-      title: gigData.title,
-      createdBy: { $in: seededEmails },
-    });
+    // Find all gigs matching this title
+    const allMatches = await ProjectModel.find({ title: gigData.title }).sort({ createdAt: -1 });
+
+    let existingGig: any = null;
+
+    if (allMatches.length > 1) {
+      // Keep newest single copy, delete older duplicate copies
+      existingGig = allMatches[0];
+      const duplicateIds = allMatches.slice(1).map((g) => g._id);
+      const duplicateIdStrings = duplicateIds.map((id) => String(id));
+      await ProjectModel.deleteMany({ _id: { $in: duplicateIds } });
+      await Activity.deleteMany({ gigId: { $in: duplicateIdStrings } });
+      addLog(`🧹 Removed ${duplicateIds.length} duplicate copy of: "${gigData.title}"`);
+    } else if (allMatches.length === 1) {
+      existingGig = allMatches[0];
+    }
 
     if (!existingGig) {
-      existingGig = await ProjectModel.create({
+      const created = await ProjectModel.create({
         title: gigData.title,
         description: gigData.description,
         createdBy: creator.email,
@@ -607,13 +618,13 @@ export async function seedPlatformDatabase() {
       });
       newGigsCount++;
       addLog(`✓ Created gig: "${gigData.title}" (₹${gigData.budget}) by ${creator.name}`);
-      createdGigs.push({ gig: existingGig, creator });
+      newlyCreatedGigs.push({ gig: created, creator });
     } else {
       if (existingGig.isCurated !== true) {
         await ProjectModel.updateOne({ _id: existingGig._id }, { $set: { isCurated: true } });
-        addLog(`ℹ Tagged existing seeded gig as isCurated: "${gigData.title}"`);
+        addLog(`ℹ Tagged existing gig as isCurated: "${gigData.title}"`);
       } else {
-        addLog(`ℹ Found existing gig: "${gigData.title}" (unchanged)`);
+        addLog(`ℹ Found existing unique gig: "${gigData.title}" (unchanged)`);
       }
     }
   }
@@ -622,8 +633,8 @@ export async function seedPlatformDatabase() {
   const dynamicFreelancerNames = await fetchDynamicFreelancers();
   let activityCount = 0;
 
-  for (let i = 0; i < createdGigs.length; i++) {
-    const { gig, creator } = createdGigs[i];
+  for (let i = 0; i < newlyCreatedGigs.length; i++) {
+    const { gig, creator } = newlyCreatedGigs[i];
     const gigId = String(gig._id);
     const creatorId = String(creator._id);
 
@@ -718,13 +729,13 @@ export async function seedPlatformDatabase() {
     addLog(`⚠ Redis cache purge skipped: ${e.message}`);
   }
 
-  addLog(`✨ Seeding complete! Profiles: ${clientsData.length} (${newUsersCount} new), Gigs: ${createdGigs.length} (${newGigsCount} new), Activities: ${activityCount}`);
+  addLog(`✨ Seeding complete! Profiles: ${clientsData.length} (${newUsersCount} new), Gigs: ${SEED_GIG_TEMPLATES.length} (${newGigsCount} new), Activities: ${activityCount}`);
 
   return {
     success: true,
     usersCount: clientsData.length,
     newUsersCount,
-    gigsCount: createdGigs.length,
+    gigsCount: SEED_GIG_TEMPLATES.length,
     newGigsCount,
     activityCount,
     logs,
