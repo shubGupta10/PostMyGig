@@ -30,7 +30,7 @@ export async function fetchActivityData(): Promise<ActivityItem[]> {
     
     return []
   } catch (error) {
-    console.error("Failed to fetch activity data:", error)
-    throw new Error("Failed to load activity feed. Please try again.")
+    console.warn("Failed to fetch activity data:", error)
+    return []
   }
 }

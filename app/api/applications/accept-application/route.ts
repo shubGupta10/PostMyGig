@@ -8,8 +8,8 @@ import userModel from "@/models/UserModel";
 import resend from "@/lib/resend";
 import redis from "@/lib/redis";
 import { dispatchNotification } from "@/lib/notification/dispatcher";
+import Activity from "@/models/ActivityModel";
 
-//accept application
 export async function POST(req: NextRequest) {
     try {
         await ConnectoDatabase();
@@ -102,7 +102,28 @@ export async function POST(req: NextRequest) {
                 title: "Application Accepted!",
                 message: `Your pitch for "${fetchGigTitle?.title || 'Gig'}" was accepted by the client.`,
                 link: `/projects/${gigId}/huddle`,
-            })
+            });
+
+            // Record public activity
+            try {
+                const poster = await userModel.findOne({ email: application.posterEmail }).select("name").lean();
+                await Activity.create({
+                    userId: freelancerWeSearchingFor._id.toString(),
+                    gigId: gigId,
+                    type: 'hired',
+                    metadata: {
+                        clientName: poster?.name || "Client",
+                        freelancerName: freelancerWeSearchingFor.name || "Freelancer",
+                        gigTitle: fetchGigTitle?.title || "Gig",
+                        skills: fetchGigTitle?.skillsRequired?.slice(0, 3) || [],
+                        budget: fetchGigTitle?.budget || "",
+                    }
+                });
+                await redis.del("real-time-activity-data");
+                await redis.del("public-success-feed");
+            } catch (actErr) {
+                console.warn("Failed to record hired activity:", actErr);
+            }
         })
 
 

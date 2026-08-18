@@ -4,7 +4,7 @@ import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
 
 
-export async function POST(req: NextRequest) {
+async function handleFetchActivity() {
     try {
         await ConnectoDatabase();
 
@@ -13,9 +13,10 @@ export async function POST(req: NextRequest) {
         // Try fetching from Redis
         const redisData = await redis.get(cacheKey);
         if (redisData) {
+            const parsed = typeof redisData === "string" ? JSON.parse(redisData) : redisData;
             return NextResponse.json({
                 message: "Real time Activity Data Fetched (from cache)",
-                activityData: (redisData),
+                activityData: parsed,
             });
         }
 
@@ -24,7 +25,8 @@ export async function POST(req: NextRequest) {
         if (!dbData || dbData.length === 0) {
             return NextResponse.json({
                 message: "No activity data found",
-            }, { status: 404 });
+                activityData: [],
+            }, { status: 200 });
         }
 
         // Cache the result
@@ -38,6 +40,16 @@ export async function POST(req: NextRequest) {
         console.error("Activity fetch error:", error);
         return NextResponse.json({
             message: "Internal Server Error",
+            activityData: [],
         }, { status: 500 });
     }
 }
+
+export async function GET() {
+    return handleFetchActivity();
+}
+
+export async function POST() {
+    return handleFetchActivity();
+}
+

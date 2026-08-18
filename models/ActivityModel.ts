@@ -3,10 +3,13 @@ import mongoose, { Document, Schema, Model } from "mongoose";
 export interface IActivity extends Document {
   userId: string;
   gigId: string;
-  type: string;
+  type: 'posted' | 'applied' | 'hired' | 'completed';
   metadata: {
-    FullName: string;
+    clientName?: string;
+    freelancerName?: string;
     gigTitle: string;
+    skills?: string[];
+    budget?: string;
   };
   createdAt: Date;
 }
@@ -22,17 +25,29 @@ const activitySchema: Schema<IActivity> = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['posted', 'pings'],
+    enum: ['posted', 'applied', 'hired', 'completed'],
     required: true,
   },
   metadata: {
-    FullName: {
+    clientName: {
       type: String,
-      required: true,
+      default: '',
+    },
+    freelancerName: {
+      type: String,
+      default: '',
     },
     gigTitle: {
       type: String,
       required: true,
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    budget: {
+      type: String,
+      default: '',
     },
   },
   createdAt: {
@@ -41,7 +56,7 @@ const activitySchema: Schema<IActivity> = new mongoose.Schema({
   },
 });
 
-activitySchema.index({ createdAt: 1 }, { expireAfterSeconds: 4 * 24 * 60 * 60 });
+activitySchema.index({ createdAt: 1 }, { expireAfterSeconds: 30 * 24 * 60 * 60 });
 
 const Activity: Model<IActivity> = mongoose.models.Activity || mongoose.model<IActivity>("Activity", activitySchema);
 export default Activity;

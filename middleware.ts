@@ -70,6 +70,7 @@ export default withAuth(
                     "/api/gigs/fetch-gigs",
                     "/auth/verify-code",
                     "/activity",
+                    "/api/activity",
                     "/open-gig",
                     "/api/gigs/open-gigs",
                     "/api/cron"

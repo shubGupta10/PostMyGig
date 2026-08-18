@@ -1,8 +1,9 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse, NextRequest, after } from "next/server";
 import ProjectModel from "@/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
 import userModel from "@/models/UserModel";
+import Activity from "@/models/ActivityModel";
 
 export async function POST(req: NextRequest) {
     try {
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
 
         const THRESHOLD = 3;
 
-        // Check Client
+        // Check Client verification eligibility
         if (project.createdBy) {
             const clientGigCount = await ProjectModel.countDocuments({
                 createdBy: project.createdBy,
@@ -48,6 +49,7 @@ export async function POST(req: NextRequest) {
             }
         }
 
+        // Check Freelancer verification eligibility
         if (project.AcceptedFreelancerEmail) {
             const freelancerGigCount = await ProjectModel.countDocuments({
                 AcceptedFreelancerEmail: project.AcceptedFreelancerEmail,
@@ -60,6 +62,36 @@ export async function POST(req: NextRequest) {
                 );
             }
         }
+
+        // Record public activity
+        after(async () => {
+            try {
+                const [clientUser, freelancerUser] = await Promise.all([
+                    userModel.findOne({ email: project.createdBy }).select("name").lean(),
+                    project.AcceptedFreelancerEmail
+                        ? userModel.findOne({ email: project.AcceptedFreelancerEmail }).select("name").lean()
+                        : null
+                ]);
+
+                await Activity.create({
+                    userId: clientUser?._id?.toString() || project.createdBy,
+                    gigId: gigId,
+                    type: 'completed',
+                    metadata: {
+                        clientName: clientUser?.name || "Client",
+                        freelancerName: freelancerUser?.name || "Freelancer",
+                        gigTitle: project.title,
+                        skills: project.skillsRequired?.slice(0, 3) || [],
+                        budget: project.budget || "",
+                    }
+                });
+
+                await redis.del("real-time-activity-data");
+                await redis.del("public-success-feed");
+            } catch (actErr) {
+                console.warn("Failed to record completed activity:", actErr);
+            }
+        });
 
         return NextResponse.json({
             message: "Gig marked as completed successfully",

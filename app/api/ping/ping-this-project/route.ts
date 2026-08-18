@@ -150,20 +150,22 @@ export async function POST(req: NextRequest) {
     })
 
     after(async () => {
-      //save activity
-      if (session.user.activityPublic === true) {
+      // save activity
+      if (session.user.activityPublic !== false) {
         await Activity.create({
           userId: session.user.id,
           gigId: fetchedProject.id,
-          type: 'pings',
+          type: 'applied',
           metadata: {
-            FullName: session.user.name,
-            gigTitle: fetchedProject.title
+            freelancerName: session.user.name || "Freelancer",
+            gigTitle: fetchedProject.title,
+            skills: (fetchedProject.skillsRequired || []).slice(0, 3),
+            budget: fetchedProject.budget || "",
           }
-        })
+        });
         await redis.del("real-time-activity-data");
+        await redis.del("public-success-feed");
       }
-
     })
 
 
