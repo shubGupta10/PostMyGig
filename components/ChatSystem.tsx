@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useRef, type JSX } from "react"
-import { Send, MessageCircle, Loader, AlertCircle, ChevronDown, ArrowLeft, CheckCheck, Paperclip, FileText, ExternalLink } from "lucide-react"
+import { Send, MessageCircle, Loader, AlertCircle, ChevronDown, ArrowLeft, CheckCheck, Paperclip, FileText, ExternalLink, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 import { toast } from "sonner"
 import {
   connectSocket,
@@ -81,9 +81,16 @@ interface UserData {
 interface ChatSystemProps {
   projectId: string
   onBackToThreads?: () => void
+  onToggleSidebar?: () => void
+  isSidebarCollapsed?: boolean
 }
 
-export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemProps): JSX.Element {
+export default function ChatSystem({
+  projectId,
+  onBackToThreads,
+  onToggleSidebar,
+  isSidebarCollapsed = false,
+}: ChatSystemProps): JSX.Element {
   const [messages, setMessages] = useState<Message[]>([])
   const [message, setMessage] = useState<string>("")
   const [isConnected, setIsConnected] = useState<boolean>(false)
@@ -142,7 +149,7 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
@@ -423,12 +430,26 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
       {/* WhatsApp Web Right Header */}
       <div className="h-16 px-4 bg-card border-b border-border flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
+          {/* Mobile Back Button */}
           <button
             onClick={() => (onBackToThreads ? onBackToThreads() : router.back())}
             className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer md:hidden"
+            title="Back to conversation list"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
+
+          {/* Desktop Toggle Conversation List (Only shown when sidebar is collapsed) */}
+          {onToggleSidebar && isSidebarCollapsed && (
+            <button
+              onClick={onToggleSidebar}
+              className="hidden md:flex p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer mr-1"
+              title="Show conversation list"
+            >
+              <PanelLeftOpen className="w-5 h-5" />
+            </button>
+          )}
+
           <div className="size-10 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center font-bold text-sm border border-border shrink-0">
             {getInitials(chatPartnerName || "User")}
           </div>
@@ -499,84 +520,107 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
             <p className="text-xs text-muted-foreground">Messages are connected in real-time.</p>
           </div>
         ) : (
-          messages.map((msg, idx) => (
+          messages.map((msg, idx) => {
+            const hasImage = msg.attachment?.fileType === "image"
+            const hasPdf = msg.attachment?.fileType === "pdf"
+            const hasText = Boolean(msg.message && msg.message.trim().length > 0)
+            const isMediaOnly = hasImage && !hasText
 
-            <div
-              key={idx}
-              className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
-            >
+            return (
               <div
-                className={`max-w-[85%] sm:max-w-[70%] px-4 py-2.5 shadow-xs space-y-2 ${
-                  msg.isOwn
-                    ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
-                    : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border-2 border-border"
-                }`}
+                key={idx}
+                className={`flex ${msg.isOwn ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-1 duration-150`}
               >
-                {msg.attachment?.fileType === "image" && (
-                  <div
-                    className="rounded-xl overflow-hidden cursor-pointer max-w-sm hover:opacity-95 transition-opacity"
-                    onClick={() =>
-                      setSelectedImageModal({
-                        url: msg.attachment!.url,
-                        name: msg.attachment!.fileName,
-                      })
-                    }
-                  >
-                    <img
-                      src={msg.attachment.url}
-                      alt={msg.attachment.fileName}
-                      className="w-full h-auto max-h-60 object-cover rounded-lg"
-                    />
-                  </div>
-                )}
-
-                {msg.attachment?.fileType === "pdf" && (
-                  <div
-                    className={`p-3 rounded-xl flex items-center justify-between gap-3 border ${
-                      msg.isOwn
-                        ? "bg-primary-foreground/10 border-primary-foreground/20"
-                        : "bg-background border-border"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-9 h-9 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
-                        <FileText className="w-5 h-5" />
-                      </div>
-                      <div className="truncate text-xs">
-                        <p className="font-semibold truncate">{msg.attachment.fileName}</p>
-                        <p className="text-[10px] opacity-75">
-                          {(msg.attachment.fileSize / (1024 * 1024)).toFixed(2)} MB • PDF
-                        </p>
-                      </div>
-                    </div>
-                    <a
-                      href={msg.attachment.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors shrink-0"
-                      title="Open PDF"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </div>
-                )}
-
-                {msg.message && (
-                  <p className="text-sm leading-relaxed font-normal break-words">{msg.message}</p>
-                )}
-
                 <div
-                  className={`flex items-center justify-end gap-1 text-[10px] ${
-                    msg.isOwn ? "text-primary-foreground/80" : "text-secondary-foreground/70"
-                  }`}
+                  className={`max-w-[85%] sm:max-w-[65%] shadow-xs transition-all ${
+                    msg.isOwn
+                      ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
+                      : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border border-border"
+                  } ${isMediaOnly ? "p-1 overflow-hidden" : "p-3 space-y-2"}`}
                 >
-                  <span>{msg.timestamp}</span>
-                  {msg.isOwn && <CheckCheck className="w-3 h-3" />}
+                  {/* Image Attachment */}
+                  {hasImage && (
+                    <div
+                      className={`relative rounded-xl overflow-hidden cursor-pointer max-w-sm group ${
+                        isMediaOnly ? "" : "mb-2"
+                      }`}
+                      onClick={() =>
+                        setSelectedImageModal({
+                          url: msg.attachment!.url,
+                          name: msg.attachment!.fileName,
+                        })
+                      }
+                    >
+                      <img
+                        src={msg.attachment!.url}
+                        alt={msg.attachment!.fileName || "Image"}
+                        className="w-full h-auto max-h-72 object-cover rounded-xl transition-transform duration-200 group-hover:scale-[1.01]"
+                      />
+
+                      {/* Translucent Overlay Timestamp for Media-Only Bubbles */}
+                      {isMediaOnly && (
+                        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-black/65 text-white/90 backdrop-blur-xs text-[10px] font-medium flex items-center gap-1 shadow-xs pointer-events-none">
+                          <span>{msg.timestamp}</span>
+                          {msg.isOwn && <CheckCheck className="w-3 h-3 text-emerald-400" />}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* PDF Attachment */}
+                  {hasPdf && (
+                    <div
+                      className={`p-3 rounded-xl flex items-center justify-between gap-3 border ${
+                        msg.isOwn
+                          ? "bg-primary-foreground/10 border-primary-foreground/20"
+                          : "bg-background border-border"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-9 h-9 rounded-lg bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <div className="truncate text-xs">
+                          <p className="font-semibold truncate">{msg.attachment!.fileName}</p>
+                          <p className="text-[10px] opacity-75">
+                            {msg.attachment!.fileSize ? (msg.attachment!.fileSize / (1024 * 1024)).toFixed(2) : "0"} MB • PDF
+                          </p>
+                        </div>
+                      </div>
+                      <a
+                        href={msg.attachment!.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors shrink-0"
+                        title="Open PDF"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Message Text Caption */}
+                  {hasText && (
+                    <p className="text-sm leading-relaxed font-normal break-words whitespace-pre-wrap">
+                      {msg.message}
+                    </p>
+                  )}
+
+                  {/* Message Timestamp (Only shown below if there is text or PDF) */}
+                  {!isMediaOnly && (
+                    <div
+                      className={`flex items-center justify-end gap-1 text-[10px] pt-0.5 ${
+                        msg.isOwn ? "text-primary-foreground/80" : "text-muted-foreground"
+                      }`}
+                    >
+                      <span>{msg.timestamp}</span>
+                      {msg.isOwn && <CheckCheck className="w-3 h-3" />}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-
-          ))
+            )
+          })
         )}
         <div ref={messagesEndRef} />
 
@@ -590,18 +634,8 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
         )}
       </div>
 
-      {/* Input Bar */}
-      <div className="bg-card border-t border-border shrink-0">
-        <ChatAttachmentPreview
-          file={stagedFile}
-          previewUrl={previewUrl}
-          isUploading={isUploading}
-          onRemove={() => {
-            setStagedFile(null)
-            setPreviewUrl(null)
-          }}
-        />
-
+      {/* Expanded Modern Input Box */}
+      <div className="p-3 sm:p-4 bg-card border-t border-border shrink-0">
         <input
           type="file"
           ref={fileInputRef}
@@ -612,38 +646,57 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
           className="hidden"
         />
 
-        <div className="p-3 flex gap-2 sm:gap-3 items-center">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            disabled={!isConnected || isUploading}
-            onClick={() => fileInputRef.current?.click()}
-            className="h-10 w-10 text-muted-foreground hover:text-foreground rounded-xl shrink-0 cursor-pointer"
-            title="Attach image or PDF"
-          >
-            <Paperclip className="w-4 h-4" />
-          </Button>
+        <div className="bg-background border border-border focus-within:border-primary/60 rounded-2xl p-3 transition-all shadow-xs flex flex-col gap-2.5">
+          {/* Staged File Preview if any */}
+          {stagedFile && (
+            <ChatAttachmentPreview
+              file={stagedFile}
+              previewUrl={previewUrl}
+              isUploading={isUploading}
+              onRemove={() => {
+                setStagedFile(null)
+                setPreviewUrl(null)
+              }}
+            />
+          )}
 
-          <Input
-            type="text"
+          {/* Multi-line Message Textarea */}
+          <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onPaste={handlePaste}
             onKeyDown={handleKeyDown}
-            placeholder={stagedFile ? "Add a caption (optional)..." : "Type a message or paste image (Ctrl+V)..."}
+            rows={2}
+            placeholder={stagedFile ? "Add a caption (optional)..." : "Type a message..."}
             disabled={!isConnected || isUploading}
-            className="flex-1 h-10 px-4 bg-background border border-border rounded-xl"
+            className="w-full bg-transparent border-0 resize-none focus:outline-hidden focus:ring-0 text-sm text-foreground placeholder:text-muted-foreground min-h-[44px] max-h-36 leading-relaxed p-0"
           />
 
-          <Button
-            onClick={sendMessage}
-            disabled={!isConnected || (!message.trim() && !stagedFile) || isUploading}
-            className="h-10 px-4 bg-primary text-primary-foreground rounded-xl font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-          >
-            <Send className="w-4 h-4" />
-            <span className="hidden sm:inline">Send</span>
-          </Button>
+          {/* Bottom Controls Row */}
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                disabled={!isConnected || isUploading}
+                onClick={() => fileInputRef.current?.click()}
+                className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-lg cursor-pointer transition-colors"
+                title="Attach image or PDF"
+              >
+                <Paperclip className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <Button
+              onClick={sendMessage}
+              disabled={!isConnected || (!message.trim() && !stagedFile) || isUploading}
+              className="h-8 px-4 bg-primary text-primary-foreground rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs hover:opacity-95 transition-opacity"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Send</span>
+            </Button>
+          </div>
         </div>
       </div>
 

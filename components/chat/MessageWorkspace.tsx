@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { MessageCircle, Search, Trash2 } from "lucide-react"
+import { MessageCircle, Search, Trash2, PanelLeftClose } from "lucide-react"
 import type { ChatData } from "@/app/(pages)/(socket)/chat-history/types"
 import { formatTimeStamp, getInitials } from "@/lib/helpers"
 import ChatSystem from "@/components/ChatSystem"
@@ -39,6 +39,7 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
   )
   const [searchTerm, setSearchTerm] = useState("")
   const [showMobileChat, setShowMobileChat] = useState<boolean>(!!activeProjectId)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [chatToDelete, setChatToDelete] = useState<{ id: string; gigId: string; name: string } | null>(null)
 
@@ -138,14 +139,22 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
 
       {/* Left Column: Messages & Huddles Thread List */}
       <div
-        className={`w-full md:w-80 lg:w-96 border-r border-border bg-card flex flex-col shrink-0 ${showMobileChat ? "hidden md:flex" : "flex"
-          }`}
+        className={`w-full md:w-80 lg:w-96 border-r border-border bg-card flex flex-col shrink-0 transition-all duration-200 ${
+          showMobileChat ? "hidden md:flex" : "flex"
+        } ${isSidebarCollapsed ? "md:!hidden" : "md:flex"}`}
       >
         {/* Sidebar Top Bar */}
         <div className="h-16 px-4 border-b border-border flex items-center justify-between bg-card shrink-0">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             Messages & Huddles
           </p>
+          <button
+            onClick={() => setIsSidebarCollapsed(true)}
+            className="hidden md:flex p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            title="Collapse conversation list"
+          >
+            <PanelLeftClose className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Search Bar */}
@@ -206,11 +215,17 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
 
       {/* Right Column: Active Chat Feed Workspace */}
       <div
-        className={`flex-1 flex flex-col bg-background ${showMobileChat ? "flex" : "hidden md:flex"
-          }`}
+        className={`flex-1 flex flex-col bg-background ${
+          showMobileChat ? "flex" : "hidden md:flex"
+        }`}
       >
         {selectedProjectId ? (
-          <ChatSystem projectId={selectedProjectId} onBackToThreads={() => setShowMobileChat(false)} />
+          <ChatSystem
+            projectId={selectedProjectId}
+            onBackToThreads={() => setShowMobileChat(false)}
+            onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
+            isSidebarCollapsed={isSidebarCollapsed}
+          />
         ) : (
           <div className="flex-1 flex items-center justify-center p-8">
             <div className="bg-muted rounded-xl p-10 text-center border border-border max-w-sm w-full">

@@ -23,7 +23,7 @@ export function ChatAttachmentPreview({
     const formattedSize = (file.size / (1024 * 1024)).toFixed(2) + " MB"
 
     return (
-        <div className="px-4 py-2 bg-muted border-t border-border flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="p-2.5 bg-muted/50 rounded-xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-2 duration-200">
             <div className="flex items-center gap-3 min-w-0">
                 {isImage && previewUrl ? (
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-border shrink-0 bg-background">
