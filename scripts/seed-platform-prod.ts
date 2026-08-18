@@ -697,15 +697,45 @@ export async function seedPlatformDatabase() {
     }
   }
 
+  // 3.5 Ensure any existing gigs with missing or past expiresAt are corrected
+  try {
+    const fixedResult = await ProjectModel.updateMany(
+      {
+        $or: [
+          { expiresAt: { $exists: false } },
+          { expiresAt: null },
+          { expiresAt: { $lt: new Date() } },
+        ],
+      },
+      {
+        $set: {
+          status: "active",
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          isFlagged: false,
+        },
+      }
+    );
+    if (fixedResult.modifiedCount > 0) {
+      addLog(`⚡ Activated & renewed expiresAt for ${fixedResult.modifiedCount} existing gigs in database`);
+    }
+  } catch (fixErr: any) {
+    addLog(`⚠ Existing gigs update check skipped: ${fixErr.message}`);
+  }
+
   // 4. Invalidate Redis Caches so UI shows immediately
   try {
     const keys = await redis.keys("fetch-gigs:*");
     if (keys.length > 0) {
       await redis.del(...keys);
     }
+    const trackedKeys = await redis.smembers("gig-cache-keys-for-deletion").catch(() => []);
+    if (Array.isArray(trackedKeys) && trackedKeys.length > 0) {
+      await redis.del(...trackedKeys);
+    }
+    await redis.del("gig-cache-keys-for-deletion");
     await redis.del("public-success-feed");
     await redis.del("real-time-activity-data");
-    addLog("🧹 Redis caches invalidated successfully ('fetch-gigs:*', 'public-success-feed', 'real-time-activity-data')");
+    addLog("🧹 Redis caches purged completely ('fetch-gigs:*', 'gig-cache-keys-for-deletion', 'public-success-feed', 'real-time-activity-data')");
   } catch (e: any) {
     addLog(`⚠ Redis cache purge skipped: ${e.message}`);
   }
