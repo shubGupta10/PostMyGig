@@ -9,7 +9,8 @@ export default withAuth(
         if (
             (pathname.startsWith("/api") || pathname.startsWith("/auth")) &&
             !pathname.startsWith("/api/auth") &&
-            !pathname.startsWith("/api/cron")
+            !pathname.startsWith("/api/cron") &&
+            !pathname.startsWith("/api/uploadthing")
         ) {
             const realIp = req.headers.get("x-real-ip");
             const forwardedFor = req.headers.get("x-forwarded-for");
@@ -73,7 +74,8 @@ export default withAuth(
                     "/api/activity",
                     "/open-gig",
                     "/api/gigs/open-gigs",
-                    "/api/cron"
+                    "/api/cron",
+                    "/api/uploadthing"
                 ];
 
                 const isPublic = publicRoutes.some(route =>
@@ -92,6 +94,6 @@ export default withAuth(
 
 export const config = {
     matcher: [
-        "/((?!api/auth|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+        "/((?!api/auth|api/uploadthing|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
     ],
 };

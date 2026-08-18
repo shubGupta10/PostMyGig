@@ -22,11 +22,36 @@ export async function POST(req: NextRequest) {
             $set: { status: "active" }
         }, { new: true });
 
+        const [project, allApplicationsForGig] = await Promise.all([
+            ProjectModel.findById(gigId).select("createdBy").lean(),
+            PingModel.find({ projectId: gigId }).select("userEmail").lean(),
+        ]);
+
         try {
-            await redis.del(`fetch-open-gig:${gigId}`);
+            const keysToDelete: string[] = [
+                `open-gig:${gigId}`,
+                `fetch-open-gig:${gigId}`,
+            ];
+
+            if (project?.createdBy) {
+                const clientKeys = await redis.keys(`dashboard-data:client:${project.createdBy}*`);
+                const projectKeys = await redis.keys(`user-projects:${project.createdBy}*`);
+                keysToDelete.push(...clientKeys, ...projectKeys);
+            }
+
+            for (const app of allApplicationsForGig) {
+                if (app.userEmail) {
+                    const fKeys = await redis.keys(`dashboard-data:freelancer:${app.userEmail}*`);
+                    keysToDelete.push(...fKeys);
+                }
+            }
+
             const keys = await redis.keys("fetch-gigs:*");
-            if (keys.length > 0) {
-                await redis.del(...keys);
+            keysToDelete.push(...keys);
+
+            if (keysToDelete.length > 0) {
+                const uniqueKeys = Array.from(new Set(keysToDelete));
+                await redis.del(...uniqueKeys);
             }
         } catch (error) {
             console.warn("Failed to invalidate cache", error);

@@ -166,6 +166,18 @@ export async function POST(req: NextRequest) {
         await redis.del("real-time-activity-data");
         await redis.del("public-success-feed");
       }
+
+      // Invalidate dashboard caches for both applicant and project owner
+      try {
+        const freelancerKeys = await redis.keys(`dashboard-data:freelancer:${userEmail}*`);
+        const clientKeys = await redis.keys(`dashboard-data:client:${posterEmail}*`);
+        const keysToDelete = [...freelancerKeys, ...clientKeys];
+        if (keysToDelete.length > 0) {
+          await redis.del(...keysToDelete);
+        }
+      } catch (err) {
+        console.warn("Failed to invalidate dashboard cache on ping:", err);
+      }
     })
 
 

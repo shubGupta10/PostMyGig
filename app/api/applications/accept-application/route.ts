@@ -49,14 +49,38 @@ export async function POST(req: NextRequest) {
             status: "assigned"
         }, { new: true });
 
-        // Invalidate gig caches since its status changed
+        // Fetch all applicants for this gig to invalidate their proposal/dashboard caches
+        const allApplicationsForGig = await PingModel.find({ projectId: gigId }).select("userEmail").lean();
+
+        // Invalidate gig and dashboard caches
         try {
-            await redis.del(`fetch-open-gig:${gigId}`);
-            await redis.del(`dashboard-data:freelancer:${applicantEmail}`);
-            await redis.del(`dashboard-data:client:${application.posterEmail}`);
-            const keys = await redis.keys("fetch-gigs:*");
-            if (keys.length > 0) {
-                await redis.del(...keys);
+            const keysToDelete: string[] = [
+                `open-gig:${gigId}`,
+                `fetch-open-gig:${gigId}`,
+            ];
+
+            // Invalidate client dashboard & project list cache (all pages)
+            if (application.posterEmail) {
+                const clientKeys = await redis.keys(`dashboard-data:client:${application.posterEmail}*`);
+                const projectKeys = await redis.keys(`user-projects:${application.posterEmail}*`);
+                keysToDelete.push(...clientKeys, ...projectKeys);
+            }
+
+            // Invalidate freelancer dashboard cache for all applicants (accepted and rejected)
+            for (const app of allApplicationsForGig) {
+                if (app.userEmail) {
+                    const fKeys = await redis.keys(`dashboard-data:freelancer:${app.userEmail}*`);
+                    keysToDelete.push(...fKeys);
+                }
+            }
+
+            // Invalidate global gig lists
+            const gigKeys = await redis.keys("fetch-gigs:*");
+            keysToDelete.push(...gigKeys);
+
+            if (keysToDelete.length > 0) {
+                const uniqueKeys = Array.from(new Set(keysToDelete));
+                await redis.del(...uniqueKeys);
             }
         } catch (e) {
             console.warn("Failed to invalidate cache", e);

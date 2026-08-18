@@ -28,7 +28,8 @@ export async function POST(req: NextRequest) {
     try {
       const cachedGig = await redis.get(cachekey);
       if (cachedGig) {
-        return NextResponse.json(JSON.parse(cachedGig as string), { status: 200 });
+        const parsedGig = typeof cachedGig === "string" ? JSON.parse(cachedGig) : cachedGig;
+        return NextResponse.json(parsedGig, { status: 200 });
       }
     } catch (error) {
       console.warn("Redis read error:", error);

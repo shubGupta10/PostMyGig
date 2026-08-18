@@ -42,12 +42,21 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [chatToDelete, setChatToDelete] = useState<{ id: string; gigId: string; name: string } | null>(null)
 
-  const filteredChats = chats.filter(
-    (chat) =>
-      chat.receiverName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      chat.receiverEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const getChatPartner = (chat: ChatData) => {
+    const isMe = chat.senderId === session?.user?.id || chat.senderEmail === session?.user?.email;
+    const partnerName = isMe ? chat.receiverName : chat.senderName;
+    const partnerEmail = isMe ? chat.receiverEmail : chat.senderEmail;
+    return { partnerName, partnerEmail };
+  };
+
+  const filteredChats = chats.filter((chat) => {
+    const { partnerName, partnerEmail } = getChatPartner(chat);
+    return (
+      partnerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      partnerEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
       chat.message.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+    );
+  });
 
   // Separate active huddles vs recent direct chats
   const huddleChats = filteredChats.filter((c) => !!c.gigId)
@@ -79,6 +88,7 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
   const renderChatItem = (chat: ChatData) => {
     const isSelected = selectedProjectId === chat.gigId
     const isDeleting = deletingId === chat._id
+    const { partnerName } = getChatPartner(chat)
 
     return (
       <div
@@ -90,13 +100,13 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
           }`}
       >
         <div className="size-10 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center font-bold text-sm border border-border shrink-0">
-          {getInitials(chat.receiverName)}
+          {getInitials(partnerName || "User")}
         </div>
 
         <div className="flex-1 min-w-0 space-y-1">
           <div className="flex items-center justify-between gap-1">
             <h4 className="text-sm font-semibold text-foreground truncate">
-              {chat.receiverName}
+              {partnerName}
             </h4>
             <span className="text-xs text-muted-foreground font-normal shrink-0 group-hover:hidden">
               {formatTimeStamp(chat.timeStamp)}
@@ -104,7 +114,7 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
             <button
               onClick={(e) => {
                 e.stopPropagation()
-                setChatToDelete({ id: chat._id, gigId: chat.gigId, name: chat.receiverName })
+                setChatToDelete({ id: chat._id, gigId: chat.gigId, name: partnerName })
               }}
               disabled={isDeleting}
               title="Delete chat"

@@ -8,13 +8,23 @@ interface JoinRoomData {
   targetUserId: string
 }
 
+export interface ChatAttachmentData {
+  url: string;
+  fileType: "image" | "pdf";
+  fileName: string;
+  fileSize: number;
+  fileKey?: string;
+}
+
 interface SendMessageData {
   targetUserId: string
   message: string
+  attachment?: ChatAttachmentData | null;
 }
 
 interface ReceiveMessageData {
   message: string
+  attachment?: ChatAttachmentData | null;
   sender: string
 }
 
@@ -23,6 +33,7 @@ interface ChatHistoryData {
   senderId: string
   receiverId: string
   message: string
+  attachment?: ChatAttachmentData | null;
   timeStamp: string
 }
 
@@ -138,7 +149,7 @@ export const joinPrivateRoom = (targetUserId: string): void => {
   socketState.socket.emit("join_room", { targetUserId })
 }
 
-export const sendPrivateMessage = (targetUserId: string, message: string, gigId: string, senderName: string, senderEmail: string, receiverName: string, receiverEmail: string): void => {
+export const sendPrivateMessage = (targetUserId: string, message: string, gigId: string, senderName: string, senderEmail: string, receiverName: string, receiverEmail: string, attachment?: ChatAttachmentData | null): void => {
   if (!socketState.socket?.connected) {
     throw new Error("Socket not connected. Call connectSocket() first.")
   }
@@ -147,7 +158,16 @@ export const sendPrivateMessage = (targetUserId: string, message: string, gigId:
     throw new Error("User not initialized. Call initUser() first.")
   }
 
-  socketState.socket.emit("send_message", { targetUserId, message, gigId, senderName, senderEmail, receiverName, receiverEmail })
+  socketState.socket.emit("send_message", {
+    targetUserId,
+    message,
+    gigId,
+    senderName,
+    senderEmail,
+    receiverName,
+    receiverEmail,
+    attachment,
+  })
 }
 
 export const onReceiveMessage = (callback: (data: ReceiveMessageData) => void): void => {
@@ -231,11 +251,34 @@ export const getCurrentUserId = (): string | null => {
   return socketState.currentUserId
 }
 
+export interface UserPresenceData {
+  userId: string
+  isOnline: boolean
+}
+
+export const onUserPresence = (callback: (data: UserPresenceData) => void): void => {
+  if (!socketState.socket) return
+  socketState.socket.on("user_presence", callback)
+}
+
+export const offUserPresence = (): void => {
+  if (socketState.socket) {
+    socketState.socket.off("user_presence")
+  }
+}
+
+export const checkUserPresence = (targetUserId: string): void => {
+  if (socketState.socket?.connected) {
+    socketState.socket.emit("check_presence", { targetUserId })
+  }
+}
+
 export const cleanupListeners = (): void => {
   offReceiveMessage()
   offChatHistory()
   offConnect()
   offDisconnect()
+  offUserPresence()
 }
 
 export type { InitUserData, JoinRoomData, SendMessageData, ReceiveMessageData, ChatHistoryData, SocketConfig }

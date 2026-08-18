@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useRef, type JSX } from "react"
-import { Send, MessageCircle, Loader, AlertCircle, ChevronDown, ArrowLeft, CheckCheck } from "lucide-react"
+import { Send, MessageCircle, Loader, AlertCircle, ChevronDown, ArrowLeft, CheckCheck, Paperclip, FileText, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 import {
   connectSocket,
@@ -15,11 +15,15 @@ import {
   offReceiveMessage,
   offChatHistory,
   offDisconnect,
+  onUserPresence,
+  offUserPresence,
+  checkUserPresence,
   disconnectSocket,
   isConnected as socketIsConnected,
   getCurrentUserId,
   type ReceiveMessageData,
   type ChatHistoryData,
+  ChatAttachmentData,
 } from "@/lib/(socket)/socket"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -38,9 +42,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useUploadThing } from "@/lib/uploadthing"
+import { ChatAttachmentPreview } from "./chat/ChatAttachmentPreview"
+import { ChatImageModal } from "./chat/ChatImageModal"
 
 interface Message {
   message: string
+  attachment?: ChatAttachmentData | null;
   sender: string
   timestamp: string
   isOwn: boolean
@@ -91,11 +99,55 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
   const [historyLoaded, setHistoryLoaded] = useState<boolean>(false)
   const [projectStatus, setProjectStatus] = useState<string>("");
   const [isCompleting, setIsCompleting] = useState<boolean>(false);
+  const [isPartnerOnline, setIsPartnerOnline] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const { data: session, status } = useSession()
   const router = useRouter()
+  const [stagedFile, setStagedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [selectedImageModal, setSelectedImageModal] = useState<{ url: string; name?: string } | null>(null)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const { startUpload, isUploading } = useUploadThing("chatAttachment")
+
+  const stageSelectedFile = (file: File) => {
+    if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
+      toast.error("Only images and PDF files are supported")
+      return
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("File size must be under 8MB")
+      return
+    }
+    setStagedFile(file)
+    setPreviewUrl(URL.createObjectURL(file))
+  }
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items
+    if (!items) return
+
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1 || items[i].type === "application/pdf") {
+        const file = items[i].getAsFile()
+        if (file) {
+          stageSelectedFile(file)
+          e.preventDefault()
+          break
+        }
+      }
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
+    }
+  }
 
   const scrollToBottom = (): void => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -199,6 +251,7 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
       onChatHistory((historyData: ChatHistoryData[]) => {
         const formattedMessages: Message[] = historyData.map((chat) => ({
           message: chat.message,
+          attachment: chat.attachment || null,
           sender: chat.senderId,
           timestamp: new Date(chat.timeStamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           isOwn: chat.senderId === userId,
@@ -217,6 +270,7 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
           ...prev,
           {
             message: data.message,
+            attachment: data.attachment || null,
             sender: data.sender,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isOwn: false,
@@ -224,8 +278,17 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
         ])
       })
 
+      onUserPresence((presenceData) => {
+        if (presenceData.userId === targetId) {
+          setIsPartnerOnline(presenceData.isOnline)
+        }
+      })
+
+      checkUserPresence(targetId)
+
       onDisconnect(() => {
         setIsConnected(false)
+        setIsPartnerOnline(false)
       })
     } catch (error) {
       setError("Failed to connect to chat server")
@@ -240,12 +303,33 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
       offReceiveMessage()
       offChatHistory()
       offDisconnect()
+      offUserPresence()
       disconnectSocket()
     }
   }, [])
 
-  const sendMessage = (): void => {
-    if (!socketIsConnected() || !message.trim() || !posterUserId || !applyerUserId) return
+  const sendMessage = async (): Promise<void> => {
+    if (!socketIsConnected() || (!message.trim() && !stagedFile) || !posterUserId || !applyerUserId || isUploading) return
+
+    let uploadedAttachment: ChatAttachmentData | null = null;
+
+    if (stagedFile) {
+      try {
+        const res = await startUpload([stagedFile])
+        if (res && res[0]) {
+          uploadedAttachment = {
+            url: res[0].ufsUrl || res[0].url,
+            fileType: stagedFile.type.startsWith("image/") ? "image" : "pdf",
+            fileName: stagedFile.name,
+            fileSize: stagedFile.size,
+            fileKey: res[0].key,
+          }
+        }
+      } catch (uploadErr) {
+        toast.error("Failed to upload attachment")
+        return
+      }
+    }
 
     const currentUserId = getCurrentUserId()
     const targetUserId = currentUserId === posterUserId ? applyerUserId : posterUserId
@@ -266,6 +350,7 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
 
     const messageData: Message = {
       message: message.trim(),
+      attachment: uploadedAttachment,
       sender: currentUserId || "",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isOwn: true,
@@ -283,8 +368,11 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
         senderEmail,
         receiverName,
         receiverEmail,
+        uploadedAttachment
       )
       setMessage("")
+      setStagedFile(null)
+      setPreviewUrl(null)
     } catch (error) {
       toast.error("Failed to send message")
     }
@@ -331,6 +419,7 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
   return (
     <div className="h-full bg-background flex flex-col flex-1 overflow-hidden">
       <SidebarAutoCollapser />
+
       {/* WhatsApp Web Right Header */}
       <div className="h-16 px-4 bg-card border-b border-border flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
@@ -346,8 +435,10 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
           <div>
             <h2 className="text-sm font-semibold text-foreground">{chatPartnerName}</h2>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
-              <span className={`w-2 h-2 rounded-full ${isConnected ? "bg-primary animate-pulse" : isConnecting ? "bg-yellow-500 animate-pulse" : "bg-destructive"}`} />
-              <span>{isConnected ? "Online" : isConnecting ? "Connecting..." : "Disconnected"}</span>
+              <span className={`w-2 h-2 rounded-full ${isPartnerOnline ? "bg-emerald-500 shadow-xs shadow-emerald-500/50" : isConnecting ? "bg-amber-500 animate-pulse" : "bg-muted-foreground/30"}`} />
+              <span className={isPartnerOnline ? "text-emerald-500 font-medium" : "text-muted-foreground"}>
+                {isPartnerOnline ? "Online" : isConnecting ? "Connecting..." : "Offline"}
+              </span>
             </div>
           </div>
         </div>
@@ -374,7 +465,7 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel className="font-semibold">Cancel</AlertDialogCancel>
-                  <AlertDialogAction 
+                  <AlertDialogAction
                     onClick={handleCompleteGig}
                     className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
                   >
@@ -387,7 +478,7 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
 
           {projectStatus === "completed" && (
             <div className="flex items-center gap-1.5 text-emerald-600 font-semibold text-xs px-3 py-1.5 bg-emerald-600/10 rounded-lg border border-emerald-600/20">
-              <CheckCheck className="w-4 h-4" /> 
+              <CheckCheck className="w-4 h-4" />
               Project Completed
             </div>
           )}
@@ -409,26 +500,82 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
           </div>
         ) : (
           messages.map((msg, idx) => (
+
             <div
               key={idx}
               className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[85%] sm:max-w-[70%] px-4 py-2.5 shadow-xs space-y-1 ${msg.isOwn
-                  ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
-                  : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border-2 border-border"
-                  }`}
+                className={`max-w-[85%] sm:max-w-[70%] px-4 py-2.5 shadow-xs space-y-2 ${
+                  msg.isOwn
+                    ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
+                    : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border-2 border-border"
+                }`}
               >
-                <p className="text-sm leading-relaxed font-normal break-words">{msg.message}</p>
-                <div
-                  className={`flex items-center justify-end gap-1 text-[10px] ${msg.isOwn ? "text-primary-foreground/80" : "text-secondary-foreground/70"
+                {msg.attachment?.fileType === "image" && (
+                  <div
+                    className="rounded-xl overflow-hidden cursor-pointer max-w-sm hover:opacity-95 transition-opacity"
+                    onClick={() =>
+                      setSelectedImageModal({
+                        url: msg.attachment!.url,
+                        name: msg.attachment!.fileName,
+                      })
+                    }
+                  >
+                    <img
+                      src={msg.attachment.url}
+                      alt={msg.attachment.fileName}
+                      className="w-full h-auto max-h-60 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+
+                {msg.attachment?.fileType === "pdf" && (
+                  <div
+                    className={`p-3 rounded-xl flex items-center justify-between gap-3 border ${
+                      msg.isOwn
+                        ? "bg-primary-foreground/10 border-primary-foreground/20"
+                        : "bg-background border-border"
                     }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-9 h-9 rounded-lg bg-red-500/10 text-red-600 flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div className="truncate text-xs">
+                        <p className="font-semibold truncate">{msg.attachment.fileName}</p>
+                        <p className="text-[10px] opacity-75">
+                          {(msg.attachment.fileSize / (1024 * 1024)).toFixed(2)} MB • PDF
+                        </p>
+                      </div>
+                    </div>
+                    <a
+                      href={msg.attachment.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors shrink-0"
+                      title="Open PDF"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </div>
+                )}
+
+                {msg.message && (
+                  <p className="text-sm leading-relaxed font-normal break-words">{msg.message}</p>
+                )}
+
+                <div
+                  className={`flex items-center justify-end gap-1 text-[10px] ${
+                    msg.isOwn ? "text-primary-foreground/80" : "text-secondary-foreground/70"
+                  }`}
                 >
                   <span>{msg.timestamp}</span>
                   {msg.isOwn && <CheckCheck className="w-3 h-3" />}
                 </div>
               </div>
             </div>
+
           ))
         )}
         <div ref={messagesEndRef} />
@@ -444,20 +591,54 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
       </div>
 
       {/* Input Bar */}
-      <div className="p-3 bg-card border-t border-border shrink-0">
-        <div className="flex gap-2 sm:gap-3 items-center">
+      <div className="bg-card border-t border-border shrink-0">
+        <ChatAttachmentPreview
+          file={stagedFile}
+          previewUrl={previewUrl}
+          isUploading={isUploading}
+          onRemove={() => {
+            setStagedFile(null)
+            setPreviewUrl(null)
+          }}
+        />
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={(e) => {
+            if (e.target.files?.[0]) stageSelectedFile(e.target.files[0])
+          }}
+          accept="image/*,application/pdf"
+          className="hidden"
+        />
+
+        <div className="p-3 flex gap-2 sm:gap-3 items-center">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            disabled={!isConnected || isUploading}
+            onClick={() => fileInputRef.current?.click()}
+            className="h-10 w-10 text-muted-foreground hover:text-foreground rounded-xl shrink-0 cursor-pointer"
+            title="Attach image or PDF"
+          >
+            <Paperclip className="w-4 h-4" />
+          </Button>
+
           <Input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder={`Type a message...`}
-            disabled={!isConnected}
+            onPaste={handlePaste}
+            onKeyDown={handleKeyDown}
+            placeholder={stagedFile ? "Add a caption (optional)..." : "Type a message or paste image (Ctrl+V)..."}
+            disabled={!isConnected || isUploading}
             className="flex-1 h-10 px-4 bg-background border border-border rounded-xl"
           />
+
           <Button
             onClick={sendMessage}
-            disabled={!isConnected || !message.trim()}
+            disabled={!isConnected || (!message.trim() && !stagedFile) || isUploading}
             className="h-10 px-4 bg-primary text-primary-foreground rounded-xl font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs"
           >
             <Send className="w-4 h-4" />
@@ -465,6 +646,13 @@ export default function ChatSystem({ projectId, onBackToThreads }: ChatSystemPro
           </Button>
         </div>
       </div>
+
+      <ChatImageModal
+        imageUrl={selectedImageModal?.url || null}
+        fileName={selectedImageModal?.name}
+        isOpen={Boolean(selectedImageModal)}
+        onClose={() => setSelectedImageModal(null)}
+      />
     </div>
   )
 }
