@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
-import { seedPlatformDatabase } from "@/scripts/seed-platform-prod";
+import { purgeCuratedPlatformData } from "@/scripts/seed-platform-prod";
 import { ConnectoDatabase } from "@/lib/db";
 import userModel from "@/models/UserModel";
 
@@ -26,17 +26,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await seedPlatformDatabase();
+    const result = await purgeCuratedPlatformData();
 
     return NextResponse.json({
       success: true,
-      message: "Platform successfully seeded with authentic client briefs.",
+      message: `Purged ${result.deletedGigsCount} curated gigs and ${result.deletedActivitiesCount} activity events.`,
       result,
     });
   } catch (err: any) {
-    console.error("Seed platform API error:", err);
+    console.error("Purge curated data API error:", err);
     return NextResponse.json(
-      { message: "Internal server error during platform seeding", error: err.message },
+      { message: "Internal server error during curated data purge", error: err.message },
       { status: 500 }
     );
   }

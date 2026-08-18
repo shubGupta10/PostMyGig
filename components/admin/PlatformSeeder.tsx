@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -22,9 +21,21 @@ import {
 import { toast } from "sonner"
 import Link from "next/link"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 export function PlatformSeeder() {
-  const { data: session } = useSession()
   const [isRunning, setIsRunning] = useState(false)
+  const [isPurging, setIsPurging] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
   const [resultSummary, setResultSummary] = useState<{
     usersCount: number
@@ -42,12 +53,6 @@ export function PlatformSeeder() {
     try {
       const res = await fetch("/api/admin/seed-platform", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userEmail: session?.user?.email,
-        }),
       })
 
       const data = await res.json()
@@ -70,13 +75,45 @@ export function PlatformSeeder() {
         activityCount: data.result?.activityCount || 0,
       })
 
-      toast.success("Platform successfully seeded with authentic data!")
+      toast.success("Platform successfully seeded with authentic client briefs!")
     } catch (err: any) {
       console.error("Seeder execution error:", err)
       setLogs((prev) => [...prev, `[ERROR] ❌ ${err.message}`])
       toast.error(err.message || "Failed to seed platform")
     } finally {
       setIsRunning(false)
+    }
+  }
+
+  const purgeCuratedData = async () => {
+    setIsPurging(true)
+    setLogs(["[SYSTEM] Initializing request to /api/admin/purge-curated-data..."])
+    setResultSummary(null)
+
+    try {
+      const res = await fetch("/api/admin/purge-curated-data", {
+        method: "POST",
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || data.error || "Failed to purge curated data")
+      }
+
+      if (data.result?.logs && Array.isArray(data.result.logs)) {
+        setLogs(data.result.logs)
+      } else {
+        setLogs((prev) => [...prev, "[SUCCESS] Curated data purged successfully."])
+      }
+
+      toast.success(data.message || "All curated gigs and activities purged successfully!")
+    } catch (err: any) {
+      console.error("Purge execution error:", err)
+      setLogs((prev) => [...prev, `[ERROR] ❌ ${err.message}`])
+      toast.error(err.message || "Failed to purge curated data")
+    } finally {
+      setIsPurging(false)
     }
   }
 
@@ -94,40 +131,83 @@ export function PlatformSeeder() {
   return (
     <div className="space-y-6">
       {/* Overview & Action Card */}
-      <Card className="border-2 border-border shadow-sm rounded-2xl overflow-hidden bg-card">
-        <CardHeader className="p-6 pb-4">
+      <Card className="border-2 border-border shadow-xs rounded-2xl overflow-hidden bg-card">
+        <CardHeader className="p-4 sm:p-6 pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-primary text-primary-foreground">
                   <Sparkles className="size-5" />
                 </div>
-                <CardTitle className="text-xl font-bold text-foreground">
+                <CardTitle className="text-lg sm:text-xl font-bold text-foreground">
                   Platform Growth & Data Seeder
                 </CardTitle>
               </div>
-              <CardDescription className="mt-1 text-sm text-muted-foreground">
-                Deploy 18 authentic multi-country client profiles (Indian, American, British), 18 multi-domain gigs, and live activity events in one click.
+              <CardDescription className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                Deploy 18 authentic multi-country client profiles (Indian, American, British), 18 detailed human briefs, and live milestones.
               </CardDescription>
             </div>
 
-            <Button
-              onClick={runSeeder}
-              disabled={isRunning}
-              className="bg-primary text-primary-foreground font-semibold h-11 px-6 rounded-xl shrink-0 shadow-sm cursor-pointer hover:opacity-90"
-            >
-              {isRunning ? (
-                <>
-                  <Loader2 className="size-4 animate-spin mr-2" />
-                  <span>Seeding Platform...</span>
-                </>
-              ) : (
-                <>
-                  <Zap className="size-4 mr-2" />
-                  <span>Run Platform Seeder</span>
-                </>
-              )}
-            </Button>
+            <div className="flex items-center gap-2.5 flex-wrap shrink-0">
+              {/* Purge Curated Data with Confirmation */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    disabled={isRunning || isPurging}
+                    className="border-destructive/40 text-destructive hover:bg-destructive/10 font-medium h-10 sm:h-11 px-4 rounded-xl text-xs sm:text-sm cursor-pointer"
+                  >
+                    {isPurging ? (
+                      <>
+                        <Loader2 className="size-3.5 animate-spin mr-1.5" />
+                        <span>Purging...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="size-3.5 mr-1.5" />
+                        <span>Purge Curated Gigs</span>
+                      </>
+                    )}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Purge All Curated Gigs & Milestones?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will delete all gigs marked with <code className="bg-muted px-1.5 py-0.5 rounded text-foreground font-semibold">isCurated: true</code> and their associated feed milestones. Real user accounts and genuine client gigs will NOT be touched.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={purgeCuratedData}
+                      className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                    >
+                      Yes, Purge Curated Data
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              {/* Run Seeder */}
+              <Button
+                onClick={runSeeder}
+                disabled={isRunning || isPurging}
+                className="bg-primary text-primary-foreground font-semibold h-10 sm:h-11 px-5 sm:px-6 rounded-xl shadow-xs cursor-pointer hover:opacity-90 text-xs sm:text-sm"
+              >
+                {isRunning ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" />
+                    <span>Seeding Platform...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="size-4 mr-2" />
+                    <span>Run Platform Seeder</span>
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </CardHeader>
 

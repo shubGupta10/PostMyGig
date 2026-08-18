@@ -136,13 +136,15 @@ export function AdminUsersTab({ users, onToggleVerify }: AdminUsersTabProps) {
                         {formatDate(user.createdAt)}
                       </div>
                     </TableCell>
-                    <Badge
-                      className={
-                        user.isBanned ? "bg-destructive/10 text-destructive" : "bg-emerald-500/10 text-emerald-600"
-                      }
-                    >
-                      {user.isBanned ? "Banned" : "Active"}
-                    </Badge>
+                    <TableCell>
+                      <Badge
+                        className={
+                          user.isBanned ? "bg-destructive/10 text-destructive" : "bg-emerald-500/10 text-emerald-600"
+                        }
+                      >
+                        {user.isBanned ? "Banned" : "Active"}
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
