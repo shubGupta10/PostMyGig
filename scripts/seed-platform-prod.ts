@@ -348,8 +348,23 @@ export async function fetchDynamicClients(): Promise<any[]> {
 
     return [...indianClients, ...americanClients, ...britishClients];
   } catch (err) {
-    console.warn("RandomUser API unavailable or timed out, using curated fallback profiles:", err);
+    console.warn("RandomUser API unavailable or timed out, using fallback profiles:", err);
     return FALLBACK_CLIENTS;
+  }
+}
+
+// Fetch Dynamic Freelancer Names from RandomUser API for application/hiring activity milestones
+export async function fetchDynamicFreelancers(): Promise<string[]> {
+  try {
+    const res = await fetch("https://randomuser.me/api/?results=10&nat=in,us,gb&inc=name", {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) throw new Error("RandomUser API error");
+    const data = await res.json();
+    return (data.results || []).map((item: any) => `${item.name.first} ${item.name.last}`);
+  } catch (err) {
+    console.warn("Failed to fetch dynamic freelancers:", err);
+    return [];
   }
 }
 
@@ -588,39 +603,15 @@ export async function seedPlatformDatabase() {
         updatedAt: gigData.createdAt,
       });
       newGigsCount++;
-      addLog(`✓ Created active gig: "${gigData.title}" (₹${gigData.budget}) by ${creator.name}`);
+      addLog(`✓ Created gig: "${gigData.title}" (₹${gigData.budget}) by ${creator.name}`);
+      createdGigs.push({ gig: existingGig, creator });
     } else {
-      // Ensure existing gig has valid active status and expiresAt in future
-      await ProjectModel.updateOne(
-        { _id: existingGig._id },
-        {
-          $set: {
-            status: "active",
-            expiresAt: expiresAt,
-            displayContactLinks: false,
-            AcceptedFreelancerEmail: "",
-          }
-        }
-      );
-      addLog(`ℹ Verified active status & expiry for: "${gigData.title}"`);
+      addLog(`ℹ Found existing gig: "${gigData.title}" (unchanged)`);
     }
-    createdGigs.push({ gig: existingGig, creator });
   }
 
-  // 3. Seed Realistic Activity Events
-  const sampleFreelancerNames = [
-    "Priya Menon",
-    "Alex Rivera",
-    "Liam Smith",
-    "Neha Gupta",
-    "Daniel Clark",
-    "Zain Khan",
-    "Pooja Hegde",
-    "Ethan Wright",
-    "Tanvi Joshi",
-    "Marcus Vance",
-  ];
-
+  // 3. Seed Realistic Activity Events (only for newly created gigs) with dynamic freelancer names
+  const dynamicFreelancerNames = await fetchDynamicFreelancers();
   let activityCount = 0;
 
   for (let i = 0; i < createdGigs.length; i++) {
@@ -647,9 +638,11 @@ export async function seedPlatformDatabase() {
       addLog(`⚡ Logged 'posted' activity for: "${gig.title}"`);
     }
 
-    // For selected gigs, add 'applied' or 'hired' milestones
+    // For selected gigs, add 'applied' or 'hired' milestones with dynamic freelancer name
     if (i % 3 === 0) {
-      const freelancerName = sampleFreelancerNames[i % sampleFreelancerNames.length];
+      const freelancerName = dynamicFreelancerNames.length > 0 
+        ? dynamicFreelancerNames[i % dynamicFreelancerNames.length]
+        : `Freelancer ${i + 1}`;
       const appliedTime = new Date(new Date(gig.createdAt).getTime() + 1000 * 60 * 60 * 3);
 
       const existingApplied = await Activity.findOne({ gigId, type: "applied" });
@@ -673,7 +666,9 @@ export async function seedPlatformDatabase() {
     }
 
     if (i % 4 === 0) {
-      const freelancerName = sampleFreelancerNames[(i + 1) % sampleFreelancerNames.length];
+      const freelancerName = dynamicFreelancerNames.length > 0
+        ? dynamicFreelancerNames[(i + 1) % dynamicFreelancerNames.length]
+        : `Freelancer ${i + 2}`;
       const hiredTime = new Date(new Date(gig.createdAt).getTime() + 1000 * 60 * 60 * 8);
 
       const existingHired = await Activity.findOne({ gigId, type: "hired" });
@@ -695,31 +690,6 @@ export async function seedPlatformDatabase() {
         addLog(`⚡ Logged 'hired' milestone: ${creator.name} hired ${freelancerName}`);
       }
     }
-  }
-
-  // 3.5 Ensure any existing gigs with missing or past expiresAt are corrected
-  try {
-    const fixedResult = await ProjectModel.updateMany(
-      {
-        $or: [
-          { expiresAt: { $exists: false } },
-          { expiresAt: null },
-          { expiresAt: { $lt: new Date() } },
-        ],
-      },
-      {
-        $set: {
-          status: "active",
-          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          isFlagged: false,
-        },
-      }
-    );
-    if (fixedResult.modifiedCount > 0) {
-      addLog(`⚡ Activated & renewed expiresAt for ${fixedResult.modifiedCount} existing gigs in database`);
-    }
-  } catch (fixErr: any) {
-    addLog(`⚠ Existing gigs update check skipped: ${fixErr.message}`);
   }
 
   // 4. Invalidate Redis Caches so UI shows immediately
