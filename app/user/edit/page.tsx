@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useUserStore, useUserData, useUserLoading, useUserError } from "@/store/userDataStore"
 import { PortfolioProject } from "@/models/UserModel"
+import EditProfileLoading from "./loading"
 
 interface ContactLinks {
   label: string
@@ -244,23 +245,7 @@ function EditPage() {
 
   // Show loading state while fetching user data
   if (userLoading || (!userData && !user)) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="relative mb-8">
-              <div className="animate-spin rounded-full h-20 w-20 border-4 border-muted border-t-primary mx-auto"></div>
-              <div
-                className="absolute inset-0 rounded-full h-20 w-20 border-4 border-transparent border-t-accent animate-spin mx-auto"
-                style={{ animationDelay: "0.3s", animationDuration: "1.5s" }}
-              ></div>
-            </div>
-            <h3 className="text-2xl font-bold text-foreground mb-3">Loading Profile Data</h3>
-            <p className="text-muted-foreground text-lg">Please wait while we load your profile information...</p>
-          </div>
-        </div>
-      </div>
-    )
+    return <EditProfileLoading />
   }
 
   // Show error state if user data failed to load

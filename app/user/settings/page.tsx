@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useUserStore, useUserData, useUserLoading } from "@/store/userDataStore"
 import { useAuthStore } from "@/store/useAuthStore"
+import SettingsLoading from "./loading"
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -164,11 +165,7 @@ export default function SettingsPage() {
   }
 
   if (status === "loading" || (userLoading && !dataLoaded)) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    )
+    return <SettingsLoading />
   }
 
   return (

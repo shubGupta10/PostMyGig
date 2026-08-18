@@ -48,6 +48,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import SendMail from "./sendMail"
 import { PlatformSeeder } from "@/components/admin/PlatformSeeder"
+import AdminDashboardLoading from "./loading"
 
 interface UserType {
   _id: string
@@ -370,11 +371,7 @@ function AdminDashboard() {
   }
 
   if (status === "loading" || loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    )
+    return <AdminDashboardLoading />
   }
 
   if (status === "unauthenticated") {

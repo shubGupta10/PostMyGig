@@ -16,6 +16,7 @@ import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from 'sonner'
 import { useGigStore } from "@/store/gigStore"
+import EditGigLoading from "./loading"
 
 interface FormData {
   title: string
@@ -250,14 +251,7 @@ function EditGig() {
   }
 
   if (loading || !gigData) {
-    return (
-      <div className="w-full bg-background min-h-screen py-8 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading gig data...</p>
-        </div>
-      </div>
-    )
+    return <EditGigLoading />
   }
 
   return (
