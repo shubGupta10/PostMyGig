@@ -1,5 +1,6 @@
 import DisplayAllGigs from "@/components/DisplayAllGigs"
 import GigFilters from "@/components/gigs/GigFilters"
+import { getAllUniqueSkills } from "../services/gigService";
 
 export default async function ViewGigs({
   searchParams
@@ -12,11 +13,19 @@ export default async function ViewGigs({
   const currentSkill = params.skill || "";
   const currentSort = params.sort || "";
 
+  // Fetch all unique skills currently present in active gigs
+  const availableSkills = await getAllUniqueSkills();
+
   return (
     <div className="w-full min-h-screen bg-background p-4 sm:p-6 sm:py-10">
       <div className="max-w-7xl mx-auto space-y-6">
 
-        <GigFilters currentSearch={currentSearch} currentSkill={currentSkill} currentSort={currentSort} />
+        <GigFilters
+          availableSkills={availableSkills}
+          currentSearch={currentSearch}
+          currentSkill={currentSkill}
+          currentSort={currentSort}
+        />
 
         <DisplayAllGigs page={currentPage} search={currentSearch} skill={currentSkill} sort={currentSort} />
       </div>

@@ -108,3 +108,47 @@ export async function getGigs(page = 1, limit = 9, search = "", skill = "", sort
         };
     }
 }
+
+export async function getAllUniqueSkills(): Promise<string[]> {
+    try {
+        await ConnectoDatabase();
+        const cacheKey = "all-active-unique-skills";
+
+        try {
+            const cached = await redis.get<string[] | string>(cacheKey);
+            if (cached) {
+                return Array.isArray(cached) ? cached : (typeof cached === "string" ? JSON.parse(cached) : []);
+            }
+        } catch (e) {
+            console.warn("Redis cache read failed for skills:", e);
+        }
+
+        const currentDate = new Date();
+
+        const rawSkills: string[] = await ProjectModel.distinct("skillsRequired", {
+            expiresAt: { $gt: currentDate },
+            status: { $nin: ["assigned", "completed", "expired"] }
+        });
+
+        const cleanedSkills = Array.from(
+            new Set(
+                rawSkills
+                    .filter((s) => typeof s === "string" && s.trim().length > 0)
+                    .map((s) => s.trim())
+            )
+        ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+
+        after(async () => {
+            try {
+                await redis.set(cacheKey, JSON.stringify(cleanedSkills), { ex: 300 });
+            } catch (error) {
+                console.error("Failed to cache unique skills:", error);
+            }
+        });
+
+        return cleanedSkills;
+    } catch (err) {
+        console.error("Failed to fetch distinct skills:", err);
+        return [];
+    }
+}

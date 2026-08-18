@@ -12,12 +12,17 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const POPULAR_SKILLS = [
-  "React", "Next.js", "Node.js", "UI/UX Design",
-  "Figma", "TailwindCSS", "TypeScript", "Python"
-]
-
-export default function GigFilters({ currentSearch, currentSkill = "", currentSort = "" }: { currentSearch: string, currentSkill?: string, currentSort?: string }) {
+export default function GigFilters({
+  availableSkills = [],
+  currentSearch,
+  currentSkill = "",
+  currentSort = ""
+}: {
+  availableSkills?: string[],
+  currentSearch: string,
+  currentSkill?: string,
+  currentSort?: string
+}) {
 
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState(currentSearch)
@@ -61,16 +66,16 @@ export default function GigFilters({ currentSearch, currentSkill = "", currentSo
       {/* Bottom Row: Filters aligned left and right */}
       <div className="flex flex-wrap items-center justify-between gap-4">
 
-        {/* Left Side: Your Skills (and future filters) */}
+        {/* Left Side: Dynamic Skills Dropdown */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="w-36 sm:w-40">
+          <div className="w-44 sm:w-52">
             <Select value={currentSkill || "all"} onValueChange={(val) => updateFilters(searchTerm, val, currentSort)}>
               <SelectTrigger className="w-full h-10 border-2 rounded-lg bg-background text-sm">
                 <SelectValue placeholder="All Skills" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-72">
                 <SelectItem value="all">All Skills</SelectItem>
-                {POPULAR_SKILLS.map((skill) => (
+                {availableSkills.map((skill) => (
                   <SelectItem key={skill} value={skill}>
                     {skill}
                   </SelectItem>
