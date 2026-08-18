@@ -8,6 +8,7 @@ export interface UserGig {
   createdAt: string
   expiresAt: string
   AcceptedFreelancerEmail?: string
+  isCurated?: boolean
 }
 
 export interface PaginationInfo {

@@ -17,6 +17,7 @@ export interface Gig {
   }
   budget?: number
   updatedAt?: string
+  isCurated?: boolean
 }
 
 export interface Owner {
