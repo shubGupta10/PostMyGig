@@ -5,6 +5,7 @@ import { dispatchNotification } from "@/lib/notification/dispatcher";
 import redis from "@/lib/redis";
 import resend from "@/lib/resend";
 import ProjectModel from "@/models/ProjectModel";
+import PingModel from "@/models/PingSchema";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -23,9 +24,23 @@ export async function POST(req: NextRequest) {
         const now = new Date();
         const nowIso = now.toISOString();
 
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const curatedGigs = await ProjectModel.find({ isCurated: true }, "_id").lean();
+        if (curatedGigs.length > 0) {
+            const curatedIds = curatedGigs.map((g) => g._id.toString());
+            await PingModel.updateMany(
+                {
+                    projectId: { $in: curatedIds },
+                    status: "pending",
+                    createdAt: { $lt: sevenDaysAgo },
+                },
+                { $set: { status: "rejected" } }
+            );
+        }
+
         const allActiveProjects = await ProjectModel.find(
             {},
-            "title status expiresAt createdAt createdBy"
+            "title status expiresAt createdAt createdBy isCurated"
         ).lean();
 
         const expiredProjects = await ProjectModel.find({
@@ -58,6 +73,11 @@ export async function POST(req: NextRequest) {
         await ProjectModel.updateMany(
             { _id: { $in: expireIds } },
             { $set: { status: "expired" } }
+        );
+
+        await PingModel.updateMany(
+            { projectId: { $in: expireIds.map((id) => id.toString()) }, status: "pending" },
+            { $set: { status: "rejected" } }
         );
 
         for (const project of expiredProjects) {

@@ -581,8 +581,10 @@ export async function seedPlatformDatabase() {
 
     const expiresAt = new Date(new Date(gigData.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000);
 
+    const seededEmails = Array.from(userMap.keys());
     let existingGig: any = await ProjectModel.findOne({
       title: gigData.title,
+      createdBy: { $in: seededEmails },
     });
 
     if (!existingGig) {
@@ -598,6 +600,7 @@ export async function seedPlatformDatabase() {
         expiresAt: expiresAt,
         AcceptedFreelancerEmail: "",
         isFlagged: false,
+        isCurated: true,
         reportCount: 0,
         createdAt: gigData.createdAt,
         updatedAt: gigData.createdAt,
@@ -606,7 +609,12 @@ export async function seedPlatformDatabase() {
       addLog(`✓ Created gig: "${gigData.title}" (₹${gigData.budget}) by ${creator.name}`);
       createdGigs.push({ gig: existingGig, creator });
     } else {
-      addLog(`ℹ Found existing gig: "${gigData.title}" (unchanged)`);
+      if (existingGig.isCurated !== true) {
+        await ProjectModel.updateOne({ _id: existingGig._id }, { $set: { isCurated: true } });
+        addLog(`ℹ Tagged existing seeded gig as isCurated: "${gigData.title}"`);
+      } else {
+        addLog(`ℹ Found existing gig: "${gigData.title}" (unchanged)`);
+      }
     }
   }
 

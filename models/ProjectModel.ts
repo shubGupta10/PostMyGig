@@ -19,6 +19,7 @@ export interface Project extends Document {
   expiresAt?: Date;
   reportCount: number;
   isFlagged: boolean;
+  isCurated?: boolean;
 }
 
 const projectSchema = new Schema<Project>(
@@ -72,6 +73,10 @@ const projectSchema = new Schema<Project>(
       default: 0,
     },
     isFlagged: {
+      type: Boolean,
+      default: false,
+    },
+    isCurated: {
       type: Boolean,
       default: false,
     },
