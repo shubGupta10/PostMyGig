@@ -47,6 +47,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import SendMail from "./sendMail"
+import { PlatformSeeder } from "@/components/admin/PlatformSeeder"
 
 interface UserType {
   _id: string
@@ -463,11 +464,12 @@ function AdminDashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5">
             <TabsTrigger value="users">User Management</TabsTrigger>
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="feedback">Feedback ({feedbackStats.total})</TabsTrigger>
-            <TabsTrigger value="verification">Verification Requests</TabsTrigger>
+            <TabsTrigger value="verification">Verification</TabsTrigger>
+            <TabsTrigger value="seeder">Platform Seeder</TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="space-y-6">
@@ -895,6 +897,10 @@ function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="seeder" className="space-y-6">
+            <PlatformSeeder />
           </TabsContent>
         </Tabs>
       </div>
