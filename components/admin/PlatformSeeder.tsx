@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +23,7 @@ import { toast } from "sonner"
 import Link from "next/link"
 
 export function PlatformSeeder() {
+  const { data: session } = useSession()
   const [isRunning, setIsRunning] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
   const [resultSummary, setResultSummary] = useState<{
@@ -43,6 +45,9 @@ export function PlatformSeeder() {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          userEmail: session?.user?.email,
+        }),
       })
 
       const data = await res.json()
