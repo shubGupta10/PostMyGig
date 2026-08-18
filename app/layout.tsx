@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     siteName: "PostMyGig",
     images: [
       {
-        url: "/og-image.png",
+        url: `${baseUrl}/og-image.png`,
         width: 1200,
         height: 630,
         alt: "PostMyGig – Freelance Gig Sharing Platform",
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     title: "PostMyGig – Find & Share Freelance Gigs",
     description:
       "List extra work or find freelance projects easily. Free and direct chat with freelancers. No platform cut.",
-    images: ["/og-image.png"],
+    images: [`${baseUrl}/og-image.png`],
     creator: "@postmygig",
   },
   icons: {
