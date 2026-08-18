@@ -564,6 +564,8 @@ export async function seedPlatformDatabase() {
     const creator = clientList[i % clientList.length];
     if (!creator) continue;
 
+    const expiresAt = new Date(new Date(gigData.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000);
+
     let existingGig: any = await ProjectModel.findOne({
       title: gigData.title,
     });
@@ -577,16 +579,30 @@ export async function seedPlatformDatabase() {
         skillsRequired: gigData.skillsRequired,
         contact: { email: "", whatsapp: "", x: "" },
         displayContactLinks: false,
-        status: gigData.status,
+        status: "active",
+        expiresAt: expiresAt,
+        AcceptedFreelancerEmail: "",
         isFlagged: false,
         reportCount: 0,
         createdAt: gigData.createdAt,
         updatedAt: gigData.createdAt,
       });
       newGigsCount++;
-      addLog(`✓ Created gig: "${gigData.title}" (₹${gigData.budget}) by ${creator.name}`);
+      addLog(`✓ Created active gig: "${gigData.title}" (₹${gigData.budget}) by ${creator.name}`);
     } else {
-      addLog(`ℹ Found existing gig: "${gigData.title}"`);
+      // Ensure existing gig has valid active status and expiresAt in future
+      await ProjectModel.updateOne(
+        { _id: existingGig._id },
+        {
+          $set: {
+            status: "active",
+            expiresAt: expiresAt,
+            displayContactLinks: false,
+            AcceptedFreelancerEmail: "",
+          }
+        }
+      );
+      addLog(`ℹ Verified active status & expiry for: "${gigData.title}"`);
     }
     createdGigs.push({ gig: existingGig, creator });
   }
