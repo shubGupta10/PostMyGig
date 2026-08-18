@@ -79,10 +79,10 @@ export function AnimatedNavFramer() {
               How it works
             </button>
             <button
-              onClick={() => handleScrollTo("#demo-video")}
+              onClick={() => handleScrollTo("#success-stories")}
               className="text-muted-foreground hover:text-foreground text-sm font-medium px-3.5 py-2 transition-colors whitespace-nowrap"
             >
-              Demo
+              Success Stories
             </button>
           </div>
 
@@ -144,10 +144,10 @@ export function AnimatedNavFramer() {
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
               <button
-                onClick={() => handleScrollTo("#demo-video")}
-                className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-foreground hover:bg-accent/60 transition-colors"
+                onClick={() => handleScrollTo("#success-stories")}
+                className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium text-foreground hover:bg-accent/60 rounded-xl transition-colors"
               >
-                <span>Demo</span>
+                <span>Success Stories</span>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
 

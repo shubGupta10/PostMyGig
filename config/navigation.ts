@@ -1,4 +1,4 @@
-import { Home, Briefcase, LayoutDashboard, Shield, Activity, type LucideIcon } from "lucide-react"
+import { Home, Briefcase, LayoutDashboard, Shield, Activity, Sparkles, type LucideIcon } from "lucide-react"
 
 export interface NavItem {
   title: string
@@ -11,6 +11,11 @@ export const publicNavItems: NavItem[] = [
     title: "Find Work",
     href: "/view-gigs",
     icon: Briefcase,
+  },
+  {
+    title: "Success Stories",
+    href: "/#success-stories",
+    icon: Sparkles,
   },
   {
     title: "Activity",

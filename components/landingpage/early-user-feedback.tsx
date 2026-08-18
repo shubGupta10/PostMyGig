@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Sparkles, ArrowRight, Zap } from "lucide-react"
+import { Sparkles, ArrowRight, Zap, Radio } from "lucide-react"
 import { VerticalMarquee } from "./feedback/VerticalMarquee"
 import { SuccessActivityCard } from "./feedback/SuccessActivityCard"
 import { fetchLandingActivityFeed, COMMUNITY_SUCCESS_STORIES } from "./services/landingActivityService"
@@ -21,7 +21,7 @@ export default function EarlyUserFeedback() {
           setActivities(data)
         }
       } catch (e) {
-        // keep community stories
+        // keep default diverse community stories
       }
     }
     loadActivities()
@@ -38,28 +38,22 @@ export default function EarlyUserFeedback() {
   const actCol3 = displayActivities.slice(third * 2)
 
   return (
-    <section id="success-stories" className="bg-background py-12 md:py-20 scroll-mt-16">
-      <div className="mx-auto max-w-3xl lg:max-w-6xl px-4 sm:px-6">
+    <section id="success-stories" className="bg-background py-16 md:py-24 scroll-mt-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* Section Header */}
-        <div className="mx-auto mb-8 sm:mb-12 md:mb-14 max-w-4xl text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
-            Community & Platform Success
-          </p>
+        <div className="mx-auto mb-10 sm:mb-14 md:mb-16 max-w-3xl text-center">
           <h2
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground tracking-tight"
             style={{ fontFamily: "var(--font-serif)" }}
           >
-            Real Connections, Real <span className="text-primary">Success</span>
+            Real Collaborations, Real <span className="text-primary">Outcomes</span>
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto font-normal">
-            Live milestones recorded directly on PostMyGig — gigs posted, pitches received, talent hired, and completed projects.
-          </p>
         </div>
 
-        {/* Dynamic Display */}
+        {/* Dynamic Display Grid */}
         {isLoading ? (
-          <div className="h-[320px] flex items-center justify-center">
+          <div className="h-[360px] flex items-center justify-center">
             <div className="flex items-center gap-2.5 text-sm text-muted-foreground font-medium">
               <span className="size-2 rounded-full bg-primary animate-pulse" />
               <span>Fetching live platform activity...</span>
@@ -67,7 +61,7 @@ export default function EarlyUserFeedback() {
           </div>
         ) : hasActivities ? (
           <div className="relative overflow-hidden w-full">
-            <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-hidden h-[520px] sm:h-[620px] w-full">
+            <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 overflow-hidden h-[580px] sm:h-[660px] lg:h-[720px] w-full">
               <VerticalMarquee reverse={false}>
                 {actCol1.map((item, i) => (
                   <SuccessActivityCard key={`col1-${item._id}-${i}`} activity={item} />
@@ -87,13 +81,13 @@ export default function EarlyUserFeedback() {
               </VerticalMarquee>
 
               {/* Edge fade gradient overlays */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-24 sm:h-32 bg-gradient-to-b from-background to-transparent z-10" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 sm:h-32 bg-gradient-to-t from-background to-transparent z-10" />
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-28 sm:h-36 bg-gradient-to-b from-background via-background/80 to-transparent z-10" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-t from-background via-background/80 to-transparent z-10" />
             </div>
           </div>
         ) : (
-          <div className="bg-muted rounded-2xl border-2 border-border p-10 sm:p-14 text-center max-w-2xl mx-auto shadow-sm">
-            <div className="size-12 rounded-xl bg-background border border-border flex items-center justify-center mx-auto mb-4">
+          <div className="bg-card rounded-2xl border-2 border-border p-10 sm:p-14 text-center max-w-2xl mx-auto shadow-sm">
+            <div className="size-12 rounded-xl bg-muted border border-border flex items-center justify-center mx-auto mb-4">
               <Zap className="size-6 text-primary" />
             </div>
             <h3 className="text-lg font-semibold text-foreground mb-1">
@@ -114,7 +108,7 @@ export default function EarlyUserFeedback() {
 
       </div>
 
-      {/* Marquee Animations */}
+      {/* Smooth Marquee Animations */}
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes scroll-up {
@@ -126,10 +120,10 @@ export default function EarlyUserFeedback() {
             100% { transform: translateY(0); }
           }
           .animate-scroll-up {
-            animation: scroll-up 30s linear infinite;
+            animation: scroll-up 42s linear infinite;
           }
           .animate-scroll-down {
-            animation: scroll-down 30s linear infinite;
+            animation: scroll-down 42s linear infinite;
           }
         `
       }} />

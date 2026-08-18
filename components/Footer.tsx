@@ -43,6 +43,11 @@ function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/#success-stories" className="text-sm sm:text-base font-normal text-muted-foreground hover:text-primary transition-colors duration-200 inline-block py-1 sm:py-0">
+                  Success Stories
+                </Link>
+              </li>
+              <li>
                 <Link href="/view-gigs" className="text-sm sm:text-base font-normal text-muted-foreground hover:text-primary transition-colors duration-200 inline-block py-1 sm:py-0">
                   Browse Projects
                 </Link>
