@@ -92,7 +92,7 @@ export async function getDashboardDetails(page: number = 1, limit: number = 6): 
                 // Fetch pings joined with project details using $lookup aggregation
                 PingModel.aggregate([
                     { $match: { userEmail } },
-                    { $sort: { createdAt: -1 } },
+                    { $sort: { updatedAt: -1, createdAt: -1 } },
                     { $skip: skip },
                     { $limit: limit },
                     {

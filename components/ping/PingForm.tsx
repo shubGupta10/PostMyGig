@@ -11,11 +11,12 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { ApplicationSuccessModal } from "@/components/ping/ApplicationSuccessModal"
 import { submitPingService } from "@/app/(pages)/ping/ping-project/services/pingService"
+import { completedOnboarding } from "@/app/onboarding/services/onboardingService"
 import type { PingFormData } from "@/app/(pages)/ping/ping-project/types"
 import { useUserData, useUserStore } from "@/store/userDataStore"
 
 export function PingForm() {
-  const { data } = useSession()
+  const { data, update } = useSession()
   const userData = useUserData()
   const { fetchUserData } = useUserStore()
   const searchParams = useSearchParams()
@@ -79,6 +80,44 @@ export function PingForm() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Restrict client role from applying
+  if (data?.user && data.user.role === "client") {
+    return (
+      <div className="w-full bg-card border-2 border-border rounded-2xl p-8 sm:p-12 text-center space-y-5 max-w-xl mx-auto my-12 shadow-sm">
+        <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto">
+          <AlertTriangle className="w-7 h-7" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground">You are in Client Mode</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Clients cannot apply for gigs. To submit proposals and pitch your services to clients, please switch to <strong>Freelancer Mode</strong>.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Button
+            onClick={async () => {
+              try {
+                setIsLoading(true);
+                await completedOnboarding({ role: "freelancer" });
+                await update({ role: "freelancer" });
+                toast.success("Switched to Freelancer Mode");
+                router.refresh();
+              } catch (err: any) {
+                toast.error("Failed to switch role");
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            disabled={isLoading}
+            className="bg-primary text-primary-foreground font-semibold px-6 h-11 rounded-xl shadow-xs"
+          >
+            {isLoading ? "Switching..." : "Switch to Freelancer Mode & Apply"}
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (

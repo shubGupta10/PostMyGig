@@ -57,3 +57,64 @@ export function formatDate(dateString: string): string {
     year: "numeric", month: "long", day: "numeric",
   })
 }
+
+
+export function getDateSectionLabel(dateString?: string | Date): string {
+  if (!dateString) return "Earlier";
+  const date = new Date(dateString);
+  const now = new Date();
+
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  if (isToday) return "Today";
+
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+
+  if (isYesterday) return "Yesterday";
+
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }); // e.g. "15 Aug 2026"
+}
+
+export function groupItemsByTimeline<T>(
+  items: T[],
+  getDate: (item: T) => string | Date | undefined
+): { label: string; items: T[] }[] {
+  const groupsMap = new Map<string, T[]>();
+
+  items.forEach((item) => {
+    const label = getDateSectionLabel(getDate(item));
+    if (!groupsMap.has(label)) {
+      groupsMap.set(label, []);
+    }
+    groupsMap.get(label)!.push(item);
+  });
+
+    return Array.from(groupsMap.entries()).map(([label, items]) => ({
+    label,
+    items,
+  }));
+}
+
+export function formatActivityDate(
+  dateString?: string | Date,
+  prefix: "Updated" | "Posted" | "Applied" = "Updated"
+): string {
+  if (!dateString) return "";
+  const label = getDateSectionLabel(dateString);
+  if (label === "Today" || label === "Yesterday") {
+    return `${prefix} ${label.toLowerCase()}`;
+  }
+  return `${prefix} ${label}`;
+}

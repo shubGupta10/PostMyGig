@@ -20,8 +20,8 @@ export default async function UserGigsPage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10">
-      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+    <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10 w-full min-w-0 max-w-full">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8 w-full min-w-0">
         <UserGigsList initialProjects={result.gigs} pagination={result.pagination} />
       </div>
     </div>

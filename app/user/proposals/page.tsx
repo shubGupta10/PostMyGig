@@ -7,6 +7,7 @@ import Link from "next/link"
 import type { FreelancerDashboardData } from "@/app/dashboard/types"
 import { redirect } from "next/navigation"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
+import { formatActivityDate, getDateSectionLabel, groupItemsByTimeline } from "@/lib/helpers"
 
 export const metadata = {
   title: "My Proposals | PostMyGig",
@@ -30,20 +31,14 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
   const applications = freelancerData.appliedHistory || []
   const pagination = freelancerData.pagination
 
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "accepted":
-        return "bg-primary text-primary-foreground border-transparent"
-      case "rejected":
-        return "bg-destructive text-destructive-foreground border-transparent"
-      default:
-        return "bg-secondary text-secondary-foreground border-border"
-    }
-  }
+  const groupedApplications = groupItemsByTimeline(
+    applications,
+    (app) => (app as any).updatedAt || app.createdAt
+  );
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10 w-full min-w-0 max-w-full">
+      <div className="max-w-7xl mx-auto space-y-6 w-full min-w-0">
 
         {applications.length === 0 ? (
           <div className="border-2 border-dashed border-border bg-card p-6 sm:p-12 text-center rounded-2xl flex flex-col items-center justify-center">
@@ -64,56 +59,73 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
             </Button>
           </div>
         ) : (
-          <div className="space-y-3">
-            {applications.map((item) => (
-              <div
-                key={item._id}
-                className="bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-xs hover:border-border/80 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-              >
-                <div className="space-y-1.5 min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <h3 className="text-base font-semibold text-foreground truncate">
-                      {item.projectDetails?.title || "Gig Details"}
-                    </h3>
-                    <Badge className={`${getStatusBadge(item.status)} capitalize text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0`}>
-                      {item.status}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground font-normal">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                      Applied {new Date(item.createdAt).toLocaleDateString()}
-                    </span>
-                    {item.message && (
-                      <span className="truncate hidden md:inline text-muted-foreground">
-                        • "{item.message}"
-                      </span>
-                    )}
-                  </div>
+          <div className="space-y-8">
+            {groupedApplications.map((group) => (
+              <div key={group.label} className="space-y-3">
+                {/* Timeline Section Header */}
+                <div className="flex items-center gap-2 pt-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    {group.label}
+                  </span>
+                  <div className="h-px flex-1 bg-border" />
                 </div>
 
-                {item.status.toLowerCase() === "accepted" ? (
-                  <Button
-                    asChild
-                    className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs bg-primary text-primary-foreground cursor-pointer"
-                  >
-                    <Link href={`/projects/${item.projectId}/huddle`}>
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Open Project Huddle
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button
-                    asChild
-                    variant="secondary"
-                    className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs"
-                  >
-                    <Link href={`/open-gig/${item.projectId}`}>
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </Link>
-                  </Button>
-                )}
+                <div className="space-y-3">
+                  {group.items.map((item) => {
+                    const isUpdated = Boolean(
+                      (item as any).updatedAt &&
+                      new Date((item as any).updatedAt).getTime() - new Date(item.createdAt).getTime() > 60000
+                    );
+                    const activityText = isUpdated
+                      ? formatActivityDate((item as any).updatedAt, "Updated")
+                      : formatActivityDate(item.createdAt, "Applied");
+
+                    return (
+                      <div
+                        key={item._id}
+                        className="bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-xs hover:border-border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      >
+                        <div className="space-y-1.5 min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2.5">
+                            <h3 className="text-base font-semibold text-foreground truncate">
+                              {item.projectDetails?.title || "Gig Details"}
+                            </h3>
+                            <Badge className="bg-secondary text-secondary-foreground border-border border capitalize text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0">
+                              {item.status}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
+                            <Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                            <span>{activityText}</span>
+                          </div>
+                        </div>
+
+                        {item.status.toLowerCase() === "accepted" ? (
+                          <Button
+                            asChild
+                            className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs bg-primary text-primary-foreground cursor-pointer"
+                          >
+                            <Link href={`/projects/${item.projectId}/huddle`}>
+                              <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
+                              <span>Open Project Huddle</span>
+                            </Link>
+                          </Button>
+                        ) : (
+                          <Button
+                            asChild
+                            variant="secondary"
+                            className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs"
+                          >
+                            <Link href={`/open-gig/${item.projectId}`}>
+                              <Eye className="h-4 w-4 mr-2 shrink-0" />
+                              <span>View Details</span>
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             ))}
 

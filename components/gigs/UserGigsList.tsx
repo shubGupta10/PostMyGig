@@ -18,6 +18,7 @@ import {
 import { Accordion } from "@/components/ui/accordion"
 import type { PaginationInfo, UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination"
+import { groupItemsByTimeline } from "@/lib/helpers"
 
 interface UserGigsListProps {
   initialProjects: UserGig[]
@@ -88,54 +89,73 @@ export function UserGigsList({ initialProjects, pagination }: UserGigsListProps)
     )
   }
 
+  const groupedProjects = groupItemsByTimeline(
+    projects,
+    (p) => (p as any).updatedAt || p.createdAt
+  );
+
   return (
-    <>
-      <Accordion type="multiple" className="flex flex-col gap-4">
-        {projects.map((project) => (
-          <UserGigCard
-            key={project._id}
-            project={project}
-            deletingId={deletingId}
-            onDelete={openDeleteDialog}
-          />
-        ))}
-      </Accordion>
+    <div className="space-y-8">
+      {groupedProjects.map((group) => (
+        <div key={group.label} className="space-y-4">
+          {/* Timeline Section Header */}
+          <div className="flex items-center gap-2 pt-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              {group.label}
+            </span>
+            <div className="h-px flex-1 bg-border/60" />
+          </div>
 
-      {pagination && pagination.totalPages > 1 && (
-        <div className="mt-8 pt-6 border-t border-border">
-          <Pagination>
-            <PaginationContent>
-
-              {/* Previous button */}
-              <PaginationItem>
-                <PaginationPrevious
-                  href={pagination.hasPrevPage ? `?page=${pagination.page - 1}` : undefined}
-                  className={!pagination.hasPrevPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
-                />
-              </PaginationItem>
-
-              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
-                <PaginationItem key={pageNum}>
-                  <PaginationLink
-                    href={`?page=${pageNum}`}
-                    isActive={pageNum === pagination.page}
-                  >
-                    {pageNum}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              {/* next button */}
-              <PaginationItem>
-                <PaginationNext
-                  href={pagination.hasNextPage ? `?page=${pagination.page + 1}` : undefined}
-                  className={!pagination.hasNextPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <Accordion type="multiple" className="flex flex-col gap-4">
+            {group.items.map((project) => (
+              <UserGigCard
+                key={project._id}
+                project={project}
+                deletingId={deletingId}
+                onDelete={openDeleteDialog}
+              />
+            ))}
+          </Accordion>
         </div>
-      )}
+      ))}
+
+      {
+        pagination && pagination.totalPages > 1 && (
+          <div className="mt-8 pt-6 border-t border-border">
+            <Pagination>
+              <PaginationContent>
+
+                {/* Previous button */}
+                <PaginationItem>
+                  <PaginationPrevious
+                    href={pagination.hasPrevPage ? `?page=${pagination.page - 1}` : undefined}
+                    className={!pagination.hasPrevPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                  />
+                </PaginationItem>
+
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <PaginationItem key={pageNum}>
+                    <PaginationLink
+                      href={`?page=${pageNum}`}
+                      isActive={pageNum === pagination.page}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                {/* next button */}
+                <PaginationItem>
+                  <PaginationNext
+                    href={pagination.hasNextPage ? `?page=${pagination.page + 1}` : undefined}
+                    className={!pagination.hasNextPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )
+      }
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-card text-card-foreground border border-border">
@@ -158,6 +178,6 @@ export function UserGigsList({ initialProjects, pagination }: UserGigsListProps)
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div >
   )
 }

@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     const [projects, totalCount] = await Promise.all([
       ProjectModel.find({ createdBy: userEmail })
-        .sort({ createdAt: -1 })
+        .sort({ updatedAt: -1, createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),

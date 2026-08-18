@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Calendar, Clock, User, CheckCircle, ArrowLeft, Eye, Users, Info } from "lucide-react"
+import { toast } from "sonner"
 import type { Gig, Owner } from "@/app/(pages)/(gig)/types"
 import { getStatusConfig, getTimeAgo, getDaysUntilExpiry } from "./utils"
 
@@ -116,6 +117,16 @@ export function OpenGigHeader({ gig, owner, isPinged, canApply, disabledMessage 
               >
                 <Users className="w-5 h-5" />
                 View Applications
+              </button>
+            ) : user?.role === "client" ? (
+              <button
+                onClick={() => {
+                  toast.info("Please switch to Freelancer mode in the top navigation bar to apply for this gig.");
+                }}
+                className="bg-secondary text-secondary-foreground border border-border hover:bg-muted font-semibold text-xs sm:text-sm h-11 w-full lg:w-auto px-5 rounded-xl flex items-center justify-center gap-2"
+              >
+                <Info className="w-4 h-4 text-primary" />
+                Switch to Freelancer to Apply
               </button>
             ) : (
               <>

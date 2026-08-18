@@ -19,6 +19,7 @@ import {
 import type { Gig, Owner } from "@/app/(pages)/(gig)/types"
 import { getStatusConfig, formatDate, getDaysUntilExpiry } from "./utils"
 import { deleteGig } from "@/app/(pages)/(gig)/open-gig/[gigId]/services/gigApi"
+import { toast } from "sonner"
 
 interface OpenGigSidebarProps {
   gig: Gig
@@ -182,7 +183,22 @@ export function OpenGigSidebar({ gig, owner, isPinged, canApply, disabledMessage
 
             {user?.email !== gig.createdBy ? (
               <>
-                {canApply ? (
+                {user?.role === "client" ? (
+                  <div>
+                    <button
+                      onClick={() => {
+                        toast.info("Please switch to Freelancer mode in the top navigation bar to apply for this gig.");
+                      }}
+                      className="w-full h-12 bg-secondary text-secondary-foreground border border-border hover:bg-muted font-bold text-sm rounded-xl flex items-center justify-center gap-2"
+                    >
+                      <Info className="w-4 h-4 text-primary" />
+                      Switch to Freelancer to Apply
+                    </button>
+                    <p className="text-xs text-muted-foreground mt-2 text-center">
+                      You are currently in Client mode.
+                    </p>
+                  </div>
+                ) : canApply ? (
                   <>
                     {isPinged === true ? (
                       <button

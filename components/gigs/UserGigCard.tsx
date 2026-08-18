@@ -9,6 +9,7 @@ import type { UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
 import { useState } from "react"
 import { toast } from "sonner"
 import { MouseEvent } from "react"
+import { getDateSectionLabel, formatActivityDate } from "@/lib/helpers"
 
 interface UserGigCardProps {
   project: UserGig
@@ -19,36 +20,6 @@ interface UserGigCardProps {
 export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps) {
   const router = useRouter();
   const [renewing, setRenewing] = useState(false);
-
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-        return (
-          <Badge className="bg-primary text-primary-foreground border-primary border font-medium flex items-center gap-1.5 px-2.5 py-1">
-            <Activity className="w-3 h-3" /> Completed
-          </Badge>
-        )
-      case "active":
-        return (
-          <Badge className="bg-primary text-primary-foreground border-primary border font-medium flex items-center gap-1.5 px-2.5 py-1">
-            <Activity className="w-3 h-3" /> Active
-          </Badge>
-        )
-      case "expired":
-        return (
-          <Badge className="bg-destructive/15 text-destructive border-destructive/30 border font-medium flex items-center gap-1.5 px-2.5 py-1">
-            <Clock className="w-3 h-3" /> Expired
-          </Badge>
-        )
-      case "pending":
-      default:
-        return (
-          <Badge className="bg-secondary text-secondary-foreground border-border border font-medium flex items-center gap-1.5 px-2.5 py-1">
-            <Activity className="w-3 h-3" /> Pending
-          </Badge>
-        )
-    }
-  }
 
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -76,6 +47,16 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
       setRenewing(false);
     }
   };
+
+  const isUpdated = Boolean(
+    (project as any).updatedAt &&
+    new Date((project as any).updatedAt).getTime() - new Date(project.createdAt).getTime() > 60000
+  )
+
+  const activityText = isUpdated
+    ? formatActivityDate((project as any).updatedAt, "Updated")
+    : formatActivityDate(project.createdAt, "Posted")
+
   return (
     <AccordionItem
       value={project._id}
@@ -84,13 +65,21 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
       <AccordionTrigger className="p-5 sm:p-6 hover:no-underline hover:bg-muted transition-colors">
         <div className="flex items-center justify-between w-full gap-3 sm:gap-6 pr-2 sm:pr-4">
 
-          {/* Left Column: Title & Status */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0 text-left">
-            <h3 className="text-base sm:text-lg font-bold text-foreground truncate">
-              {project.title}
-            </h3>
-            {getStatusBadge(project.status)}
+          {/* Left Column: Title, Status & Activity */}
+          <div className="flex flex-col items-start gap-1 flex-1 min-w-0 text-left">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h3 className="text-base sm:text-lg font-bold text-foreground truncate">
+                {project.title}
+              </h3>
+              <Badge className="bg-secondary text-secondary-foreground border-border border font-medium px-2.5 py-1 capitalize text-xs">
+                {project.status}
+              </Badge>
+            </div>
+            <span className="text-xs text-muted-foreground font-normal">
+              {activityText}
+            </span>
           </div>
+
 
           {/* Right Column: Budget */}
           <div className="flex items-center gap-1.5 bg-muted px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border border-border shrink-0">

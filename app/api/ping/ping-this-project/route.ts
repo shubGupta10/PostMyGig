@@ -28,6 +28,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    if (session.user.role === "client") {
+      return NextResponse.json(
+        {
+          message: "Clients cannot apply for gigs. Please switch to Freelancer mode in the top navigation to apply.",
+        },
+        { status: 403 }
+      )
+    }
+
     const { projectId, userEmail, posterId, message, bestWorkLink, bestWorkDescription } = await req.json()
 
     // Validate required fields
