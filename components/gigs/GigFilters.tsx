@@ -28,7 +28,7 @@ export default function GigFilters({ currentSearch, currentSkill = "", currentSo
         updateFilters(searchTerm, currentSkill, currentSort)
       }
     }, 500)
-    
+
     return () => clearTimeout(timeoutId)
   }, [searchTerm, currentSearch, currentSkill])
 
@@ -65,7 +65,7 @@ export default function GigFilters({ currentSearch, currentSkill = "", currentSo
         <div className="flex flex-wrap items-center gap-3">
           <div className="w-36 sm:w-40">
             <Select value={currentSkill || "all"} onValueChange={(val) => updateFilters(searchTerm, val, currentSort)}>
-              <SelectTrigger className="h-10 border-2 rounded-lg bg-background text-sm">
+              <SelectTrigger className="w-full h-10 border-2 rounded-lg bg-background text-sm">
                 <SelectValue placeholder="All Skills" />
               </SelectTrigger>
               <SelectContent>
@@ -83,7 +83,7 @@ export default function GigFilters({ currentSearch, currentSkill = "", currentSo
         {/* Right Side: "Sort" filter */}
         <div className="w-36 sm:w-40">
           <Select defaultValue="newest" value={currentSort} onValueChange={(val) => updateFilters(searchTerm, currentSkill, val)}>
-            <SelectTrigger className="h-10 border-2 rounded-lg bg-background text-sm">
+            <SelectTrigger className="w-full h-10 border-2 rounded-lg bg-background text-sm">
               <SelectValue placeholder="Newest First" />
             </SelectTrigger>
             <SelectContent>
