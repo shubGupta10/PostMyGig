@@ -5,6 +5,8 @@ import PingModel from "@/models/PingSchema";
 import { ConnectoDatabase } from "@/lib/db";
 import ratelimiter from "@/lib/ratelimit";
 import FeedbackModel from "@/models/FeedbackModel";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 export async function POST(req: NextRequest) {
 
@@ -20,6 +22,20 @@ export async function POST(req: NextRequest) {
         );
     }
 
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return NextResponse.json({
+            message: "Unauthorized"
+        }, { status: 404 })
+    }
+
+    //check if this user is admin
+    if (session.user.isAdmin !== true) {
+        return NextResponse.json({
+            message: "Not a admin account"
+        }, { status: 404 })
+    }
+
     try {
         await ConnectoDatabase();
 
@@ -28,6 +44,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({
                 message: "User Email not found"
             }, { status: 400 })
+        }
+
+        if (session.user.email !== userEmail) {
+            return NextResponse.json({
+                message: "Unauthorized Access"
+            }, { status: 404 })
         }
 
         const fetchCurrentUser = await userModel.findOne({ email: userEmail });

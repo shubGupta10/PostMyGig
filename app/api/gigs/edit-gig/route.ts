@@ -7,10 +7,17 @@ import redis from "@/lib/redis";
 
 export async function PATCH(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({
+                message: "Unauthorized"
+            }, { status: 404 })
+        }
+
         await ConnectoDatabase();
 
         const { gigId, title, description, budget, status, expiresAt } = await req.json();
-        if (!gigId || !title || !description || !budget  || !expiresAt) {
+        if (!gigId || !title || !description || !budget || !expiresAt) {
             return NextResponse.json({ message: "Please fill all fields" }, { status: 400 });
         }
 
@@ -19,9 +26,7 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ message: "Gig not found" }, { status: 404 });
         }
 
-        const session = await getServerSession(authOptions);
         const createdBy = session?.user.email;
-
 
         if (findGig.createdBy.toString() !== createdBy) {
             return NextResponse.json({

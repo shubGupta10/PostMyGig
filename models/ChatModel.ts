@@ -79,6 +79,7 @@ const chatSchema: Schema<IChat> = new mongoose.Schema({
 });
 
 chatSchema.index({ timeStamp: 1 }, { expireAfterSeconds: 20 * 24 * 60 * 60 });
+chatSchema.index({ senderId: 1, receiverId: 1, timeStamp: 1 })
 
 const Chat: Model<IChat> = mongoose.models.Chat || mongoose.model<IChat>("Chat", chatSchema);
 export default Chat;

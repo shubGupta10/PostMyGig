@@ -8,6 +8,8 @@ import { postMyGigAccountDeletedTemplate } from "@/lib/email/templates";
 import { EmailSender } from "@/lib/email/send";
 import ProjectModel from "@/models/ProjectModel";
 import PingModel from "@/models/PingSchema";
+import Chat from "@/models/ChatModel";
+import { UTApi } from "uploadthing/server";
 
 
 export async function DELETE(req: NextRequest) {
@@ -42,12 +44,35 @@ export async function DELETE(req: NextRequest) {
         //delete user pings
         await PingModel.deleteMany({
             userEmail: userEmail
-        })
+        });
+
+        try {
+            const userChatsWithFiles = await Chat.find({
+                senderEmail: userEmail,
+                "attachment.fileKey": { $exists: true, $ne: "" },
+            }, "attachment.fileKey").lean();
+
+            const fileKeys = userChatsWithFiles
+                .map((c: any) => c.attachment?.fileKey)
+                .filter((k: string | undefined): k is string => Boolean(k));
+
+            if (fileKeys.length > 0) {
+                const utApi = new UTApi();
+                await utApi.deleteFiles(fileKeys);
+            }
+        } catch (fileErr) {
+            console.error("Failed to delete user's uploadthing files:", fileErr);
+        }
+
+        //delete the chat messages
+        await Chat.deleteMany({
+            $or: [{ senderEmail: userEmail }, { receiverEmail: userEmail }]
+        });
 
         //delete the user
         await userModel.deleteOne({
             email: userEmail
-        })
+        });
 
         //send mail for deletion
         after(async () => {

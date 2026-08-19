@@ -2,15 +2,36 @@ import { NextResponse, NextRequest } from "next/server";
 import { ConnectoDatabase } from "@/lib/db";
 import userModel from "@/models/UserModel";
 import ProjectModel from "@/models/ProjectModel";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 export async function POST(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({
+                message: "Unauthorized"
+            }, { status: 404 })
+        }
+
+        //check if this user is admin
+        if (session.user.isAdmin !== true) {
+            return NextResponse.json({
+                message: "Not a admin account"
+            }, { status: 404 })
+        }
         await ConnectoDatabase();
-        
+
         const { adminEmail } = await req.json();
 
         if (!adminEmail) {
             return NextResponse.json({ message: "Admin Email not found" }, { status: 400 });
+        }
+
+        if (session.user.email !== adminEmail) {
+            return NextResponse.json({
+                message: "Unauthorized Access"
+            }, { status: 404 })
         }
 
         const fetchCurrentUser = await userModel.findOne({ email: adminEmail });
@@ -43,7 +64,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             users: usersWithGigs
         }, { status: 200 });
-        
+
     } catch (error) {
         console.error("fetch-verification-requests error:", error);
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });

@@ -1,10 +1,25 @@
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigGenericTemplate } from "@/lib/email/templates";
+import { authOptions } from "@/lib/options";
 import resend from "@/lib/resend";
+import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({
+                message: "Unauthorized"
+            }, { status: 404 })
+        }
+
+        //check if this user is admin
+        if (session.user.isAdmin !== true) {
+            return NextResponse.json({
+                message: "Not a admin account"
+            }, { status: 404 })
+        }
         const { htmlContent, to, subject, userName } = await req.json();
 
         if (!htmlContent || !to || !subject || !userName) {

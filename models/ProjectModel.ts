@@ -86,6 +86,11 @@ const projectSchema = new Schema<Project>(
   }
 );
 
+projectSchema.index({ status: 1, createdAt: -1 })
+projectSchema.index({ createdBy: 1 })
+projectSchema.index({ expiresAt: 1 })
+projectSchema.index({ isCurated: 1 })
+
 const ProjectModel: Model<Project> =
   mongoose.models.Project || mongoose.model<Project>('Project', projectSchema);
 

@@ -2,9 +2,26 @@ import { NextResponse, NextRequest } from "next/server";
 import ProjectModel from "@/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import userModel from "@/models/UserModel";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 export async function DELETE(req: NextRequest) {
     try {
+
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({
+                message: "Unauthorized"
+            }, { status: 404 })
+        }
+
+        //check if this user is admin
+        if (session.user.isAdmin !== true) {
+            return NextResponse.json({
+                message: "Not a admin account"
+            }, { status: 404 })
+        }
+
         await ConnectoDatabase();
 
         const { userEmail, gigId } = await req.json();
@@ -13,6 +30,12 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({
                 message: "User Email not found"
             }, { status: 400 })
+        }
+
+        if (session.user.email !== userEmail) {
+            return NextResponse.json({
+                message: "Unauthorized Access"
+            }, { status: 404 })
         }
 
         if (!gigId) {
