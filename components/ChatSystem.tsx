@@ -121,17 +121,30 @@ export default function ChatSystem({
   const { startUpload, isUploading } = useUploadThing("chatAttachment")
 
   const stageSelectedFile = (file: File) => {
-    if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
-      toast.error("Only images and PDF files are supported")
+    const isImage = file.type.startsWith("image/")
+    const isPdf = file.type === "application/pdf"
+
+    if (!isImage && !isPdf) {
+      toast.error("Only images (PNG, JPG, WEBP) and PDF files are supported")
       return
     }
-    if (file.size > 8 * 1024 * 1024) {
-      toast.error("File size must be under 8MB")
+
+    // Max 2MB for images
+    if (isImage && file.size > 2 * 1024 * 1024) {
+      toast.error("Image size must be under 2MB")
       return
     }
+
+    // Max 4MB for PDFs
+    if (isPdf && file.size > 4 * 1024 * 1024) {
+      toast.error("PDF size must be under 4MB")
+      return
+    }
+
     setStagedFile(file)
     setPreviewUrl(URL.createObjectURL(file))
   }
+
 
   const handlePaste = (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items
@@ -332,10 +345,12 @@ export default function ChatSystem({
             fileKey: res[0].key,
           }
         }
-      } catch (uploadErr) {
-        toast.error("Failed to upload attachment")
+      } catch (uploadErr: any) {
+        console.error("UploadThing error:", uploadErr)
+        toast.error(uploadErr?.message || "Failed to upload attachment")
         return
       }
+
     }
 
     const currentUserId = getCurrentUserId()
@@ -400,14 +415,6 @@ export default function ChatSystem({
       toast.error("Failed to mark as completed")
     } finally {
       setIsCompleting(false)
-    }
-  }
-
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      sendMessage()
     }
   }
 
@@ -532,18 +539,16 @@ export default function ChatSystem({
                 className={`flex ${msg.isOwn ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-1 duration-150`}
               >
                 <div
-                  className={`max-w-[85%] sm:max-w-[65%] shadow-xs transition-all ${
-                    msg.isOwn
-                      ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
-                      : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border border-border"
-                  } ${isMediaOnly ? "p-1 overflow-hidden" : "p-3 space-y-2"}`}
+                  className={`max-w-[85%] sm:max-w-[65%] shadow-xs transition-all ${msg.isOwn
+                    ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-xs"
+                    : "bg-secondary text-secondary-foreground rounded-2xl rounded-tl-xs border border-border"
+                    } ${isMediaOnly ? "p-1 overflow-hidden" : "p-3 space-y-2"}`}
                 >
                   {/* Image Attachment */}
                   {hasImage && (
                     <div
-                      className={`relative rounded-xl overflow-hidden cursor-pointer max-w-sm group ${
-                        isMediaOnly ? "" : "mb-2"
-                      }`}
+                      className={`relative rounded-xl overflow-hidden cursor-pointer max-w-sm group ${isMediaOnly ? "" : "mb-2"
+                        }`}
                       onClick={() =>
                         setSelectedImageModal({
                           url: msg.attachment!.url,
@@ -570,11 +575,10 @@ export default function ChatSystem({
                   {/* PDF Attachment */}
                   {hasPdf && (
                     <div
-                      className={`p-3 rounded-xl flex items-center justify-between gap-3 border ${
-                        msg.isOwn
-                          ? "bg-primary-foreground/10 border-primary-foreground/20"
-                          : "bg-background border-border"
-                      }`}
+                      className={`p-3 rounded-xl flex items-center justify-between gap-3 border ${msg.isOwn
+                        ? "bg-primary-foreground/10 border-primary-foreground/20"
+                        : "bg-background border-border"
+                        }`}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-9 h-9 rounded-lg bg-red-500/15 text-red-500 flex items-center justify-center shrink-0">
@@ -609,9 +613,8 @@ export default function ChatSystem({
                   {/* Message Timestamp (Only shown below if there is text or PDF) */}
                   {!isMediaOnly && (
                     <div
-                      className={`flex items-center justify-end gap-1 text-[10px] pt-0.5 ${
-                        msg.isOwn ? "text-primary-foreground/80" : "text-muted-foreground"
-                      }`}
+                      className={`flex items-center justify-end gap-1 text-[10px] pt-0.5 ${msg.isOwn ? "text-primary-foreground/80" : "text-muted-foreground"
+                        }`}
                     >
                       <span>{msg.timestamp}</span>
                       {msg.isOwn && <CheckCheck className="w-3 h-3" />}
