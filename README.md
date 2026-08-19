@@ -57,13 +57,13 @@ The platform is architected as a fullstack **Next.js 15 App Router** application
 - **User Verification Queue**: Freelancers can request verification; admins review portfolios and grant verified badges (`isVerified`).
 - **Gig Moderation & Flagging**: Review reported gigs (`ReportSchema`), take down violating listings, and ban offending accounts.
 - **Feedback Management**: In-app feedback dialog with admin tools to resolve queries and reply directly via email.
-- **Platform Seeding**: Production seed utilities (`npm run seed:prod`) and curated listing management.
 
 ### 8. ⏰ Scheduled Cron Jobs & Background Tasks
-- **Upstash QStash Integration**:
-  - `expire-projects`: Daily automated check marking projects older than 45 days as expired.
-  - `cleanup-chat-attachments`: Periodic cleanup of orphaned chat uploads.
-  - `send-emails-weekly`: Automated weekly digests highlighting new and trending gigs.
+- **Automated Web Crons (via [cron-job.org](https://cron-job.org/))**:
+  - Endpoints secured with HTTP `Authorization: Bearer <CRON_SECRET>` header verification.
+  - **`expire-projects`** (`/api/cron/expire-projects`): Daily automated check marking projects older than 45 days as expired and notifying gig owners to renew.
+  - **`cleanup-chat-attachments`** (`/api/cron/cleanup-chat-attachments`): Periodic cleanup of orphaned chat uploads.
+  - **`send-emails-weekly`** (`/api/cron/send-emails-weekly`): Automated weekly digests highlighting new and trending gigs.
 
 ### 9. 📧 Transactional Email Suite (Nodemailer)
 8+ responsive, branded HTML email templates:
@@ -98,7 +98,7 @@ The platform is architected as a fullstack **Next.js 15 App Router** application
 ### Database, Cloud & Storage
 - **Database**: MongoDB Atlas / Local MongoDB with [Mongoose](https://mongoosejs.com/)
 - **Cache & Rate Limiting**: [Upstash Redis](https://upstash.com/redis) & `@upstash/ratelimit`
-- **Background Cron Jobs**: [Upstash QStash](https://upstash.com/qstash)
+- **Scheduled Cron Service**: [cron-job.org](https://cron-job.org/) (Secured with `CRON_SECRET` Bearer token authentication)
 - **File Storage**: [UploadThing](https://uploadthing.com/) (Images & PDFs)
 - **Email Service**: [Nodemailer](https://nodemailer.com/) (Gmail SMTP / Custom SMTP)
 
@@ -134,7 +134,7 @@ freelancer-board/
 │   │   ├── ChatModel.ts           # Messages, attachments, 20-day TTL
 │   │   ├── SubscriptionModel.ts   # Tier tracking & limits
 │   │   └── ActivityModel.ts       # Platform activity timeline
-│   └── scripts/                   # Production platform seeding scripts
+│   └── types.d.ts                 # Global TypeScript definitions
 │
 └── postmygig-chat-server/         # Real-Time WebSocket Microservice
     ├── controllers/               # Socket event & room handlers
@@ -169,17 +169,18 @@ cd freelancer-board
 ### Step 2: Configure Environment Variables
 
 #### 1. Next.js App (`postmygig/.env`):
-Create `postmygig/.env` with the following variables:
+Create `postmygig/.env` (or copy `.env.example`) with the following variables:
 ```env
-# Environment
+# Environment & Base URLs
 NODE_ENV=development
 NEXT_PUBLIC_LIVE_URL=http://localhost:3000
+NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
 
-# MongoDB
+# MongoDB Connections
 MONGO_LOCAL_URI=mongodb://localhost:27017/PostMyGig
 MONGO_PROD_URI=your_mongodb_connection_string
 
-# NextAuth
+# NextAuth.js Authentication
 NEXTAUTH_SECRET=your_nextauth_secret_key
 NEXTAUTH_URL=http://localhost:3000
 
@@ -189,26 +190,24 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
 
-# Upstash Redis & Rate Limiting
+# Upstash Redis (Cache & Chat Rate Limiting)
 UPSTASH_REDIS_REST_URL=your_upstash_redis_url
 UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
 
-# Upstash QStash (Crons)
-QSTASH_URL=https://qstash.upstash.io
-QSTASH_TOKEN=your_qstash_token
-CRON_SECRET=your_cron_secret_token
-
-# UploadThing (Chat Attachments)
-UPLOADTHING_TOKEN=your_uploadthing_token
-
-# Nodemailer / SMTP
+# Email Configuration (Nodemailer / Gmail SMTP)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=465
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_gmail_app_password
 
-# Chat Server Endpoint
-NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
+# Resend Email Fallback
+RESENT_API_KEY=your_resend_api_key
+
+# Cron Job Authentication (cron-job.org)
+CRON_SECRET=your_cron_secret_token
+
+# UploadThing (Chat File & PDF Attachments)
+UPLOADTHING_TOKEN=your_uploadthing_token
 ```
 
 #### 2. Chat Server (`postmygig-chat-server/.env`):
@@ -254,7 +253,6 @@ npm run dev
 | `npm run build` | Builds the production bundle & generates sitemap |
 | `npm run start` | Starts the production server |
 | `npm run lint` | Runs ESLint checks |
-| `npm run seed:prod` | Runs production platform database seeder script |
 
 ### In `postmygig-chat-server/`:
 | Command | Description |
