@@ -3,9 +3,17 @@ import PingModel from "@/models/PingSchema";
 import ProjectModel from "@/models/ProjectModel";
 import { calculateRecommendations } from "./utils";
 import { ConnectoDatabase } from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 export async function GET(req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user.id) {
+      return NextResponse.json({
+        message: "Unauthorized"
+      }, { status: 404 })
+    }
     await ConnectoDatabase();
     const { searchParams } = new URL(req.url);
     const gigId = searchParams.get("gigId");
@@ -14,7 +22,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Gig ID is required" }, { status: 400 });
     }
 
-    const gig = await ProjectModel.findById(gigId).select("title skillsRequired").lean();
+    const gig = await ProjectModel.findById(gigId).select("title skillsRequired createdBy").lean();
+
+    if (!gig) {
+      return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+    }
+
+    if (gig?.createdBy !== session.user.email) {
+      return NextResponse.json({
+        message: "Forbidden. You are not allowed to view applicants for this gig."
+      }, { status: 404 })
+    }
 
     const rawApplications = await PingModel.aggregate([
       {

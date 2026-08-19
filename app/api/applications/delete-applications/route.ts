@@ -6,10 +6,18 @@ import { EmailSender } from "@/lib/email/send";
 import { postMyGigPingRejectionTemplate } from "@/lib/email/templates";
 import resend from "@/lib/resend";
 import { dispatchNotification } from "@/lib/notification/dispatcher";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 
 export async function DELETE(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user.id) {
+            return NextResponse.json({
+                message: "Unathorized"
+            }, { status: 404 })
+        }
         const { applicationId } = await req.json();
         if (!applicationId) return NextResponse.json({ message: "Application ID is required" }, { status: 400 });
 

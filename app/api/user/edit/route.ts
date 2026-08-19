@@ -2,6 +2,8 @@ import { NextResponse, NextRequest } from "next/server";
 import userModel from "@/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 interface ContactLinks {
   label: string;
@@ -27,6 +29,13 @@ export async function PATCH(req: NextRequest) {
 
     if (!userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    const session = await getServerSession(authOptions);
+    if (session?.user.id !== userId) {
+      return NextResponse.json({
+        message: "Unauthorized"
+      }, { status: 403 })
     }
 
     if (

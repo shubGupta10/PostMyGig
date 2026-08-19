@@ -9,16 +9,36 @@ import resend from "@/lib/resend";
 import redis from "@/lib/redis";
 import { dispatchNotification } from "@/lib/notification/dispatcher";
 import Activity from "@/models/ActivityModel";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 export async function POST(req: NextRequest) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user.id) {
+            return NextResponse.json({
+                message: "Unauthorized"
+            }, { status: 404 })
+        }
+
         await ConnectoDatabase();
         const { applicationId, gigId, applicantEmail } = await req.json();
+
+        //find the gig in db
+        const project = await ProjectModel.findById(gigId);
+        if (!project) {
+            return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+        }
+
+        if (project.createdBy !== session.user.email) {
+            return NextResponse.json({
+                message: "Forbidden. You are not allowed to accept applications for someone else's gig."
+            }, { status: 403 })
+        }
         if (!applicationId || !gigId || !applicantEmail) {
             return NextResponse.json({ error: "Application ID, Gig ID, and Applicant Email are required" }, { status: 400 });
         }
 
-        // Find the application by ID
         const application = await PingModel.findById(applicationId);
         if (!application) {
             return NextResponse.json({ error: "Application not found" }, { status: 404 });

@@ -1,11 +1,20 @@
 import { ConnectoDatabase } from "@/lib/db";
+import { authOptions } from "@/lib/options";
 import redis from "@/lib/redis";
 import PingModel from "@/models/PingSchema";
 import ProjectModel from "@/models/ProjectModel";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
+
+        const session = await getServerSession(authOptions);
+        if (!session?.user.id) {
+            return NextResponse.json({
+                message: "Unathorized"
+            }, { status: 404 })
+        }
         await ConnectoDatabase();
         const { gigId } = await req.json();
         if (!gigId) {
