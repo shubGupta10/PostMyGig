@@ -29,7 +29,6 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { getInitials } from "@/lib/helpers"
 import { SidebarAutoCollapser } from "./chat/SidebarAutoCollapser"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -115,7 +114,6 @@ export default function ChatSystem({
   const [stagedFile, setStagedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [selectedImageModal, setSelectedImageModal] = useState<{ url: string; name?: string } | null>(null)
-  const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { startUpload, isUploading } = useUploadThing("chatAttachment")
@@ -169,9 +167,16 @@ export default function ChatSystem({
     }
   }
 
-  const scrollToBottom = (): void => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth"): void => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior,
+      });
+    } else {
+      messagesEndRef.current?.scrollIntoView({ behavior });
+    }
+  };
 
   const handleScroll = (): void => {
     if (messagesContainerRef.current) {
@@ -180,6 +185,16 @@ export default function ChatSystem({
       setShowScrollButton(!isAtBottom)
     }
   }
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const timer = setTimeout(() => {
+        scrollToBottom("smooth");
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [messages]);
+
 
   useEffect(() => {
     const container = messagesContainerRef.current
@@ -295,8 +310,10 @@ export default function ChatSystem({
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             isOwn: false,
           },
-        ])
-      })
+        ]);
+        setTimeout(() => scrollToBottom("smooth"), 50);
+      });
+
 
       onUserPresence((presenceData) => {
         if (presenceData.userId === targetId) {
@@ -629,7 +646,7 @@ export default function ChatSystem({
 
         {showScrollButton && (
           <button
-            onClick={scrollToBottom}
+            onClick={() => scrollToBottom()}
             className="fixed bottom-24 right-8 p-3 bg-card border-2 border-border text-foreground rounded-full shadow-lg hover:bg-secondary transition-colors z-10 cursor-pointer"
           >
             <ChevronDown className="w-5 h-5" />
