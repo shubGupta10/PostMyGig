@@ -69,6 +69,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    if (message.length > 2000) {
+      return NextResponse.json(
+        { message: "Pitch message cannot exceed 3,000 characters." },
+        { status: 400 }
+      );
+    }
+
+
     const [poster, fetchedProject, existingPing] = await Promise.all([
       userModel.findById(posterId).lean(),
       ProjectModel.findById(projectId).lean(),

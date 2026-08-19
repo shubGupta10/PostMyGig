@@ -4,9 +4,19 @@ import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
 import userModel from "@/models/UserModel";
 import Activity from "@/models/ActivityModel";
+import mongoose from "mongoose";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 export async function POST(req: NextRequest) {
+    let dbSession;
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({
+                message: "Unauthorized"
+            }, { status: 403 })
+        }
         await ConnectoDatabase();
         const { gigId } = await req.json();
 
@@ -14,24 +24,25 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Gig ID is required" }, { status: 400 });
         }
 
-        const project = await ProjectModel.findByIdAndUpdate(gigId, {
-            status: "completed"
-        }, { new: true });
+        dbSession = await mongoose.startSession();
+        dbSession.startTransaction();
+
+        const project = await ProjectModel.findById(gigId).session(dbSession);
 
         if (!project) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
             return NextResponse.json({ error: "Gig not found" }, { status: 404 });
         }
 
-        // Invalidate caches
-        try {
-            await redis.del(`fetch-open-gig:${gigId}`);
-            const keys = await redis.keys("fetch-gigs:*");
-            if (keys.length > 0) {
-                await redis.del(...keys);
-            }
-        } catch (e) {
-            console.warn("Failed to invalidate cache", e);
+        if (project.createdBy !== session.user.email) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
+            return NextResponse.json({ message: "Forbidden. Only the gig creator can mark it completed." }, { status: 403 });
         }
+
+        project.status = "completed";
+        await project.save({ session: dbSession });
 
         const THRESHOLD = 3;
 
@@ -40,11 +51,13 @@ export async function POST(req: NextRequest) {
             const clientGigCount = await ProjectModel.countDocuments({
                 createdBy: project.createdBy,
                 status: "completed"
-            });
+            }).session(dbSession);
+
             if (clientGigCount >= THRESHOLD) {
                 await userModel.findOneAndUpdate(
                     { email: project.createdBy, verificationStatus: { $nin: ['pending', 'approved'] }, isVerified: { $ne: true } },
-                    { $set: { verificationStatus: 'pending' } }
+                    { $set: { verificationStatus: 'pending' } },
+                    { session: dbSession }
                 );
             }
         }
@@ -54,13 +67,33 @@ export async function POST(req: NextRequest) {
             const freelancerGigCount = await ProjectModel.countDocuments({
                 AcceptedFreelancerEmail: project.AcceptedFreelancerEmail,
                 status: "completed"
-            });
+            }).session(dbSession);
+
             if (freelancerGigCount >= THRESHOLD) {
                 await userModel.findOneAndUpdate(
                     { email: project.AcceptedFreelancerEmail, verificationStatus: { $nin: ['pending', 'approved'] }, isVerified: { $ne: true } },
-                    { $set: { verificationStatus: 'pending' } }
+                    { $set: { verificationStatus: 'pending' } },
+                    { session: dbSession }
                 );
             }
+        }
+
+        await dbSession.commitTransaction();
+        await dbSession.endSession();
+
+        // Invalidate caches
+        try {
+            await redis.del(`fetch-open-gig:${gigId}`);
+            const keys = await redis.keys("fetch-gigs:*");
+            if (keys.length > 0) {
+                await redis.del(...keys);
+            }
+            if (project.createdBy) {
+                const userKeys = await redis.keys(`user-projects:${project.createdBy}*`);
+                if (userKeys.length > 0) await redis.del(...userKeys);
+            }
+        } catch (e) {
+            console.warn("Failed to invalidate cache", e);
         }
 
         // Record public activity
@@ -98,6 +131,10 @@ export async function POST(req: NextRequest) {
         }, { status: 200 });
 
     } catch (error) {
+        if (dbSession) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
+        }
         console.error("Complete gig error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }

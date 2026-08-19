@@ -4,10 +4,19 @@ import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
 import Chat from "@/models/ChatModel";
 import mongoose from "mongoose";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
 export async function DELETE(req: NextRequest) {
     let dbSession;
     try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
+
+
+
         await ConnectoDatabase();
 
         const { gigId } = await req.json();
@@ -29,6 +38,13 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({
                 message: "Gig not found"
             }, { status: 404 });
+        }
+
+        // Check ownership after fetching the gig:
+        if (gig.createdBy !== session.user.email) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession()
+            return NextResponse.json({ message: "Forbidden" }, { status: 403 });
         }
 
         const cacheKey = `user-projects:${gig.createdBy}`;

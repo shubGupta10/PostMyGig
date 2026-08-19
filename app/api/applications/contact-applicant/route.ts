@@ -1,9 +1,17 @@
 import { NextResponse, NextRequest } from "next/server";
 import userModel from "@/models/UserModel";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/options";
 
-export async function POST(req: NextRequest){
+export async function POST(req: NextRequest) {
     try {
-        const {applicantEmail} = await req.json();
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.email) {
+            return NextResponse.json({
+                message: "Unauthorized"
+            }, { status: 401 });
+        }
+        const { applicantEmail } = await req.json();
         if (!applicantEmail) {
             return NextResponse.json({ error: "Applicant email is required" }, { status: 400 });
         }
@@ -13,11 +21,11 @@ export async function POST(req: NextRequest){
             return NextResponse.json({ error: "Applicant not found" }, { status: 404 });
         }
 
-        //fetch its contact details
+        // Fetch its contact details with privacy settings respected
         const contactDetails = {
-            email: foundApplicant.email,
-            contactLinks: foundApplicant.contactLinks || [],
-        }
+            email: foundApplicant.showEmail !== false ? foundApplicant.email : null,
+            contactLinks: foundApplicant.showContactLinks !== false ? (foundApplicant.contactLinks || []) : [],
+        };
 
         return NextResponse.json({ contactDetails }, { status: 200 });
     } catch (error) {
