@@ -1,115 +1,273 @@
 # PostMyGig
 
-PostMyGig is a free, privacy-first platform designed for freelancers to share and discover projects. Freelancers can list their skills, post gigs, and connect with clients through secure pings (in-app or email, with WhatsApp integration planned). Built by Shubham Kumar Gupta in Lucknow, India, PostMyGig focuses on India’s 15M+ freelancers, ensuring compliance with the Digital Personal Data Protection Act (DPDP). Currently in beta, the platform is set to launch on X and Product Hunt in June 2025, targeting 100-200 early users.
+A modern, privacy-first freelance marketplace and real-time collaboration platform designed for independent developers, designers, and creators to discover projects, pitch proposals, and collaborate securely.
 
-## Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Roles and Permissions](#roles-and-permissions)
-- [Admin Dashboard](#admin-dashboard)
-- [Email Notifications](#email-notifications)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+---
 
-## Features
-- **Gig Management**: Freelancers can create, read, update, and delete (CRUD) gigs, such as web development or design projects.
-- **Secure Pings**: Connect with clients through in-app messages or email, with contacts (email/WhatsApp) kept private until approved.
-- **Role-Based Access**: Tailored permissions for freelancers and admins.
-- **Admin Dashboard**: Tools to moderate gigs, manage users, and view analytics.
-- **Filters**: Browse gigs by skills (e.g., MERN stack) or location (e.g., India).
-- **Privacy-First**: DPDP-compliant with encrypted data and secure authentication.
-- **Free Tier**: No fees for listing or connecting. Premium tiers planned: Pro (₹75/month), Premium (₹375/month).
+## 🌟 Overview
 
-## Tech Stack
-- **Frontend**: Next.js, Tailwind CSS, Shadcn UI
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB with Mongoose
-- **Cache & Rate Limiting**: Redis
-- **Authentication**: NextAuth.js (Google, X OAuth)
-- **Email Notifications**: Nodemailer (Gmail SMTP, free for beta)
-- **Hosting**: Vercel
+**PostMyGig** simplifies the freelance workflow by eliminating clutter and prioritizing privacy. Freelancers can showcase their portfolios, discover curated gigs, and send targeted proposals ("pings"). Clients can post gigs, review candidate pitches, and seamlessly transition into a dedicated real-time collaboration space (**Project Huddle**) with live chat and file sharing.
 
-## Installation
-1. **Clone the Repository**:
-   - Download or clone from the GitHub repository: `https://github.com/shubham-145/postmygig`.
-2. **Install Dependencies**:
-   - Navigate to the project folder and run `npm install`.
-3. **Set Up Environment Variables**:
-   - Create a `.env` file in the root directory with the following variables:
-     - MongoDB connection URI
-     - NextAuth secret and OAuth credentials (Google, X)
-     - Nodemailer Gmail address and app password
-     - Redis connection URL
-     - Encryption key for data security
-4. **Run MongoDB and Redis**:
-   - Use MongoDB Atlas or a local MongoDB instance.
-   - Run Redis locally or via a cloud provider.
-5. **Start the Development Server**:
-   - Run `npm run dev` and access at `http://localhost:3000`.
+The platform is architected as a fullstack **Next.js 15 App Router** application paired with a dedicated **Socket.io real-time microservice**.
 
-## Configuration
-- **MongoDB**: Set up a `postmygig` database with schemas for gigs, users, pings, and email logs.
-- **Redis**: Configure for rate limiting (10 pings/emails per user/day), session caching, and email quotas.
-- **NextAuth**: Enable Google and X OAuth for secure signups.
-- **Nodemailer**: Use Gmail SMTP for emails:
-  - Create a Gmail account or use an existing one.
-  - Enable 2FA and generate an App Password in Gmail settings.
-  - Add email and password to `.env`.
-- **Vercel**: Deploy the app for production, ensuring HTTPS and CORS settings.
+---
 
-## Usage
-1. **Sign Up**: Register using Google or X OAuth.
-2. **Post a Gig** (Freelancers): Navigate to the post section, enter gig details (title, skills, description), and manage gigs in the dashboard.
-3. **Ping a Gig**: Send a 50-word message to a gig owner via the platform or email.
-4. **Connect**: Approve pings in the dashboard to share contact details securely.
-5. **Admin Tasks**: Access the admin panel to moderate gigs, manage users, or view analytics.
+## 🚀 Key Features
 
-## Roles and Permissions
-- **Freelancer**:
-  - Create, update, and delete own gigs.
-  - Send pings to connect with other users.
-- **Admin**:
-  - Moderate gigs (approve/reject).
-  - Manage user accounts (e.g., ban users).
-  - Access analytics on platform activity.
+### 1. 🔐 Authentication, Security & Privacy
+- **Multi-Provider Auth**: Built on NextAuth.js supporting **Google OAuth**, **GitHub OAuth**, and **Email/Password credentials** (bcrypt-hashed).
+- **Email Verification**: 6-digit OTP verification code sent via Nodemailer on email signup.
+- **Password Recovery**: Secure password reset flow with expiring verification tokens.
+- **Onboarding Flow**: Role selection (`freelancer` vs `client`), bio, skills tags, location, and social links.
+- **Granular Privacy Controls**: Toggles to show/hide email, contact links (WhatsApp, X), and public activity feed.
+- **DPDP Act Compliance**: Complete one-click account deletion (`/api/user/delete-account`) that purges all user data and triggers an automated confirmation email.
 
-## Admin Dashboard
-- **Features**:
-  - Review and moderate gigs (e.g., approve pending listings).
-  - Manage user accounts, including banning users for policy violations.
-  - View analytics, such as active gigs, pings, and email metrics.
-- **Access**: Restricted to admin users, secured by authentication.
-- **Interface**: Built with clean, responsive design using Tailwind CSS and Shadcn UI components.
+### 2. 💼 Gig & Project Lifecycle Management
+- **Smart Gig Management**: Post, edit, filter, and manage freelance gigs with budget, required skills, and contact preferences.
+- **45-Day Active Cycle**: Automatic 45-day expiration via automated background cron jobs with one-click gig relisting/renewal (`/api/gigs/renew-gig`).
+- **Project Status Transitions**: Structured lifecycle from `active` ➔ `assigned` ➔ `completed` / `expired` / `rejected`.
+- **Project Completion**: Clients can mark completed gigs, closing the project and logging verified milestone activity.
 
-## Email Notifications
-PostMyGig uses **Nodemailer** with Gmail SMTP (free, ~500 emails/day) to send transactional emails, including welcome messages and ping notifications.
-- **Setup**:
-  - Install Nodemailer via npm.
-  - Configure Gmail SMTP with a Gmail address and App Password in `.env`.
-- **Email Types**:
-  - **Welcome Email**: Sent on signup, inviting users to explore the beta and provide feedback.
-  - **Ping Notification**: Notifies gig owners when someone expresses interest, including the sender’s message, email, and a link to view details.
-- **Privacy**:
-  - Emails are sent only with user consent (via signup).
-  - Messages are sanitized to prevent security risks.
-  - Data is encrypted in MongoDB for storage.
-- **Limits**: Gmail’s SMTP allows ~500 emails/day, suitable for the beta phase (~100-200 users, 1-3 pings/day).
-- **Analytics**: Umami Cloud and Vercel Analytics.
+### 3. 🎯 Proposal & Application Workflow ("Pings")
+- **Targeted Pings**: Freelancers pitch clients with structured proposals, custom notes, and portfolio links.
+- **Client Application Management**: Review applicant profiles, compare skill match percentages, and manage candidate status (`/applications/view-applications`).
+- **1-Click Review Actions**: **Accept**, **Reject**, or **Revoke** applications with automated transactional email alerts sent to freelancers.
+- **Proposals Tracker**: Freelancer dashboard (`/user/proposals`) to monitor submitted proposals, review statuses, and jump directly into active chats.
 
-## Contributing
-- Fork the repository on GitHub.
-- Create a feature branch for your changes.
-- Submit a pull request with a clear description.
-- Follow the project’s Code of Conduct.
+### 4. 💬 Real-Time Collaboration ("Project Huddle")
+- **Dedicated Socket Microservice**: Powered by Express, Socket.io, and Helmet with JWT handshake authentication.
+- **Project-Based Chat Rooms**: Automatic private room creation upon application acceptance.
+- **Media & File Attachments**: Powered by **UploadThing**, supporting images (PNG, JPG, WEBP with interactive zoom modal) and PDF documents with inline preview and download.
+- **Online Presence & Read Receipts**: Live user online/offline indicators and message status indicators.
+- **Redis Rate Limiting**: Token-bucket / sliding-window rate limiting (10 messages/minute per user) backed by Upstash Redis.
+- **Automated Message TTL**: MongoDB automatic 20-day TTL expiration index on chat history.
 
-## License
-MIT License © 2025 Shubham Kumar Gupta
+### 5. 🎨 Freelancer Portfolios & Skill Matcher
+- **Interactive Portfolio Showcase**: Add featured projects with title, description, technology tags, live demo links, and GitHub repository links.
+- **Skill Matcher Engine**: Automatically calculates match percentage and highlights overlapping skills between freelancer profiles and gig requirements.
+- **Public & Private Profiles**: Shareable public profile pages (`/user/profile/[id]`) with verified badges and activity feeds.
 
-## Contact
+### 6. ⚡ Subscriptions & Quota Engine
+- **Free vs. Pro Tiers**: Feature limits managed via an internal subscription engine (`lib/subscription`):
+  - **Clients**: Free (15 gigs/month) vs. Pro (50 gigs/month + featured listings).
+  - **Freelancers**: Free (30 pings/month) vs. Pro (100 pings/month + priority pitch).
+- **Upgrade Workflow**: Transparent pricing page (`/pricing`) and role-tailored tier management.
+
+### 7. 🛡️ Admin Dashboard & Moderation
+- **User Verification Queue**: Freelancers can request verification; admins review portfolios and grant verified badges (`isVerified`).
+- **Gig Moderation & Flagging**: Review reported gigs (`ReportSchema`), take down violating listings, and ban offending accounts.
+- **Feedback Management**: In-app feedback dialog with admin tools to resolve queries and reply directly via email.
+- **Platform Seeding**: Production seed utilities (`npm run seed:prod`) and curated listing management.
+
+### 8. ⏰ Scheduled Cron Jobs & Background Tasks
+- **Upstash QStash Integration**:
+  - `expire-projects`: Daily automated check marking projects older than 45 days as expired.
+  - `cleanup-chat-attachments`: Periodic cleanup of orphaned chat uploads.
+  - `send-emails-weekly`: Automated weekly digests highlighting new and trending gigs.
+
+### 9. 📧 Transactional Email Suite (Nodemailer)
+8+ responsive, branded HTML email templates:
+- Email Signup OTP Verification
+- New Ping / Proposal Notification
+- Application Acceptance & Rejection Notices
+- Project Huddle Chat Room Invitation
+- Password Reset Link (with 15-min expiry)
+- 45-Day Gig Expiration & Renewal Reminder
+- Weekly Curated Gigs Digest
+- Account Deletion Confirmation
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend & Web Application (`postmygig/`)
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router, Turbopack, React 19)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/), Radix UI primitives, [next-themes](https://github.com/pacocoursey/next-themes) (Dark/Light mode)
+- **Animations & Icons**: [Framer Motion](https://www.framer.com/motion/), [Lucide React](https://lucide.dev/)
+- **UI Feedback**: [Sonner](https://sonner.emilkowal.ski/) (Toast notifications)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
+- **Authentication**: [NextAuth.js v4](https://next-auth.js.org/) (Google, GitHub, Credentials)
+- **SEO & Social**: [next-sitemap](https://github.com/iamvishnusankar/next-sitemap), Dynamic OpenGraph images via `@/app/api/og`
+
+### Real-Time Chat Server (`postmygig-chat-server/`)
+- **Runtime**: Node.js & Express 5 (ES Modules)
+- **WebSockets**: [Socket.io](https://socket.io/) (CORS & JWT authentication)
+- **Security**: [Helmet](https://helmetjs.github.io/), JSON Web Tokens (JWT)
+- **Rate Limiting**: [Upstash Redis](https://upstash.com/)
+
+### Database, Cloud & Storage
+- **Database**: MongoDB Atlas / Local MongoDB with [Mongoose](https://mongoosejs.com/)
+- **Cache & Rate Limiting**: [Upstash Redis](https://upstash.com/redis) & `@upstash/ratelimit`
+- **Background Cron Jobs**: [Upstash QStash](https://upstash.com/qstash)
+- **File Storage**: [UploadThing](https://uploadthing.com/) (Images & PDFs)
+- **Email Service**: [Nodemailer](https://nodemailer.com/) (Gmail SMTP / Custom SMTP)
+
+---
+
+## 📂 Repository Structure
+
+```
+freelancer-board/
+├── postmygig/                     # Next.js 15 Fullstack Application
+│   ├── app/                       # App Router routes, API endpoints, and pages
+│   │   ├── (pages)/               # Gig listing, creation, pricing, chat & applications
+│   │   ├── api/                   # REST API routes (auth, gigs, user, admin, cron, socket)
+│   │   ├── auth/                  # Login, register, verify-code, forgot-password
+│   │   ├── dashboard/             # Role-aware user dashboard
+│   │   ├── onboarding/            # Profile onboarding wizard
+│   │   ├── projects/              # Detailed project views
+│   │   └── user/                  # Admin, profile, proposals, settings, feedback
+│   ├── components/                # Modular React & UI components
+│   │   ├── chat/                  # Chat components, file preview, image modal
+│   │   ├── dashboard/             # Metrics, charts, listings
+│   │   ├── gigs/                  # Gig cards, forms, filter controls
+│   │   ├── ui/                    # Reusable Radix / Tailwind UI primitives
+│   │   └── ChatSystem.tsx         # Main real-time chat interface
+│   ├── lib/                       # Helpers, DB connection, auth, email, socket client
+│   │   ├── (socket)/              # Socket.io client connector & event listeners
+│   │   ├── email/                 # Nodemailer configuration & HTML templates
+│   │   ├── subscription/          # Plans, quotas, limits engine
+│   │   └── options.ts             # NextAuth configuration
+│   ├── models/                    # Mongoose database models
+│   │   ├── UserModel.ts           # Users, roles, portfolios, privacy settings
+│   │   ├── ProjectModel.ts        # Gigs, statuses, budgets, contacts
+│   │   ├── ChatModel.ts           # Messages, attachments, 20-day TTL
+│   │   ├── SubscriptionModel.ts   # Tier tracking & limits
+│   │   └── ActivityModel.ts       # Platform activity timeline
+│   └── scripts/                   # Production platform seeding scripts
+│
+└── postmygig-chat-server/         # Real-Time WebSocket Microservice
+    ├── controllers/               # Socket event & room handlers
+    ├── middleware/                # JWT auth verification
+    ├── model/                     # Chat schema for socket server
+    ├── routes/                    # Chat REST routes
+    ├── util/                      # Redis client & DB connection
+    └── index.js                   # Server entrypoint
+```
+
+---
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
+- **Node.js**: v18.17+ or v20+
+- **MongoDB**: Local instance or [MongoDB Atlas](https://www.mongodb.com/atlas) cluster
+- **Redis**: [Upstash Redis](https://upstash.com/) account (or local Redis)
+- **UploadThing**: Account for chat file uploads ([UploadThing](https://uploadthing.com/))
+- **Email**: Gmail with App Password or custom SMTP server
+
+---
+
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/shubGupta10/PostMyGig.git
+cd freelancer-board
+```
+
+---
+
+### Step 2: Configure Environment Variables
+
+#### 1. Next.js App (`postmygig/.env`):
+Create `postmygig/.env` with the following variables:
+```env
+# Environment
+NODE_ENV=development
+NEXT_PUBLIC_LIVE_URL=http://localhost:3000
+
+# MongoDB
+MONGO_LOCAL_URI=mongodb://localhost:27017/PostMyGig
+MONGO_PROD_URI=your_mongodb_connection_string
+
+# NextAuth
+NEXTAUTH_SECRET=your_nextauth_secret_key
+NEXTAUTH_URL=http://localhost:3000
+
+# OAuth Providers
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# Upstash Redis & Rate Limiting
+UPSTASH_REDIS_REST_URL=your_upstash_redis_url
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
+
+# Upstash QStash (Crons)
+QSTASH_URL=https://qstash.upstash.io
+QSTASH_TOKEN=your_qstash_token
+CRON_SECRET=your_cron_secret_token
+
+# UploadThing (Chat Attachments)
+UPLOADTHING_TOKEN=your_uploadthing_token
+
+# Nodemailer / SMTP
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=465
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_gmail_app_password
+
+# Chat Server Endpoint
+NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
+```
+
+#### 2. Chat Server (`postmygig-chat-server/.env`):
+Create `postmygig-chat-server/.env` with the following variables:
+```env
+PORT=5000
+FRONTEND_URL=http://localhost:3000
+BACKEND_URL=http://localhost:5000
+JWT_SECRET=your_nextauth_secret_key
+MONGODB_URI=your_mongodb_connection_string
+UPSTASH_REDIS_REST_URL=your_upstash_redis_url
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
+```
+
+---
+
+### Step 3: Install Dependencies & Run
+
+#### 1. Start the Chat Server:
+```bash
+cd postmygig-chat-server
+npm install
+npm run dev
+```
+*Chat server will be running on `http://localhost:5000`.*
+
+#### 2. Start the Next.js Web App:
+```bash
+cd ../postmygig
+npm install
+npm run dev
+```
+*Web app will be running on `http://localhost:3000`.*
+
+---
+
+## 🚦 Available Scripts
+
+### In `postmygig/`:
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Starts Next.js dev server with Turbopack |
+| `npm run build` | Builds the production bundle & generates sitemap |
+| `npm run start` | Starts the production server |
+| `npm run lint` | Runs ESLint checks |
+| `npm run seed:prod` | Runs production platform database seeder script |
+
+### In `postmygig-chat-server/`:
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Starts Socket.io server with Nodemon auto-reload |
+
+---
+
+## 📄 License & Author
+
+Distributed under the **MIT License**.
+
 - **Author**: Shubham Kumar Gupta
-- **X**: [@i_m_shubham45](https://x.com/i_m_shubham45) (#buildinpublic)
-- **GitHub Issues**: [https://github.com/shubGupta10/PostMyGig](https://github.com/shubGupta10/PostMyGig)
+- **X (Twitter)**: [@i_m_shubham45](https://x.com/i_m_shubham45)
+- **GitHub**: [shubGupta10](https://github.com/shubGupta10)
+- **Repository**: [https://github.com/shubGupta10/PostMyGig](https://github.com/shubGupta10/PostMyGig)
