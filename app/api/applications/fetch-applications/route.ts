@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import PingModel from "@/models/PingSchema";
-import ProjectModel from "@/models/ProjectModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { calculateRecommendations } from "./utils";
 import { ConnectoDatabase } from "@/lib/db";
 import { getServerSession } from "next-auth";

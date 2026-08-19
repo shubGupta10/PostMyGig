@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import { ApplicationsList } from "@/components/applications/ApplicationsList"
+import { ApplicationsList } from "@/modules/applications/components/ApplicationsList"
 
 export default function ViewApplicationsPage() {
   return (

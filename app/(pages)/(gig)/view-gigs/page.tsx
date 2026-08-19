@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import DisplayAllGigs from "@/components/DisplayAllGigs"
-import GigFilters from "@/components/gigs/GigFilters"
+import DisplayAllGigs from "@/modules/gigs/components/DisplayAllGigs"
+import GigFilters from "@/modules/gigs/components/GigFilters"
 import { getAllUniqueSkills } from "../services/gigService"
 import { getBaseUrl } from "@/lib/social-preview"
 

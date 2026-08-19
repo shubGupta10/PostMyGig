@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Briefcase, Calendar, ArrowRight } from "lucide-react";
-import type { FreelancerDashboardData } from "@/app/dashboard/types";
-import { UsageMeter } from "@/components/subscription/UsageMeter";
+import type { FreelancerDashboardData } from "@/app/(pages)/dashboard/types";
+import { UsageMeter } from "@/modules/subscriptions/components/UsageMeter";
 
 export function FreelancerDashboard({ data }: { data: FreelancerDashboardData }) {
     const router = useRouter();

@@ -1,5 +1,5 @@
 import { ConnectoDatabase } from "@/lib/db";
-import Chat from "@/models/ChatModel";
+import Chat from "@/modules/chat/models/ChatModel";
 import { NextRequest, NextResponse } from "next/server";
 import { UTApi } from "uploadthing/server"
 

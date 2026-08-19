@@ -1,6 +1,6 @@
 import { ConnectoDatabase } from "@/lib/db";
 import { authOptions } from "@/lib/options";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 

@@ -1,8 +1,8 @@
 import { ConnectoDatabase } from "@/lib/db";
 import { authOptions } from "@/lib/options";
 import redis from "@/lib/redis";
-import PingModel from "@/models/PingSchema";
-import ProjectModel from "@/models/ProjectModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";

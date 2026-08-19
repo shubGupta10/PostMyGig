@@ -1,11 +1,11 @@
 import { NextResponse, NextRequest, after } from "next/server";
-import PingModel from "@/models/PingSchema";
-import userModel from "@/models/UserModel";
-import ProjectModel from "@/models/ProjectModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
+import userModel from "@/modules/users/models/UserModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigPingRejectionTemplate } from "@/lib/email/templates";
 import resend from "@/lib/resend";
-import { dispatchNotification } from "@/lib/notification/dispatcher";
+import { dispatchNotification } from "@/modules/notifications/services/dispatcher";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 

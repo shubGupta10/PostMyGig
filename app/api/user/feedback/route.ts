@@ -1,4 +1,4 @@
-import FeedbackModel from "@/models/FeedbackModel";
+import FeedbackModel from "@/modules/admin/models/FeedbackModel";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {

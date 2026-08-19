@@ -1,14 +1,14 @@
 import { NextResponse, NextRequest, after } from "next/server";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import resend from "@/lib/resend";
 import { postMyGigAccountDeletedTemplate } from "@/lib/email/templates";
 import { EmailSender } from "@/lib/email/send";
-import ProjectModel from "@/models/ProjectModel";
-import PingModel from "@/models/PingSchema";
-import Chat from "@/models/ChatModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
+import Chat from "@/modules/chat/models/ChatModel";
 import { UTApi } from "uploadthing/server";
 import mongoose from "mongoose";
 

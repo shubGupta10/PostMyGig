@@ -1,7 +1,7 @@
 import { ConnectoDatabase } from "@/lib/db";
-import userModel from "@/models/UserModel";
-import ProjectModel from "@/models/ProjectModel";
-import Activity from "@/models/ActivityModel";
+import userModel from "@/modules/users/models/UserModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
+import Activity from "@/modules/notifications/models/ActivityModel";
 import redis from "@/lib/redis";
 
 // Helper to compute realistic staggered dates

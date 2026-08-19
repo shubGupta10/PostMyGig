@@ -1,7 +1,7 @@
 import { ConnectoDatabase } from "@/lib/db";
 import { FetchGigsResult } from "../types";
 import redis from "@/lib/redis";
-import ProjectModel from "@/models/ProjectModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { after } from "next/server";
 
 export async function getGigs(page = 1, limit = 9, search = "", skill = "", sort = "newest"): Promise<FetchGigsResult> {

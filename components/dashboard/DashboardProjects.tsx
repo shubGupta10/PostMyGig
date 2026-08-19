@@ -1,7 +1,7 @@
 "use client"
 
 import { ProjectCard, EmptyState } from "./ProjectCard"
-import type { Project } from "@/app/dashboard/types"
+import type { Project } from "@/app/(pages)/dashboard/types"
 
 interface DashboardProjectsProps {
   projects: Project[]

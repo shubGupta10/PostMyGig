@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import { PingForm } from "@/components/ping/PingForm"
+import { PingForm } from "@/modules/notifications/components/PingForm"
 import PingLoading from "./loading"
 
 export default function PingProjectPage() {

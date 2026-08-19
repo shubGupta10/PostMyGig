@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest, after } from "next/server";
-import ProjectModel from "@/models/ProjectModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
-import userModel from "@/models/UserModel";
-import Activity from "@/models/ActivityModel";
+import userModel from "@/modules/users/models/UserModel";
+import Activity from "@/modules/notifications/models/ActivityModel";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";

@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Check, Sparkles, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { PlanBadge } from "@/components/subscription/PlanBadge";
+import { PlanBadge } from "@/modules/subscriptions/components/PlanBadge";
 
 export default function PricingPage() {
     const { data: session, update } = useSession();

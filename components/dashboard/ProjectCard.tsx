@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { CalendarDays, Clock, Flag, Eye, Briefcase, Plus, MessageSquare } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { useRouter } from "next/navigation"
-import type { Project } from "@/app/dashboard/types"
+import type { Project } from "@/app/(pages)/dashboard/types"
 
 export function ProjectCard({ project }: { project: Project }) {
   const router = useRouter()

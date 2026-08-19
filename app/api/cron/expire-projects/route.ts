@@ -1,11 +1,11 @@
 import { ConnectoDatabase } from "@/lib/db";
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigExpiredTemplate } from "@/lib/email/templates";
-import { dispatchNotification } from "@/lib/notification/dispatcher";
+import { dispatchNotification } from "@/modules/notifications/services/dispatcher";
 import redis from "@/lib/redis";
 import resend from "@/lib/resend";
-import ProjectModel from "@/models/ProjectModel";
-import PingModel from "@/models/PingSchema";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 

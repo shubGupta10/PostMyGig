@@ -1,6 +1,6 @@
 import { ConnectoDatabase } from "@/lib/db"
 import redis from "@/lib/redis"
-import ActivityModel from "@/models/ActivityModel"
+import ActivityModel from "@/modules/notifications/models/ActivityModel"
 import type { ActivityItem } from "../types"
 
 export async function fetchActivityData(): Promise<ActivityItem[]> {

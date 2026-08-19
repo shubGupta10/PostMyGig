@@ -1,14 +1,14 @@
 import { NextResponse, NextRequest, after } from "next/server";
-import PingModel from "@/models/PingSchema";
-import ProjectModel from "@/models/ProjectModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigApplicationAcceptedTemplate } from "@/lib/email/templates";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import resend from "@/lib/resend";
 import redis from "@/lib/redis";
-import { dispatchNotification } from "@/lib/notification/dispatcher";
-import Activity from "@/models/ActivityModel";
+import { dispatchNotification } from "@/modules/notifications/services/dispatcher";
+import Activity from "@/modules/notifications/models/ActivityModel";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import mongoose from "mongoose";
@@ -192,9 +192,14 @@ export async function POST(req: NextRequest) {
             message: "Application accepted successfully",
         }, { status: 200 });
     } catch (error) {
+        console.error("Error accepting application:", error);
         if (dbSession) {
-            await dbSession.abortTransaction();
-            await dbSession.endSession();
+            try {
+                await dbSession.abortTransaction();
+                await dbSession.endSession();
+            } catch (cleanupErr) {
+                console.error("Failed to cleanup dbSession:", cleanupErr);
+            }
         }
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }

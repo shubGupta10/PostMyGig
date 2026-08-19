@@ -3,7 +3,7 @@ import resend from "@/lib/resend";
 import { EmailSender } from "@/lib/email/send";
 import redis from "@/lib/redis";
 import { ConnectoDatabase } from "@/lib/db";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import { postMyGigWelcomeBackTemplate } from "@/lib/email/templates";
 
 const NODE_ENV = process.env.NODE_ENV;

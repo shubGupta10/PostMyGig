@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/options"
 import { DesktopNav } from "./DesktopNav"
 import { MobileNav } from "./MobileNav"
 import { UserDropdown } from "./UserDropdown"
-import { DarkModeToggle } from "@/components/DarkModeToggle"
+import { DarkModeToggle } from "@/components/layout/DarkModeToggle"
 
 export async function Navbar() {
   const session = await getServerSession(authOptions)

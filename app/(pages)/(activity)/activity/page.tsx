@@ -1,6 +1,6 @@
 import React from 'react'
 import { Zap } from "lucide-react"
-import { ActivityCard } from "@/components/activity/ActivityCard"
+import { ActivityCard } from "@/modules/notifications/components/ActivityCard"
 import { fetchActivityData } from "./services/activityService"
 import type { ActivityItem } from "./types"
 

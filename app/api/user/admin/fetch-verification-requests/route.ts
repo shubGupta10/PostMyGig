@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { ConnectoDatabase } from "@/lib/db";
-import userModel from "@/models/UserModel";
-import ProjectModel from "@/models/ProjectModel";
+import userModel from "@/modules/users/models/UserModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 

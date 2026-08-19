@@ -1,8 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import redis from "@/lib/redis";
 import { ConnectoDatabase } from "@/lib/db";
-import ProjectModel from "@/models/ProjectModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 
 export async function POST(req: NextRequest) {
   try {
