@@ -1,8 +1,8 @@
 import { ConnectoDatabase } from "@/lib/db";
 import { authOptions } from "@/lib/options";
 import redis from "@/lib/redis";
-import ProjectModel from "@/models/ProjectModel";
-import userModel from "@/models/UserModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
+import userModel from "@/modules/users/models/UserModel";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 

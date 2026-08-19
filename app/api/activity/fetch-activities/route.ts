@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import Activity from "@/models/ActivityModel";
+import Activity from "@/modules/notifications/models/ActivityModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
 

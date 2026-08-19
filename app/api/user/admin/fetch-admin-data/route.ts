@@ -1,10 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
-import userModel from "@/models/UserModel";
-import ProjectModel from "@/models/ProjectModel";
-import PingModel from "@/models/PingSchema";
+import userModel from "@/modules/users/models/UserModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
 import { ConnectoDatabase } from "@/lib/db";
 import ratelimiter from "@/lib/ratelimit";
-import FeedbackModel from "@/models/FeedbackModel";
+import FeedbackModel from "@/modules/admin/models/FeedbackModel";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 

@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import userModel from "@/models/UserModel";
-import PingModel from "@/models/PingSchema";
+import userModel from "@/modules/users/models/UserModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
 
 export async function POST(req: NextRequest){
     try {

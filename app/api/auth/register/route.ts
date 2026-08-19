@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest, after } from "next/server";
 import bcrypt from "bcryptjs";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 import ratelimiter from "@/lib/ratelimit";
 import { postMyGigVerificationTemplate } from "@/lib/email/templates";

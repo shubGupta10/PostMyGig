@@ -5,7 +5,7 @@ import {
     getUserNotifications,
     markNotificationAsRead,
     markAllNotificationsAsRead
-} from "@/lib/notification/dispatcher";
+} from "@/modules/notifications/services/dispatcher";
 
 export async function GET(req: NextRequest) {
     try {

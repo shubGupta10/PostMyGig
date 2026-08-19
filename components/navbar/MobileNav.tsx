@@ -4,12 +4,12 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/useAuthStore"
+import { useAuthStore } from "@/modules/users/store/useAuthStore"
 import { Session } from "next-auth"
 import { Menu, X, LogOut, User, User2Icon, MessageCircleCodeIcon, MessageSquare, Shield, Briefcase, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { DarkModeToggle } from "@/components/DarkModeToggle"
-import { publicNavItems, authenticatedNavItems, adminNavItems } from "@/config/navigation"
+import { DarkModeToggle } from "@/components/layout/DarkModeToggle"
+import { publicNavItems, authenticatedNavItems, adminNavItems } from "@/lib/config/navigation"
 import {
   DropdownMenu,
   DropdownMenuContent,

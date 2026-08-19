@@ -1,4 +1,4 @@
-import FeedbackModel from "@/models/FeedbackModel";
+import FeedbackModel from "@/modules/admin/models/FeedbackModel";
 import { ConnectoDatabase } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";

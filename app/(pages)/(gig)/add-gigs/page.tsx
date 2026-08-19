@@ -23,7 +23,7 @@ import {
   Shield,
 } from "lucide-react"
 import { toast } from 'sonner'
-import FeedbackDialog from "@/components/FeedbackDialog"
+import FeedbackDialog from "@/modules/admin/components/FeedbackDialog"
 
 interface FormData {
   title: string

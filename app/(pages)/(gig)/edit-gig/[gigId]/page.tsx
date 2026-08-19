@@ -15,7 +15,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from 'sonner'
-import { useGigStore } from "@/store/gigStore"
+import { useGigStore } from "@/modules/gigs/store/gigStore"
 import EditGigLoading from "./loading"
 
 interface FormData {

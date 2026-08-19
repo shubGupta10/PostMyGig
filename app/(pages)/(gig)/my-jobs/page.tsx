@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 import { fetchUserGigs } from "./services"
-import { UserGigsList } from "@/components/gigs/UserGigsList"
+import { UserGigsList } from "@/modules/gigs/components/UserGigsList"
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>

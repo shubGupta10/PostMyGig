@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { ConnectoDatabase } from "@/lib/db"
-import ProjectModel from "@/models/ProjectModel"
+import ProjectModel from "@/modules/gigs/models/ProjectModel"
 import redis from "@/lib/redis"
 import ratelimiter from "@/lib/ratelimit"
 

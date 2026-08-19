@@ -1,7 +1,7 @@
 "use client"
 
 import { ShieldAlert } from "lucide-react"
-import type { RateLimitInfo } from "@/app/dashboard/types"
+import type { RateLimitInfo } from "@/app/(pages)/dashboard/types"
 
 export function RateLimitBanner({ rateLimitInfo }: { rateLimitInfo: RateLimitInfo }) {
   if (!rateLimitInfo.isLimited) return null

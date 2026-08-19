@@ -1,5 +1,5 @@
 import { fetchChatHistory } from "./services/chatService"
-import { MessageWorkspace } from "@/components/chat/MessageWorkspace"
+import { MessageWorkspace } from "@/modules/chat/components/MessageWorkspace"
 
 export default async function ChatHistoryPage() {
   const chatHistoryData = await fetchChatHistory()

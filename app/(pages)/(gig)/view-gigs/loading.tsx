@@ -1,4 +1,4 @@
-import { GigListSkeleton } from "@/components/gigs/GigListSkeleton"
+import { GigListSkeleton } from "@/modules/gigs/components/GigListSkeleton"
 
 export default function Loading() {
   return (

@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useAuthStore } from "@/store/useAuthStore"
+import { useAuthStore } from "@/modules/users/store/useAuthStore"
 import { Button } from "@/components/ui/button"
 import { Session } from "next-auth"
 import {

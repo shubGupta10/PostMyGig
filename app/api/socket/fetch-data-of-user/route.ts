@@ -1,8 +1,8 @@
 import { NextResponse, NextRequest, after } from "next/server";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
-import PingModel from "@/models/PingSchema";
-import ProjectModel from "@/models/ProjectModel";
+import PingModel from "@/modules/notifications/models/PingSchema";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { EmailSender } from "@/lib/email/send";
 import { postMyGigChatInvitationTemplate } from "@/lib/email/templates";
 import redis from "@/lib/redis";

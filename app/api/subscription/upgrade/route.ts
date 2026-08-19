@@ -2,9 +2,9 @@ import { NextResponse, type NextRequest, after } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import { ConnectoDatabase } from "@/lib/db";
-import userModel from "@/models/UserModel";
-import SubscriptionModel from "@/models/SubscriptionModel";
-import { dispatchNotification } from "@/lib/notification/dispatcher";
+import userModel from "@/modules/users/models/UserModel";
+import SubscriptionModel from "@/modules/subscriptions/models/SubscriptionModel";
+import { dispatchNotification } from "@/modules/notifications/services/dispatcher";
 import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {

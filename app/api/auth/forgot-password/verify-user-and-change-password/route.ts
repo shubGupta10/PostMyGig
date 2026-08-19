@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import redis from "@/lib/redis";
 import bcrypt from "bcryptjs";
 

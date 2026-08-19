@@ -1,6 +1,6 @@
 'use client'
 
-import ChatSystem from '@/components/ChatSystem'
+import ChatSystem from '@/modules/chat/components/ChatSystem'
 import { useSearchParams } from 'next/navigation'
 import React from 'react'
 

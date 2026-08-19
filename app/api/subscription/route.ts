@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
-import { getUserUsageStats } from "@/lib/subscription/engine";
-import { ACTION_TYPES } from "@/lib/subscription/config/subscriptions";
+import { getUserUsageStats } from "@/modules/subscriptions/services/engine";
+import { ACTION_TYPES } from "@/modules/subscriptions/services/config/subscriptions";
 
 export async function GET(req: NextRequest) {
     try {

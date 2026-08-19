@@ -1,13 +1,13 @@
 import { after, NextResponse, type NextRequest } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/options"
-import ProjectModel from "@/models/ProjectModel"
+import ProjectModel from "@/modules/gigs/models/ProjectModel"
 import { ConnectoDatabase } from "@/lib/db"
 import redis from "@/lib/redis"
-import Activity from "@/models/ActivityModel"
-import { canUserPerformAction, incrementUserUsage } from "@/lib/subscription/engine"
-import { ACTION_TYPES } from "@/lib/subscription/config/subscriptions"
-import { dispatchNotification } from "@/lib/notification/dispatcher"
+import Activity from "@/modules/notifications/models/ActivityModel"
+import { canUserPerformAction, incrementUserUsage } from "@/modules/subscriptions/services/engine"
+import { ACTION_TYPES } from "@/modules/subscriptions/services/config/subscriptions"
+import { dispatchNotification } from "@/modules/notifications/services/dispatcher"
 
 interface ContactInfo {
   email?: string

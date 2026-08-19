@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import { ConnectoDatabase } from "@/lib/db";
-import userModel from "@/models/UserModel";
+import userModel from "@/modules/users/models/UserModel";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

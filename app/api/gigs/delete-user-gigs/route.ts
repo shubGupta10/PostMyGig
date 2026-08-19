@@ -1,8 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
-import ProjectModel from "@/models/ProjectModel";
+import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
-import Chat from "@/models/ChatModel";
+import Chat from "@/modules/chat/models/ChatModel";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";

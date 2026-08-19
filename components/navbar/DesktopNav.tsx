@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { publicNavItems, authenticatedNavItems, adminNavItems } from "@/config/navigation"
+import { publicNavItems, authenticatedNavItems, adminNavItems } from "@/lib/config/navigation"
 import { Session } from "next-auth"
 
 interface DesktopNavProps {

@@ -1,8 +1,8 @@
 "use client";
 
-import type { ClientDashboardData } from "@/app/dashboard/types";
+import type { ClientDashboardData } from "@/app/(pages)/dashboard/types";
 import { DashboardProjects } from "./DashboardProjects";
-import { UsageMeter } from "@/components/subscription/UsageMeter";
+import { UsageMeter } from "@/modules/subscriptions/components/UsageMeter";
 
 export function ClientDashboard({ data }: { data: ClientDashboardData }) {
     const stats = [

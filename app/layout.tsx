@@ -1,25 +1,25 @@
 import { type Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SessionProviderWrapper from "../components/SessionProviderWrapper";
-import SmallFooter from "@/components/SmallFooter";
+import SessionProviderWrapper from "@/components/layout/SessionProviderWrapper";
+import SmallFooter from "@/components/layout/SmallFooter";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BackendWarmer } from "@/components/BackendWarmer";
+import { BackendWarmer } from "@/components/shared/BackendWarmer";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { HeaderTitle } from "@/components/header-title";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { HeaderTitle } from "@/components/layout/header-title";
+import { DarkModeToggle } from "@/components/layout/DarkModeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/layout/theme-provider"
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
-import { AddGigButton } from "@/components/gigs/AddGigButton";
-import { RoleSwitcher } from "@/components/RoleSwitcher";
-import { NotificationBell } from "@/components/notification/NotificationBell";
-import { PublicLayoutWrapper } from "@/components/PublicLayoutWrapper";
+import { AddGigButton } from "@/modules/gigs/components/AddGigButton";
+import { RoleSwitcher } from "@/modules/users/components/RoleSwitcher";
+import { NotificationBell } from "@/modules/notifications/components/NotificationBell";
+import { PublicLayoutWrapper } from "@/components/layout/PublicLayoutWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
