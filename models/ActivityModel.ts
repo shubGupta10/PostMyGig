@@ -57,6 +57,8 @@ const activitySchema: Schema<IActivity> = new mongoose.Schema({
 });
 
 activitySchema.index({ createdAt: 1 }, { expireAfterSeconds: 30 * 24 * 60 * 60 });
+activitySchema.index({ createdAt: -1 });
+activitySchema.index({ userId: 1, createdAt: -1 });
 
 const Activity: Model<IActivity> = mongoose.models.Activity || mongoose.model<IActivity>("Activity", activitySchema);
 export default Activity;

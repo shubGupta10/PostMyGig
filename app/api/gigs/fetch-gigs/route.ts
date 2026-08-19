@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
     // Get paginated gigs
     const gigs = await ProjectModel.find({
       expiresAt: { $gt: currentDate },
-      status: { $nin: ["accepted", "completed", "expired"] }
+      status: { $nin: ["assigned", "completed", "expired"] }
     })
       .select({
         title: 1,

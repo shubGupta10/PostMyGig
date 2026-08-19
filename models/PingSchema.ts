@@ -51,6 +51,8 @@ const pingSchema = new Schema<Ping>(
 pingSchema.index({ projectId: 1, userEmail: 1 })
 pingSchema.index({ posterEmail: 1 })
 pingSchema.index({ status: 1 })
+pingSchema.index({ userEmail: 1, createdAt: -1 })
+pingSchema.index({ projectId: 1, status: 1 })
 
 const PingModel: Model<Ping> =
   mongoose.models.Ping || mongoose.model<Ping>('Ping', pingSchema);
