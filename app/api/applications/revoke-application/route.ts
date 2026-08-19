@@ -5,8 +5,10 @@ import PingModel from "@/models/PingSchema";
 import ProjectModel from "@/models/ProjectModel";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
+    let dbSession;
     try {
 
         const session = await getServerSession(authOptions);
@@ -21,20 +23,27 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Gig ID is required" }, { status: 400 });
         }
 
+        dbSession = await mongoose.startSession();
+        dbSession.startTransaction();
+
         await PingModel.updateMany(
             { projectId: gigId },
-            { $set: { status: "pending" } }
+            { $set: { status: "pending" } },
+            { session: dbSession }
         );
 
         await ProjectModel.findByIdAndUpdate(gigId, {
             $unset: { AcceptedFreelancerEmail: "" },
-            $set: { status: "active" }
-        }, { new: true });
+            $set: { status: "active" },
+        }, { new: true }).session(dbSession);
 
         const [project, allApplicationsForGig] = await Promise.all([
             ProjectModel.findById(gigId).select("createdBy").lean(),
-            PingModel.find({ projectId: gigId }).select("userEmail").lean(),
+            PingModel.find({ projectId: gigId }).select("userEmail").lean().session(dbSession),
         ]);
+
+        await dbSession.commitTransaction();
+        await dbSession.endSession();
 
         try {
             const keysToDelete: string[] = [
@@ -70,6 +79,10 @@ export async function POST(req: NextRequest) {
             message: "Acceptance revoked successfully",
         }, { status: 200 });
     } catch (error) {
+        if (dbSession) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
+        }
         console.error("Revoke error:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }

@@ -10,9 +10,10 @@ import ProjectModel from "@/models/ProjectModel";
 import PingModel from "@/models/PingSchema";
 import Chat from "@/models/ChatModel";
 import { UTApi } from "uploadthing/server";
-
+import mongoose from "mongoose";
 
 export async function DELETE(req: NextRequest) {
+    let dbSession;
     try {
         await ConnectoDatabase();
         const { userEmail } = await req.json();
@@ -36,15 +37,18 @@ export async function DELETE(req: NextRequest) {
             }, { status: 403 })
         }
 
+        dbSession = await mongoose.startSession();
+        dbSession.startTransaction();
+
         //delete user gigs
         await ProjectModel.deleteMany({
             createdBy: userEmail
-        });
+        }).session(dbSession);
 
         //delete user pings
         await PingModel.deleteMany({
             userEmail: userEmail
-        });
+        }).session(dbSession);
 
         try {
             const userChatsWithFiles = await Chat.find({
@@ -67,12 +71,15 @@ export async function DELETE(req: NextRequest) {
         //delete the chat messages
         await Chat.deleteMany({
             $or: [{ senderEmail: userEmail }, { receiverEmail: userEmail }]
-        });
+        }).session(dbSession);
 
         //delete the user
         await userModel.deleteOne({
             email: userEmail
-        });
+        }).session(dbSession);
+
+        await dbSession.commitTransaction();
+        await dbSession.endSession();
 
         //send mail for deletion
         after(async () => {
@@ -98,6 +105,10 @@ export async function DELETE(req: NextRequest) {
             message: "User Account Deleted"
         }, { status: 200 })
     } catch (error) {
+        if (dbSession) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
+        }
         return NextResponse.json({
             message: "Failed to delete user Account"
         }, { status: 500 })

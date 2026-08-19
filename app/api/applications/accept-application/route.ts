@@ -11,8 +11,10 @@ import { dispatchNotification } from "@/lib/notification/dispatcher";
 import Activity from "@/models/ActivityModel";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
+import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
+    let dbSession;
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user.id) {
@@ -24,29 +26,40 @@ export async function POST(req: NextRequest) {
         await ConnectoDatabase();
         const { applicationId, gigId, applicantEmail } = await req.json();
 
+        dbSession = await mongoose.startSession();
+        dbSession.startTransaction();
+
         //find the gig in db
-        const project = await ProjectModel.findById(gigId);
+        const project = await ProjectModel.findById(gigId).session(dbSession);
         if (!project) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
             return NextResponse.json({ error: "Gig not found" }, { status: 404 });
         }
 
         if (project.createdBy !== session.user.email) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
             return NextResponse.json({
                 message: "Forbidden. You are not allowed to accept applications for someone else's gig."
             }, { status: 403 })
         }
         if (!applicationId || !gigId || !applicantEmail) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
             return NextResponse.json({ error: "Application ID, Gig ID, and Applicant Email are required" }, { status: 400 });
         }
 
-        const application = await PingModel.findById(applicationId);
+        const application = await PingModel.findById(applicationId).session(dbSession);
         if (!application) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
             return NextResponse.json({ error: "Application not found" }, { status: 404 });
         }
 
         // Update the application status to "accepted"
         application.status = "accepted";
-        await application.save();
+        await application.save({ session: dbSession });
 
         //reject the rest freelancers pings upon selecting one application 
         await PingModel.updateMany(
@@ -56,18 +69,22 @@ export async function POST(req: NextRequest) {
             },
             {
                 $set: { status: "rejected" }
-            }
+            },
+            { session: dbSession }
         );
 
         //update freelancer email in ProjectModel
         await ProjectModel.findByIdAndUpdate(gigId, {
             AcceptedFreelancerEmail: applicantEmail
-        }, { new: true });
+        }, { new: true, session: dbSession });
 
         //change the status of project in project model
         await ProjectModel.findByIdAndUpdate(gigId, {
             status: "assigned"
-        }, { new: true });
+        }, { new: true, session: dbSession });
+
+        await dbSession.commitTransaction();
+        await dbSession.endSession();
 
         // Fetch all applicants for this gig to invalidate their proposal/dashboard caches
         const allApplicationsForGig = await PingModel.find({ projectId: gigId }).select("userEmail").lean();
@@ -175,6 +192,10 @@ export async function POST(req: NextRequest) {
             message: "Application accepted successfully",
         }, { status: 200 });
     } catch (error) {
+        if (dbSession) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
+        }
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

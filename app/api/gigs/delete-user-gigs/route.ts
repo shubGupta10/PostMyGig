@@ -3,8 +3,10 @@ import ProjectModel from "@/models/ProjectModel";
 import { ConnectoDatabase } from "@/lib/db";
 import redis from "@/lib/redis";
 import Chat from "@/models/ChatModel";
+import mongoose from "mongoose";
 
 export async function DELETE(req: NextRequest) {
+    let dbSession;
     try {
         await ConnectoDatabase();
 
@@ -16,9 +18,14 @@ export async function DELETE(req: NextRequest) {
             }, { status: 400 });
         }
 
+        dbSession = await mongoose.startSession();
+        dbSession.startTransaction();
+
         // First fetch the gig to get its creator
-        const gig = await ProjectModel.findById(gigId).lean();
+        const gig = await ProjectModel.findById(gigId).lean().session(dbSession);
         if (!gig) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
             return NextResponse.json({
                 message: "Gig not found"
             }, { status: 404 });
@@ -27,8 +34,10 @@ export async function DELETE(req: NextRequest) {
         const cacheKey = `user-projects:${gig.createdBy}`;
 
         // Delete the gig
-        const deleted = await ProjectModel.findByIdAndDelete(gigId);
+        const deleted = await ProjectModel.findByIdAndDelete(gigId).session(dbSession);
         if (!deleted) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
             return NextResponse.json({
                 message: "Gig could not be deleted"
             }, { status: 500 });
@@ -48,13 +57,20 @@ export async function DELETE(req: NextRequest) {
         //set to delete the gig
         await Chat.deleteMany({
             gigId: gigId
-        });
+        }).session(dbSession);
+
+        await dbSession.commitTransaction();
+        await dbSession.endSession();
 
         return NextResponse.json({
             message: "Gig deleted and cache invalidated"
         }, { status: 200 });
 
     } catch (error) {
+        if (dbSession) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
+        }
         console.error("Error deleting gig:", error);
         return NextResponse.json({
             message: "Internal server error"

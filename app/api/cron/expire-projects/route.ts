@@ -7,8 +7,10 @@ import resend from "@/lib/resend";
 import ProjectModel from "@/models/ProjectModel";
 import PingModel from "@/models/PingSchema";
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
+    let dbSession;
     try {
         const authHeader = req.headers.get("authorization");
         const cronSecret = process.env.CRON_SECRET;
@@ -21,11 +23,15 @@ export async function POST(req: NextRequest) {
 
         await ConnectoDatabase();
 
+        dbSession = await mongoose.startSession();
+        dbSession.startTransaction();
+
         const now = new Date();
         const nowIso = now.toISOString();
 
         const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        const curatedGigs = await ProjectModel.find({ isCurated: true }, "_id").lean();
+        const curatedGigs = await ProjectModel.find({ isCurated: true }, "_id").lean().session(dbSession);
+
         if (curatedGigs.length > 0) {
             const curatedIds = curatedGigs.map((g) => g._id.toString());
             await PingModel.updateMany(
@@ -34,14 +40,15 @@ export async function POST(req: NextRequest) {
                     status: "pending",
                     createdAt: { $lt: sevenDaysAgo },
                 },
-                { $set: { status: "rejected" } }
+                { $set: { status: "rejected" } },
+                { session: dbSession }
             );
         }
 
         const allActiveProjects = await ProjectModel.find(
             {},
             "title status expiresAt createdAt createdBy isCurated"
-        ).lean();
+        ).lean().session(dbSession);
 
         const expiredProjects = await ProjectModel.find({
             status: "active",
@@ -49,9 +56,11 @@ export async function POST(req: NextRequest) {
                 { expiresAt: { $lt: now } },
                 { expiresAt: { $type: "string", $lt: nowIso } },
             ]
-        }).lean();
+        }).lean().session(dbSession);
 
         if (!expiredProjects.length) {
+            await dbSession.commitTransaction();
+            await dbSession.endSession();
             return NextResponse.json({
                 message: "No Projects to expire",
                 count: 0,
@@ -72,13 +81,18 @@ export async function POST(req: NextRequest) {
 
         await ProjectModel.updateMany(
             { _id: { $in: expireIds } },
-            { $set: { status: "expired" } }
+            { $set: { status: "expired" } },
+            { session: dbSession }
         );
 
         await PingModel.updateMany(
             { projectId: { $in: expireIds.map((id) => id.toString()) }, status: "pending" },
-            { $set: { status: "rejected" } }
+            { $set: { status: "rejected" } },
+            { session: dbSession }
         );
+
+        await dbSession.commitTransaction();
+        await dbSession.endSession();
 
         for (const project of expiredProjects) {
             try {
@@ -145,6 +159,10 @@ export async function POST(req: NextRequest) {
         }, { status: 200 });
 
     } catch (error: any) {
+        if (dbSession) {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
+        }
         console.error("Cron expire-projects error:", error);
         return NextResponse.json({
             message: "Cron execution failed",
