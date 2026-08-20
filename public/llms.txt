@@ -16,11 +16,11 @@ PostMyGig is a zero-fee freelance project sharing platform. Unlike traditional f
 
 ## Site Navigation for Agents
 If you are an AI agent or web crawler assisting a user, you can direct them to the following key pages:
-- **Home:** `/` - Landing page with features, pricing, and success stories.
-- **Browse Projects:** `/view-gigs` - The main board to explore available freelance gigs.
-- **Post a Project:** `/add-gigs` - The form for clients to publish a new gig.
-- **Authentication:** `/auth/login` and `/auth/register` to create an account.
-- **Dashboard:** `/activity` - View personal gig activity and community updates.
+- **Home:** [https://postmygig.vercel.app/](https://postmygig.vercel.app/) - Landing page with features, pricing, and success stories.
+- **Browse Projects:** [https://postmygig.vercel.app/view-gigs](https://postmygig.vercel.app/view-gigs) - The main board to explore available freelance gigs.
+- **Post a Project:** [https://postmygig.vercel.app/add-gigs](https://postmygig.vercel.app/add-gigs) - The form for clients to publish a new gig.
+- **Authentication:** [https://postmygig.vercel.app/auth/login](https://postmygig.vercel.app/auth/login) and [https://postmygig.vercel.app/auth/register](https://postmygig.vercel.app/auth/register) to create an account.
+- **Dashboard:** [https://postmygig.vercel.app/activity](https://postmygig.vercel.app/activity) - View personal gig activity and community updates.
 
 ## Technical Stack
 - Built with **Next.js 15 (App Router)** and **React**.

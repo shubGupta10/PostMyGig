@@ -53,7 +53,7 @@ export default function EarlyUserFeedback() {
 
         {/* Dynamic Display Grid */}
         {isLoading ? (
-          <div className="h-[360px] flex items-center justify-center">
+          <div className="h-[580px] sm:h-[660px] lg:h-[720px] flex items-center justify-center w-full">
             <div className="flex items-center gap-2.5 text-sm text-muted-foreground font-medium">
               <span className="size-2 rounded-full bg-primary animate-pulse" />
               <span>Fetching live platform activity...</span>

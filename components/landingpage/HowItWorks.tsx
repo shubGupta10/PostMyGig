@@ -101,7 +101,7 @@ export default function HowItWorks({
             ].map((item, i) => (
               <div key={i} className="bg-card border-2 border-border rounded-xl p-2.5 sm:p-3 shadow-sm flex items-center gap-2.5 sm:gap-3">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary overflow-hidden border-2 border-border flex-shrink-0">
-                  <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                  <Image src={item.img} alt={item.title} width={40} height={40} sizes="(max-width: 640px) 32px, 40px" className="w-full h-full object-cover" />
                 </div>
                 <div>
                     <div className="text-xs sm:text-sm font-bold text-foreground">{item.title}</div>
