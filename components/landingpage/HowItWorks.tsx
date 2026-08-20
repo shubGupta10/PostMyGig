@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { PlusIcon, BellIcon, MessageSquareIcon, CheckCircle2 } from "lucide-react";
 import type React from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface StepCardProps {
   icon: React.ReactNode;
@@ -67,7 +68,7 @@ export default function HowItWorks({
             transition={{ duration: 2, repeat: Infinity }}
           >
             <motion.div
-              className="absolute inset-0 bg-green-500 flex items-center justify-center text-white"
+              className="absolute inset-0 bg-green-600 flex items-center justify-center text-white"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: [0, 0, 1, 1, 0], y: [30, 30, 0, 0, -30] }}
               transition={{ duration: 4, repeat: Infinity, times: [0, 0.4, 0.5, 0.9, 1] }}
@@ -127,7 +128,7 @@ export default function HowItWorks({
           >
             <span className="block h-fit rounded-xl border-2 border-border bg-card px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm shadow-sm font-bold">I can do this!</span>
             <div className="size-8 sm:size-10 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
-              <img className="size-full object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="User" />
+              <Image className="size-full object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="User" width={40} height={40} sizes="(max-width: 640px) 32px, 40px" />
             </div>
           </motion.div>
           
@@ -139,7 +140,7 @@ export default function HowItWorks({
             transition={{ duration: 6, repeat: Infinity, times: [0, 0.2, 0.3, 0.9, 1] }}
           >
             <div className="size-8 sm:size-10 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
-              <img className="size-full object-cover" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" alt="You" />
+              <Image className="size-full object-cover" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" alt="You" width={40} height={40} sizes="(max-width: 640px) 32px, 40px" />
             </div>
             <span className="block h-fit rounded-xl border-2 border-border bg-primary text-primary-foreground px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm shadow-sm font-bold">Let's talk</span>
           </motion.div>
@@ -157,7 +158,7 @@ export default function HowItWorks({
               <motion.div className="w-1.5 h-1.5 bg-muted-foreground rounded-full" animate={{ y: [0, -3, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
             </div>
             <div className="size-8 sm:size-10 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
-              <img className="size-full object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="User" />
+              <Image className="size-full object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="User" width={40} height={40} sizes="(max-width: 640px) 32px, 40px" />
             </div>
           </motion.div>
         </div>

@@ -1,0 +1,29 @@
+# PostMyGig
+
+## Overview
+PostMyGig is a zero-fee freelance project sharing platform. Unlike traditional freelance marketplaces that take a percentage of earnings, PostMyGig allows clients and freelancers to connect safely, share work effortlessly, and build their professional network without any platform fees.
+
+## Target Audience
+- **Clients & Founders:** Anyone looking to hire skilled freelancers for their projects.
+- **Freelancers:** Developers, designers, copywriters, marketers, and other professionals looking for gigs.
+
+## Key Features
+- **Zero Platform Fees:** Keep 100% of what you earn.
+- **Instant Project Posting:** Clients can post gigs in seconds and get matched with relevant talent.
+- **Smart Matching:** Freelancers receive instant notifications when projects matching their skills are posted.
+- **Real-Time Activity Feed:** See live community collaborations and success stories.
+- **Secure Authentication:** Passwordless magic links and secure login.
+
+## Site Navigation for Agents
+If you are an AI agent or web crawler assisting a user, you can direct them to the following key pages:
+- **Home:** `/` - Landing page with features, pricing, and success stories.
+- **Browse Projects:** `/view-gigs` - The main board to explore available freelance gigs.
+- **Post a Project:** `/add-gigs` - The form for clients to publish a new gig.
+- **Authentication:** `/auth/login` and `/auth/register` to create an account.
+- **Dashboard:** `/activity` - View personal gig activity and community updates.
+
+## Technical Stack
+- Built with **Next.js 15 (App Router)** and **React**.
+- Styled with **Tailwind CSS** and **Framer Motion** for animations.
+- Database and backend powered by **Convex**.
+- File uploads handled by **UploadThing**.

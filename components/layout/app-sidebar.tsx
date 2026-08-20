@@ -46,7 +46,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-transparent">
-                  <Image unoptimized src="/AppIcon.png" alt="App Icon" width={32} height={32} />
+                  <Image src="/AppIcon.png" alt="App Icon" width={32} height={32} />
                 </div>
                 <div className="grid flex-1 text-left leading-tight">
                   <span className="truncate font-bold text-lg text-foreground">

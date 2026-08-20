@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Zap, Share2, MessageCircle, Link as LinkIcon, CheckCircle2 } from "lucide-react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 export default function Features() {
   return (
@@ -111,7 +112,7 @@ export default function Features() {
                     ].map((item, i) => (
                       <div key={i} className="bg-background border-2 border-border rounded-xl p-2.5 sm:p-3 flex items-center gap-3 sm:gap-4 shadow-sm">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-background border-2 border-border overflow-hidden flex flex-shrink-0 items-center justify-center">
-                          <img src={item.img} alt="User" className="w-full h-full object-cover" />
+                          <Image src={item.img} alt="User" width={40} height={40} sizes="(max-width: 640px) 32px, 40px" className="w-full h-full object-cover" />
                         </div>
                         <span className="text-xs sm:text-sm font-bold text-foreground">{item.title}</span>
                       </div>
@@ -163,7 +164,7 @@ export default function Features() {
                       transition={{ duration: 2, repeat: Infinity }}
                     >
                       <motion.div
-                        className="absolute inset-0 bg-green-500 flex items-center justify-center text-white"
+                        className="absolute inset-0 bg-green-600 flex items-center justify-center text-white"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: [0, 0, 1, 1, 0], y: [30, 30, 0, 0, -30] }}
                         transition={{ duration: 4, repeat: Infinity, times: [0, 0.4, 0.5, 0.9, 1] }}
@@ -204,7 +205,7 @@ export default function Features() {
                     >
                       <span className="block h-fit rounded-xl border-2 border-border bg-card px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm shadow-sm font-bold">I can design this</span>
                       <div className="size-10 sm:size-12 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
-                        <img className="size-full object-cover" src="https://randomuser.me/api/portraits/men/11.jpg" alt="Designer" />
+                        <Image className="size-full object-cover" src="https://randomuser.me/api/portraits/men/11.jpg" alt="Designer" width={48} height={48} sizes="(max-width: 640px) 40px, 48px" />
                       </div>
                     </motion.div>
 
@@ -216,7 +217,7 @@ export default function Features() {
                       transition={{ duration: 6, repeat: Infinity, times: [0, 0.2, 0.3, 0.9, 1] }}
                     >
                       <div className="size-10 sm:size-12 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
-                        <img className="size-full object-cover" src="https://randomuser.me/api/portraits/women/12.jpg" alt="You" />
+                        <Image className="size-full object-cover" src="https://randomuser.me/api/portraits/women/12.jpg" alt="You" width={48} height={48} sizes="(max-width: 640px) 40px, 48px" />
                       </div>
                       <span className="block h-fit rounded-xl border-2 border-border bg-primary text-primary-foreground px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm shadow-sm font-bold">Awesome!</span>
                     </motion.div>
@@ -235,7 +236,7 @@ export default function Features() {
                         <motion.div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-muted-foreground rounded-full" animate={{ y: [0, -4, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
                       </div>
                       <div className="size-10 sm:size-12 rounded-full overflow-hidden border-2 border-border flex-shrink-0 bg-background">
-                        <img className="size-full object-cover" src="https://randomuser.me/api/portraits/women/68.jpg" alt="Writer" />
+                        <Image className="size-full object-cover" src="https://randomuser.me/api/portraits/women/68.jpg" alt="Writer" width={48} height={48} sizes="(max-width: 640px) 40px, 48px" />
                       </div>
                     </motion.div>
 

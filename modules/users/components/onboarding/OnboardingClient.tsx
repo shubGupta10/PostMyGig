@@ -57,11 +57,11 @@ export default function OnboardingClient() {
       <div className="text-center space-y-3">
         <div className="flex justify-center mb-2">
           <Image
-            unoptimized
             src="/AppIcon.png"
             alt="PostMyGig Logo"
             width={48}
             height={48}
+            sizes="48px"
             className="rounded-xl"
           />
         </div>
