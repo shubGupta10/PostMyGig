@@ -86,6 +86,42 @@ export default async function OpenGig({ params }: { params: Promise<{ gigId: str
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 sm:py-10">
+      {/* JobPosting JSON-LD for Google Jobs Rich Snippets */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "JobPosting",
+            "title": gig.title,
+            "description": gig.description,
+            "datePosted": gig.createdAt || new Date().toISOString(),
+            "validThrough": gig.expiresAt || new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
+            "employmentType": "CONTRACTOR",
+            "hiringOrganization": {
+              "@type": "Organization",
+              "name": "PostMyGig User",
+              "sameAs": "https://postmygig.vercel.app"
+            },
+            "jobLocation": {
+              "@type": "Place",
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "Remote"
+              }
+            },
+            "baseSalary": gig.budget ? {
+              "@type": "MonetaryAmount",
+              "currency": "INR",
+              "value": {
+                "@type": "QuantitativeValue",
+                "value": gig.budget
+              }
+            } : undefined
+          })
+        }}
+      />
+      
       <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
         <OpenGigHeader
         gig={gig}
