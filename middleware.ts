@@ -94,6 +94,6 @@ export default withAuth(
 
 export const config = {
     matcher: [
-        "/((?!api/auth|api/uploadthing|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|html)$).*)",
+        "/((?!api/auth|api/uploadthing|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|html|xml)$).*)",
     ],
 };
