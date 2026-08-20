@@ -19,7 +19,7 @@ export async function Navbar() {
           <div className="flex items-center flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
-                <Image unoptimized src="/AppIcon.png" alt="App Icon" width={100} height={100} />
+                <Image src="/AppIcon.png" alt="App Icon" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-bold group-hover:text-primary transition-colors duration-200 text-foreground">
                 PostMy<span className="text-primary">Gig</span>

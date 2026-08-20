@@ -138,9 +138,9 @@ export default function Hero() {
                               <Share2 className="w-3 h-3 text-[#b4b4b4]" />
                             </div>
 
-                            <h3 className="text-xs font-bold text-[#eeeeee] line-clamp-1 leading-snug">
+                            <h2 className="text-xs font-bold text-[#eeeeee] line-clamp-1 leading-snug">
                               {gig.title}
-                            </h3>
+                            </h2>
 
                             <p className="text-[10px] sm:text-[11px] text-[#b4b4b4] line-clamp-2 leading-tight">
                               {gig.description}

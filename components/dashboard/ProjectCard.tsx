@@ -80,6 +80,7 @@ export function ProjectCard({ project }: { project: Project }) {
               onClick={() => router.push(`/open-gig/${project._id}`)}
               className="px-3 justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer shrink-0"
               title="View Gig Details"
+              aria-label={`View details for ${project.title}`}
             >
               <Eye className="h-4 w-4" />
             </Button>
@@ -89,6 +90,7 @@ export function ProjectCard({ project }: { project: Project }) {
             variant="secondary"
             onClick={() => router.push(`/open-gig/${project._id}`)}
             className="w-full justify-center h-10 font-semibold text-xs rounded-xl shadow-xs cursor-pointer"
+            aria-label={`View details for ${project.title}`}
           >
             <Eye className="h-4 w-4 mr-2" />
             View Details

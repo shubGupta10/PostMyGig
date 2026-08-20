@@ -200,6 +200,7 @@ export function SuccessActivityCard({ activity }: SuccessActivityCardProps) {
           <Link
             href={`/open-gig/${activity.gigId}`}
             className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline mt-1 self-start"
+            aria-label={`View details for ${gigTitle}`}
           >
             <span>View Gig Details</span>
             <ArrowUpRight className="size-3.5" />

@@ -15,7 +15,7 @@ function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-4 sm:mb-6">
               <div className="w-9 h-9 sm:w-10 sm:h-10 bg-transparent rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
-                <Image unoptimized src='/AppIcon.png' alt="App Icon" width={100} height={100} />
+                <Image src='/AppIcon.png' alt="App Icon" width={40} height={40} className="w-full h-full object-contain" />
               </div>
               <span className="text-lg sm:text-xl font-bold text-primary">PostMy<span className="text-accent-foreground">Gig</span></span>
             </div>
@@ -97,12 +97,12 @@ function Footer() {
             </div>
 
             {/* Social Links */}
-            <div className="flex items-center space-x-4 sm:space-x-6">
+            <div className="flex items-center space-x-2">
               <a
                 href="https://twitter.com/postmygig"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-200 p-2 -m-2 sm:p-0 sm:m-0"
+                className="text-muted-foreground hover:text-primary transition-colors duration-200 p-3"
                 aria-label="Follow PostMyGig on X (Twitter)"
               >
                 <Twitter className="w-5 h-5" />
@@ -112,7 +112,7 @@ function Footer() {
                 href="https://linkedin.com/company/postmygig"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-200 p-2 -m-2 sm:p-0 sm:m-0"
+                className="text-muted-foreground hover:text-primary transition-colors duration-200 p-3"
                 aria-label="Follow PostMyGig on LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
@@ -122,7 +122,7 @@ function Footer() {
                 href="https://instagram.com/postmygig"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-accent-foreground transition-colors duration-200 p-2 -m-2 sm:p-0 sm:m-0"
+                className="text-muted-foreground hover:text-accent-foreground transition-colors duration-200 p-3"
                 aria-label="Follow PostMyGig on Instagram"
               >
                 <Instagram className="w-5 h-5" />
