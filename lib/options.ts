@@ -153,9 +153,6 @@ export const authOptions: NextAuthOptions = {
                 // For OAuth Sign In (Google or GitHub)
                 if (account?.provider === 'google' || account?.provider === 'github') {
                     if (existingUser) {
-                        if (existingUser.provider === 'credentials') {
-                            throw new Error("This email is already registered with password. Please use password to login.")
-                        }
 
                         //update existing OAuth user and set role in user object
                         const updatedUser = await userModel.findByIdAndUpdate(
