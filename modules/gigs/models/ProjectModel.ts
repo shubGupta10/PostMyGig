@@ -20,6 +20,8 @@ export interface Project extends Document {
   reportCount: number;
   isFlagged: boolean;
   isCurated?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const projectSchema = new Schema<Project>(
