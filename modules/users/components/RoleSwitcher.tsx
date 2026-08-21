@@ -50,8 +50,12 @@ export function RoleSwitcher() {
 
     return (
         <div
-            onClick={() => !isLoading && handleToggleRole(!isFreelancer)}
-            className="flex items-center justify-between gap-2.5 min-w-[145px] bg-secondary text-secondary-foreground px-3.5 py-1.5 rounded-xl shadow-xs select-none cursor-pointer hover:opacity-90 transition-all"
+            onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (!isLoading) handleToggleRole(!isFreelancer);
+            }}
+            className="flex items-center justify-center gap-2.5 min-w-[145px] bg-secondary text-secondary-foreground px-3.5 py-1.5 rounded-xl shadow-xs select-none cursor-pointer hover:opacity-90 transition-all"
         >
             <span className="text-xs font-semibold">
                 {isFreelancer ? "Freelancer Mode" : "Client Mode"}

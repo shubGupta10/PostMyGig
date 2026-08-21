@@ -6,8 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 
-// Modular Admin Subcomponents
-import { AdminHeader } from "@/modules/admin/components/AdminHeader"
 import { AdminOverviewCards } from "@/modules/admin/components/AdminOverviewCards"
 import { AdminUsersTab } from "@/modules/admin/components/AdminUsersTab"
 import { AdminProjectsTab } from "@/modules/admin/components/AdminProjectsTab"
@@ -202,9 +200,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Header */}
-      <AdminHeader userName={user?.name} userImage={user?.image} />
-
       <div className="px-4 sm:px-6 py-4 sm:py-6">
         {/* Metric Cards */}
         <AdminOverviewCards
@@ -216,20 +211,20 @@ export default function AdminDashboard() {
 
         {/* Tab Navigation & Subsections */}
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="flex overflow-x-auto no-scrollbar w-full sm:grid sm:grid-cols-5 h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
-            <TabsTrigger value="users" className="whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+          <TabsList className="flex justify-start flex-nowrap overflow-x-auto no-scrollbar w-full sm:grid sm:grid-cols-5 h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
+            <TabsTrigger value="users" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
               Users
             </TabsTrigger>
-            <TabsTrigger value="projects" className="whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="projects" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
               Projects
             </TabsTrigger>
-            <TabsTrigger value="feedback" className="whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="feedback" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
               Feedback ({totalFeedbackCount})
             </TabsTrigger>
-            <TabsTrigger value="verification" className="whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="verification" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
               Verification
             </TabsTrigger>
-            <TabsTrigger value="seeder" className="whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="seeder" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
               Platform Seeder
             </TabsTrigger>
           </TabsList>

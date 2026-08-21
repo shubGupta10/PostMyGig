@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/sidebar"
 import { SidebarUserMenu } from "./sidebar-user-menu"
 import { SidebarNavLink } from "./sidebar-nav-link"
+import { RoleSwitcher } from "@/modules/users/components/RoleSwitcher"
 
 export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const session = await getServerSession(authOptions)
@@ -43,18 +44,23 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-transparent">
-                  <Image src="/AppIcon.png" alt="App Icon" width={32} height={32} />
-                </div>
-                <div className="grid flex-1 text-left leading-tight">
-                  <span className="truncate font-bold text-lg text-foreground">
-                    PostMy<span className="text-primary">Gig</span>
-                  </span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
+            <div className="flex items-center justify-between w-full">
+              <SidebarMenuButton size="lg" asChild className="w-auto">
+                <Link href="/">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-transparent shrink-0">
+                    <Image src="/AppIcon.png" alt="App Icon" width={32} height={32} />
+                  </div>
+                  <div className="grid flex-1 text-left leading-tight hidden sm:grid">
+                    <span className="truncate font-bold text-lg text-foreground">
+                      PostMy<span className="text-primary">Gig</span>
+                    </span>
+                  </div>
+                </Link>
+              </SidebarMenuButton>
+              <div className="sm:hidden flex items-center pr-2">
+                <RoleSwitcher />
+              </div>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

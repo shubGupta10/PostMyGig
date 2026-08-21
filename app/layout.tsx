@@ -8,7 +8,6 @@ import { BackendWarmer } from "@/components/shared/BackendWarmer";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { HeaderTitle } from "@/components/layout/header-title";
-import { DarkModeToggle } from "@/components/layout/DarkModeToggle";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import Script from "next/script";
@@ -17,7 +16,6 @@ import { ThemeProvider } from "@/components/layout/theme-provider"
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import { AddGigButton } from "@/modules/gigs/components/AddGigButton";
-import { RoleSwitcher } from "@/modules/users/components/RoleSwitcher";
 import { NotificationBell } from "@/modules/notifications/components/NotificationBell";
 import { PublicLayoutWrapper } from "@/components/layout/PublicLayoutWrapper";
 
@@ -32,9 +30,10 @@ const geistMono = Geist_Mono({
 });
 
 import { getBaseUrl } from "@/lib/social-preview";
+import { RoleSwitcher } from "@/modules/users/components/RoleSwitcher";
+import { DarkModeToggle } from "@/components/layout/DarkModeToggle";
 
 const baseUrl = getBaseUrl();
-const siteOgImage = `${baseUrl}/api/og?title=PostMyGig&type=site&badge=PostMyGig&description=Freelance%20gigs%2C%20direct%20chat%2C%20and%20fast%20hiring.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -144,7 +143,9 @@ export default async function RootLayout({
                       </div>
                       <div className="flex items-center gap-2 sm:gap-4 shrink-0">
                         <AddGigButton />
-                        <RoleSwitcher />
+                        <div className="hidden sm:block">
+                          <RoleSwitcher />
+                        </div>
                         <DarkModeToggle />
                         <NotificationBell />
                       </div>
