@@ -2,10 +2,10 @@ import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import PingModel from "@/modules/notifications/models/PingSchema";
 import userModel from "@/modules/users/models/UserModel";
 
-export async function getUserGrowth(thirtyDayAgo: Date) {
+export async function getUserGrowth(ninetyDaysAgo: Date) {
     return await userModel.aggregate([
         {
-            $match: { createdAt: { $gte: thirtyDayAgo } }
+            $match: { createdAt: { $gte: ninetyDaysAgo } }
         },
         {
             $group: {

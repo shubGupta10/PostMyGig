@@ -24,8 +24,11 @@ export async function POST(req: NextRequest) {
         const thirtyDayAgo = new Date();
         thirtyDayAgo.setDate(thirtyDayAgo.getDate() - 30);
 
+        const ninetyDaysAgo = new Date();
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
         const [userGrowth, gigGrowth, pingGrowth, roleDistribution] = await Promise.all([
-            getUserGrowth(thirtyDayAgo),
+            getUserGrowth(ninetyDaysAgo),
             getGigGrowth(thirtyDayAgo),
             getPingGrowth(thirtyDayAgo),
             getRoleDistribution()
