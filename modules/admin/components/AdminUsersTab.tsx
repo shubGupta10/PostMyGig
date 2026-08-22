@@ -12,12 +12,28 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Search, MoreHorizontal, MapPin, Calendar, Mail } from "lucide-react"
 import { UserType } from "./types"
 
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination"
+
 interface AdminUsersTabProps {
   users: UserType[]
+  pagination?: {
+    page: number
+    totalPages: number
+    hasNextPage: boolean
+    hasPrevPage: boolean
+  }
+  onPageChange?: (page: number) => void
   onToggleVerify: (userId: string, currentStatus: boolean) => void
 }
 
-export function AdminUsersTab({ users, onToggleVerify }: AdminUsersTabProps) {
+export function AdminUsersTab({ users, pagination, onPageChange, onToggleVerify }: AdminUsersTabProps) {
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredUsers = users?.filter(
@@ -176,6 +192,58 @@ export function AdminUsersTab({ users, onToggleVerify }: AdminUsersTabProps) {
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination Controls */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (pagination.hasPrevPage && onPageChange) {
+                        onPageChange(pagination.page - 1)
+                      }
+                    }}
+                    className={!pagination.hasPrevPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <PaginationItem key={pageNum}>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (onPageChange) {
+                          onPageChange(pageNum)
+                        }
+                      }}
+                      isActive={pageNum === pagination.page}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (pagination.hasNextPage && onPageChange) {
+                        onPageChange(pagination.page + 1)
+                      }
+                    }}
+                    className={!pagination.hasNextPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

@@ -68,4 +68,24 @@ export interface DashboardData {
     totalProjectsData: AdminProject[]
     fetchALLFeedbacks: Feedback[]
   }
+  pagination: {
+    userPagination: {
+      page: number
+      totalPages: number
+      hasNextPage: boolean
+      hasPrevPage: boolean
+    }
+    projectPagination: {
+      page: number
+      totalPages: number
+      hasNextPage: boolean
+      hasPrevPage: boolean
+    }
+    feedbackPagination: {
+      page: number
+      totalPages: number
+      hasNextPage: boolean
+      hasPrevPage: boolean
+    }
+  }
 }

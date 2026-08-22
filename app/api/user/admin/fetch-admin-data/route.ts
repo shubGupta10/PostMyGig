@@ -3,83 +3,51 @@ import userModel from "@/modules/users/models/UserModel";
 import ProjectModel from "@/modules/gigs/models/ProjectModel";
 import PingModel from "@/modules/notifications/models/PingSchema";
 import { ConnectoDatabase } from "@/lib/db";
-import ratelimiter from "@/lib/ratelimit";
-import FeedbackModel from "@/modules/admin/models/FeedbackModel";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
+import { getPaginatedUsers, getPaginatedProjects, getPaginatedFeedbacks } from "./paginationService";
 
 export async function POST(req: NextRequest) {
-
-    const ip = req.headers.get("x-forwarded-for") || "anonymous";
-    const { success, limit, reset, remaining } = await ratelimiter.limit(ip);
-
-    if (!success) {
-        return NextResponse.json(
-            {
-                message: `Rate limit exceeded. Try again in ${Math.ceil((reset - Date.now()) / 1000)}s.`,
-            },
-            { status: 429 }
-        );
-    }
-
-    const session = await getServerSession(authOptions);
-    if (!session) {
-        return NextResponse.json({
-            message: "Unauthorized"
-        }, { status: 404 })
-    }
-
-    //check if this user is admin
-    if (session.user.isAdmin !== true) {
-        return NextResponse.json({
-            message: "Not a admin account"
-        }, { status: 404 })
-    }
-
     try {
         await ConnectoDatabase();
 
-        const { userEmail } = await req.json();
+        const {
+            userEmail,
+            userPage = 1,
+            projectPage = 1,
+            feedbackPage = 1
+        } = await req.json();
+
         if (!userEmail) {
-            return NextResponse.json({
-                message: "User Email not found"
-            }, { status: 400 })
+            return NextResponse.json({ message: "User Email not found" }, { status: 400 });
         }
 
-        if (session.user.email !== userEmail) {
-            return NextResponse.json({
-                message: "Unauthorized Access"
-            }, { status: 404 })
+        const session = await getServerSession(authOptions);
+        if (!session || session.user.email !== userEmail) {
+            return NextResponse.json({ message: "Unauthorized Access" }, { status: 403 });
         }
 
         const fetchCurrentUser = await userModel.findOne({ email: userEmail });
-        if (!fetchCurrentUser) {
-            return NextResponse.json({
-                message: "User not found"
-            }, { status: 404 });
-        }
-
-        if (fetchCurrentUser.isAdmin !== true) {
-            return NextResponse.json({
-                message: "Only Admin is allowed to this route"
-            }, { status: 403 })
+        if (!fetchCurrentUser || fetchCurrentUser.isAdmin !== true) {
+            return NextResponse.json({ message: "Only Admin is allowed to this route" }, { status: 403 });
         }
 
         const [
             totalUsers,
             totalProjects,
             totalPingSends,
-            totalUsersData,
-            totalProjectsData,
-            fetchALLFeedbacks
+            paginatedUsers,
+            paginatedProjects,
+            paginatedFeedbacks
         ] = await Promise.all([
             userModel.countDocuments(),
             ProjectModel.countDocuments(),
             PingModel.countDocuments(),
-            userModel.find({}).sort({ createdAt: -1 }).limit(50).lean(),
-            ProjectModel.find({}).sort({ createdAt: -1 }).limit(50).lean(),
-            FeedbackModel.find({}).sort({ createdAt: -1 }).limit(50).lean()
-        ])
+
+            getPaginatedUsers(userPage),
+            getPaginatedProjects(projectPage),
+            getPaginatedFeedbacks(feedbackPage)
+        ]);
 
         return NextResponse.json({
             message: "Fetch All data",
@@ -90,12 +58,18 @@ export async function POST(req: NextRequest) {
                     totalPingSends,
                 },
                 allData: {
-                    totalUsersData,
-                    totalProjectsData,
-                    fetchALLFeedbacks
+                    totalUsersData: paginatedUsers.data,
+                    totalProjectsData: paginatedProjects.data,
+                    fetchALLFeedbacks: paginatedFeedbacks.data
+                },
+                pagination: {
+                    userPagination: paginatedUsers.pagination,
+                    projectPagination: paginatedProjects.pagination,
+                    feedbackPagination: paginatedFeedbacks.pagination
                 }
             }
-        }, { status: 200 })
+        }, { status: 200 });
+
     } catch (error) {
         console.error("Admin Fetch Error:", error);
         return NextResponse.json({

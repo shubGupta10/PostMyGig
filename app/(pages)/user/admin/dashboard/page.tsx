@@ -12,6 +12,7 @@ import { AdminProjectsTab } from "@/modules/admin/components/AdminProjectsTab"
 import { AdminFeedbackTab } from "@/modules/admin/components/AdminFeedbackTab"
 import { AdminVerificationTab } from "@/modules/admin/components/AdminVerificationTab"
 import { PlatformSeeder } from "@/modules/admin/components/PlatformSeeder"
+import AdminAnalyticsTab from "@/modules/admin/components/AdminAnalyticsTab"
 import AdminDashboardLoading from "./loading"
 
 import { DashboardData, VerificationRequest } from "@/modules/admin/components/types"
@@ -21,7 +22,12 @@ export default function AdminDashboard() {
   const user = session?.user
 
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
+  const [analyticsData, setAnalyticsData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+
+  const [userPage, setUserPage] = useState(1)
+  const [projectPage, setProjectPage] = useState(1)
+  const [feedbackPage, setFeedbackPage] = useState(1)
   const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null)
   const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null)
   const [verificationRequests, setVerificationRequests] = useState<VerificationRequest[]>([])
@@ -48,7 +54,12 @@ export default function AdminDashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userEmail: user?.email }),
+        body: JSON.stringify({ 
+          userEmail: user?.email,
+          userPage,
+          projectPage,
+          feedbackPage
+        }),
       })
       const data = await res.json()
       setDashboardData(data.data)
@@ -57,6 +68,20 @@ export default function AdminDashboard() {
       toast.error("Failed to fetch dashboard data")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchAnalyticsData = async () => {
+    try {
+      const res = await fetch("/api/admin/fetch-admin-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminEmail: user?.email }),
+      })
+      const data = await res.json()
+      setAnalyticsData(data.chartData)
+    } catch (error) {
+      console.error("Failed to fetch analytics data", error)
     }
   }
 
@@ -171,6 +196,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (user?.email) {
       fetchData()
+    }
+  }, [user?.email, userPage, projectPage, feedbackPage])
+
+  useEffect(() => {
+    if (user?.email) {
+      fetchAnalyticsData()
       fetchVerificationReqs()
     }
   }, [user?.email])
@@ -210,8 +241,11 @@ export default function AdminDashboard() {
         />
 
         {/* Tab Navigation & Subsections */}
-        <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="flex justify-start flex-nowrap overflow-x-auto no-scrollbar w-full sm:grid sm:grid-cols-5 h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
+        <Tabs defaultValue="analytics" className="space-y-6">
+          <TabsList className="flex justify-start flex-nowrap overflow-x-auto no-scrollbar w-full sm:grid sm:grid-cols-6 h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
+            <TabsTrigger value="analytics" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+              Analytics
+            </TabsTrigger>
             <TabsTrigger value="users" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
               Users
             </TabsTrigger>
@@ -229,9 +263,15 @@ export default function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="analytics" className="space-y-6">
+            <AdminAnalyticsTab chartData={analyticsData} />
+          </TabsContent>
+
           <TabsContent value="users" className="space-y-6">
             <AdminUsersTab
               users={dashboardData?.allData?.totalUsersData || []}
+              pagination={dashboardData?.pagination?.userPagination}
+              onPageChange={(page) => setUserPage(page)}
               onToggleVerify={handleToggleVerify}
             />
           </TabsContent>
@@ -239,6 +279,8 @@ export default function AdminDashboard() {
           <TabsContent value="projects" className="space-y-6">
             <AdminProjectsTab
               projects={dashboardData?.allData?.totalProjectsData || []}
+              pagination={dashboardData?.pagination?.projectPagination}
+              onPageChange={(page) => setProjectPage(page)}
               onDeleteProject={deleteGig}
               deletingProjectId={deletingProjectId}
             />
@@ -247,6 +289,8 @@ export default function AdminDashboard() {
           <TabsContent value="feedback" className="space-y-6">
             <AdminFeedbackTab
               feedbacks={dashboardData?.allData?.fetchALLFeedbacks || []}
+              pagination={dashboardData?.pagination?.feedbackPagination}
+              onPageChange={(page) => setFeedbackPage(page)}
               onDeleteFeedback={handleDeleteFeedback}
               deletingFeedbackId={deletingFeedbackId}
             />

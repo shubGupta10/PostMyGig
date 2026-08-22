@@ -31,17 +31,34 @@ import {
   MessageCircle,
   AlertTriangle,
 } from "lucide-react"
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination"
 import SendMail from "@/app/(pages)/user/admin/dashboard/sendMail"
 import { Feedback } from "./types"
 
 interface AdminFeedbackTabProps {
   feedbacks: Feedback[]
+  pagination?: {
+    page: number
+    totalPages: number
+    hasNextPage: boolean
+    hasPrevPage: boolean
+  }
+  onPageChange?: (page: number) => void
   onDeleteFeedback: (feedbackId: string) => Promise<void>
   deletingFeedbackId: string | null
 }
 
 export function AdminFeedbackTab({
   feedbacks,
+  pagination,
+  onPageChange,
   onDeleteFeedback,
   deletingFeedbackId,
 }: AdminFeedbackTabProps) {
@@ -269,6 +286,58 @@ export function AdminFeedbackTab({
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (pagination.hasPrevPage && onPageChange) {
+                        onPageChange(pagination.page - 1)
+                      }
+                    }}
+                    className={!pagination.hasPrevPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <PaginationItem key={pageNum}>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        if (onPageChange) {
+                          onPageChange(pageNum)
+                        }
+                      }}
+                      isActive={pageNum === pagination.page}
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (pagination.hasNextPage && onPageChange) {
+                        onPageChange(pagination.page + 1)
+                      }
+                    }}
+                    className={!pagination.hasNextPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
