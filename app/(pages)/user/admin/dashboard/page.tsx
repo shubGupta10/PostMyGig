@@ -206,7 +206,7 @@ export default function AdminDashboard() {
     }
   }, [user?.email])
 
-  if (status === "loading" || loading) {
+  if (status === "loading" || (loading && !dashboardData)) {
     return <AdminDashboardLoading />
   }
 
@@ -243,22 +243,22 @@ export default function AdminDashboard() {
         {/* Tab Navigation & Subsections */}
         <Tabs defaultValue="analytics" className="space-y-6">
           <TabsList className="flex justify-start flex-nowrap overflow-x-auto no-scrollbar w-full sm:grid sm:grid-cols-6 h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
-            <TabsTrigger value="analytics" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="analytics" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="users" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="users" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Users
             </TabsTrigger>
-            <TabsTrigger value="projects" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="projects" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Projects
             </TabsTrigger>
-            <TabsTrigger value="feedback" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="feedback" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Feedback ({totalFeedbackCount})
             </TabsTrigger>
-            <TabsTrigger value="verification" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="verification" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Verification
             </TabsTrigger>
-            <TabsTrigger value="seeder" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm">
+            <TabsTrigger value="seeder" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Platform Seeder
             </TabsTrigger>
           </TabsList>
