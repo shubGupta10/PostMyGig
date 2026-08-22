@@ -12,14 +12,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Search, MoreHorizontal, MapPin, Calendar, Mail } from "lucide-react"
 import { UserType } from "./types"
 
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
 } from "@/components/ui/pagination"
+import { useRouter } from "next/navigation"
 
 interface AdminUsersTabProps {
   users: UserType[]
@@ -35,6 +36,7 @@ interface AdminUsersTabProps {
 
 export function AdminUsersTab({ users, pagination, onPageChange, onToggleVerify }: AdminUsersTabProps) {
   const [searchTerm, setSearchTerm] = useState("")
+  const router = useRouter();
 
   const filteredUsers = users?.filter(
     (user) =>
@@ -107,7 +109,7 @@ export function AdminUsersTab({ users, pagination, onPageChange, onToggleVerify 
                           <AvatarImage src={user.profilePhoto || ""} />
                           <AvatarFallback className="text-xs">{user.name.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0">
+                        <div onClick={() => router.push(`/user/profile/${user._id}`)} className="min-w-0 cursor-pointer">
                           <div className="font-medium text-foreground text-sm truncate flex items-center gap-1.5">
                             {user.name}
                             {user.isVerified && (
@@ -210,7 +212,7 @@ export function AdminUsersTab({ users, pagination, onPageChange, onToggleVerify 
                     className={!pagination.hasPrevPage ? "pointer-events-none opacity-50 cursor-not-allowed" : ""}
                   />
                 </PaginationItem>
-                
+
                 {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
                   <PaginationItem key={pageNum}>
                     <PaginationLink
@@ -245,6 +247,6 @@ export function AdminUsersTab({ users, pagination, onPageChange, onToggleVerify 
           </div>
         )}
       </CardContent>
-    </Card>
+    </Card >
   )
 }
