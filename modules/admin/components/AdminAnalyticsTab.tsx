@@ -28,7 +28,7 @@ export default function AdminAnalyticsTab({ chartData }: { chartData: any }) {
             {/* User Growth Chart */}
             <Card className="border-2 border-border rounded-2xl shadow-sm bg-card">
                 <CardHeader>
-                    <CardTitle className="text-lg">User Growth (Last 30 Days)</CardTitle>
+                    <CardTitle className="text-lg">User Growth (Last 90 Days)</CardTitle>
                 </CardHeader>
                 <CardContent className="h-[300px] w-full">
                     {chartData.userGrowth?.length > 0 ? (
@@ -60,7 +60,7 @@ export default function AdminAnalyticsTab({ chartData }: { chartData: any }) {
                             </LineChart>
                         </ResponsiveContainer>
                     ) : (
-                        renderEmptyState("No user growth data in the last 30 days")
+                        renderEmptyState("No user growth data in the last 90 days")
                     )}
                 </CardContent>
             </Card>
@@ -68,7 +68,7 @@ export default function AdminAnalyticsTab({ chartData }: { chartData: any }) {
             {/* Gigs Posted Chart */}
             <Card className="border-2 border-border rounded-2xl shadow-sm bg-card">
                 <CardHeader>
-                    <CardTitle className="text-lg">Gigs Posted (Last 30 Days)</CardTitle>
+                    <CardTitle className="text-lg">Gigs Posted (Last 90 Days)</CardTitle>
                 </CardHeader>
                 <CardContent className="h-[300px] w-full">
                     {chartData.gigGrowth?.length > 0 ? (
@@ -101,7 +101,7 @@ export default function AdminAnalyticsTab({ chartData }: { chartData: any }) {
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (
-                        renderEmptyState("No gigs posted in the last 30 days")
+                        renderEmptyState("No gigs posted in the last 90 days")
                     )}
                 </CardContent>
             </Card>
@@ -147,7 +147,7 @@ export default function AdminAnalyticsTab({ chartData }: { chartData: any }) {
                             </AreaChart>
                         </ResponsiveContainer>
                     ) : (
-                        renderEmptyState("No pings sent in the last 30 days")
+                        renderEmptyState("No pings sent in the last 90 days")
                     )}
                 </CardContent>
             </Card>
