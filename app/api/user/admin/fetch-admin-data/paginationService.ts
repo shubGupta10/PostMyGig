@@ -111,6 +111,7 @@ export async function getPaginatedApplications(page: number, limit: number = 10)
                 $project: {
                     _id: 1,
                     projectId: 1,
+                    isCurated: "$projectDetails.isCurated",
                     status: 1,
                     createdAt: 1,
                     message: 1,

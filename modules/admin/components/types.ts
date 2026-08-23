@@ -60,6 +60,7 @@ export interface VerificationRequest {
 export interface AdminApplicationFeed {
   _id: string;
   projectId: string;
+  isCurated?: boolean;
   status: string;
   createdAt: string;
   message?: string;

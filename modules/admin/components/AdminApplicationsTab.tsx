@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { AdminApplicationFeed } from "./types"
-import { ExternalLink, MessageSquare } from "lucide-react"
+import { ExternalLink, MessageSquare, Sparkles } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 interface AdminApplicationsTabProps {
@@ -76,7 +76,21 @@ export function AdminApplicationsTab({ applications, pagination, onPageChange }:
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span onClick={() => router.push(`/open-gig/${app.projectId}`)} className="text-sm font-medium line-clamp-2 cursor-pointer">{app.projectTitle}</span>
+                      <div className="flex flex-col items-start gap-1.5">
+                        <span 
+                          onClick={() => router.push(`/open-gig/${app.projectId}`)} 
+                          className="text-sm font-medium line-clamp-2 cursor-pointer hover:text-primary hover:underline transition-colors"
+                        >
+                          {app.projectTitle}
+                        </span>
+                        
+                        {app.isCurated && (
+                          <Badge variant="outline" className="text-[10px] h-5 px-1.5 bg-blue-500/10 text-blue-500 border-blue-500/20">
+                            <Sparkles className="w-3 h-3 mr-1" />
+                            Curated
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
