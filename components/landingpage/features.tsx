@@ -43,7 +43,7 @@ export default function Features() {
                 </div>
                 <h2 className="mt-8 sm:mt-12 text-center text-xl sm:text-2xl font-bold text-foreground">Platform Fees</h2>
                 <p className="mt-2 sm:mt-3 text-center text-muted-foreground text-sm sm:text-base max-w-[240px] mx-auto">
-                  Connect directly with freelancers. No commissions or hidden charges.
+                  Connect directly with freelancers. You handle payments on your own terms. No commissions or hidden charges.
                 </p>
               </CardContent>
             </Card>
