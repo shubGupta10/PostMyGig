@@ -261,7 +261,10 @@ export function PingForm() {
 
       <ApplicationSuccessModal
         open={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+        onClose={() => {
+          setShowSuccessModal(false)
+          router.push(`/open-gig/${gigId}`)
+        }}
       />
     </div>
   )
