@@ -199,7 +199,7 @@ export const authOptions: NextAuthOptions = {
                         throw new Error("No user found with this email");
                     }
 
-                    if (existingUser.provider === 'google' || existingUser.provider === 'github') {
+                    if (!existingUser.password && (existingUser.provider === 'google' || existingUser.provider === 'github')) {
                         throw new Error(`This email is registered with ${existingUser.provider.charAt(0).toUpperCase() + existingUser.provider.slice(1)}. Please use ${existingUser.provider.charAt(0).toUpperCase() + existingUser.provider.slice(1)} Sign In.`);
                     }
 
