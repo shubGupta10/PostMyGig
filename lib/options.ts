@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
                     }
 
                     // Check if this is a social login user trying to use credentials
-                    if (user.provider === 'google' || user.provider === 'github') {
+                    if (!user.password && (user.provider === 'google' || user.provider === 'github')) {
                         throw new Error(`Please use ${user.provider.charAt(0).toUpperCase() + user.provider.slice(1)} Sign-In for this account`);
                     }
 
