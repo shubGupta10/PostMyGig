@@ -82,7 +82,7 @@ export default function LoginPage() {
           setError(result.error)
         }
       } else {
-        router.push(targetCallback)
+        window.location.href = targetCallback
       }
     } catch (err) {
       console.error("Login error:", err)
