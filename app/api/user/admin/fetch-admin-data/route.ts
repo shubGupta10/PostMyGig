@@ -5,7 +5,7 @@ import PingModel from "@/modules/notifications/models/PingSchema";
 import { ConnectoDatabase } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
-import { getPaginatedUsers, getPaginatedProjects, getPaginatedFeedbacks } from "./paginationService";
+import { getPaginatedUsers, getPaginatedProjects, getPaginatedFeedbacks, getPaginatedApplications } from "./paginationService";
 
 export async function POST(req: NextRequest) {
     try {
@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
             userEmail,
             userPage = 1,
             projectPage = 1,
-            feedbackPage = 1
+            feedbackPage = 1,
+            applicationPage = 1,
         } = await req.json();
 
         if (!userEmail) {
@@ -38,7 +39,8 @@ export async function POST(req: NextRequest) {
             totalPingSends,
             paginatedUsers,
             paginatedProjects,
-            paginatedFeedbacks
+            paginatedFeedbacks,
+            paginatedApplication,
         ] = await Promise.all([
             userModel.countDocuments(),
             ProjectModel.countDocuments(),
@@ -46,7 +48,8 @@ export async function POST(req: NextRequest) {
 
             getPaginatedUsers(userPage),
             getPaginatedProjects(projectPage),
-            getPaginatedFeedbacks(feedbackPage)
+            getPaginatedFeedbacks(feedbackPage),
+            getPaginatedApplications(applicationPage)
         ]);
 
         return NextResponse.json({
@@ -60,12 +63,14 @@ export async function POST(req: NextRequest) {
                 allData: {
                     totalUsersData: paginatedUsers.data,
                     totalProjectsData: paginatedProjects.data,
-                    fetchALLFeedbacks: paginatedFeedbacks.data
+                    fetchALLFeedbacks: paginatedFeedbacks.data,
+                    applicationPageData: paginatedApplication.data,
                 },
                 pagination: {
                     userPagination: paginatedUsers.pagination,
                     projectPagination: paginatedProjects.pagination,
-                    feedbackPagination: paginatedFeedbacks.pagination
+                    feedbackPagination: paginatedFeedbacks.pagination,
+                    applicationPagination: paginatedApplication.pagination
                 }
             }
         }, { status: 200 });

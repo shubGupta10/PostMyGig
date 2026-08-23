@@ -57,6 +57,19 @@ export interface VerificationRequest {
   }>
 }
 
+export interface AdminApplicationFeed {
+  _id: string;
+  projectId: string;
+  status: string;
+  createdAt: string;
+  message?: string;
+  bestWorkLink?: string;
+  projectTitle: string;
+  applicantName: string;
+  applicantEmail: string;
+}
+
+
 export interface DashboardData {
   counts: {
     totalUsers: number
@@ -66,7 +79,8 @@ export interface DashboardData {
   allData: {
     totalUsersData: UserType[]
     totalProjectsData: AdminProject[]
-    fetchALLFeedbacks: Feedback[]
+    fetchALLFeedbacks: Feedback[],
+    applicationPageData: AdminApplicationFeed[],
   }
   pagination: {
     userPagination: {
@@ -82,6 +96,12 @@ export interface DashboardData {
       hasPrevPage: boolean
     }
     feedbackPagination: {
+      page: number
+      totalPages: number
+      hasNextPage: boolean
+      hasPrevPage: boolean
+    }
+    applicationPagination: {
       page: number
       totalPages: number
       hasNextPage: boolean

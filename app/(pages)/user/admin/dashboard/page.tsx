@@ -1,7 +1,8 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
@@ -13,13 +14,27 @@ import { AdminFeedbackTab } from "@/modules/admin/components/AdminFeedbackTab"
 import { AdminVerificationTab } from "@/modules/admin/components/AdminVerificationTab"
 import { PlatformSeeder } from "@/modules/admin/components/PlatformSeeder"
 import AdminAnalyticsTab from "@/modules/admin/components/AdminAnalyticsTab"
+import { AdminApplicationsTab } from "@/modules/admin/components/AdminApplicationsTab"
 import AdminDashboardLoading from "./loading"
 
-import { DashboardData, VerificationRequest } from "@/modules/admin/components/types"
+import { AdminApplicationFeed, DashboardData, VerificationRequest } from "@/modules/admin/components/types"
 
 export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<AdminDashboardLoading />}>
+      <AdminDashboardContent />
+    </Suspense>
+  )
+}
+
+function AdminDashboardContent() {
   const { data: session, status } = useSession()
   const user = session?.user
+
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const activeTab = searchParams.get("tab") || "analytics"
 
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [analyticsData, setAnalyticsData] = useState<any>(null)
@@ -31,6 +46,7 @@ export default function AdminDashboard() {
   const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null)
   const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null)
   const [verificationRequests, setVerificationRequests] = useState<VerificationRequest[]>([])
+  const [applicationPage, setApplicationPage] = useState(1)
 
   const fetchVerificationReqs = async () => {
     try {
@@ -54,11 +70,12 @@ export default function AdminDashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           userEmail: user?.email,
           userPage,
           projectPage,
-          feedbackPage
+          feedbackPage,
+          applicationPage
         }),
       })
       const data = await res.json()
@@ -197,7 +214,7 @@ export default function AdminDashboard() {
     if (user?.email) {
       fetchData()
     }
-  }, [user?.email, userPage, projectPage, feedbackPage])
+  }, [user?.email, userPage, projectPage, feedbackPage, applicationPage])
 
   useEffect(() => {
     if (user?.email) {
@@ -241,8 +258,12 @@ export default function AdminDashboard() {
         />
 
         {/* Tab Navigation & Subsections */}
-        <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="flex justify-start flex-nowrap overflow-x-auto no-scrollbar w-full sm:grid sm:grid-cols-6 h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
+        <Tabs 
+          value={activeTab} 
+          onValueChange={(value) => router.replace(`${pathname}?tab=${value}`, { scroll: false })}
+          className="space-y-6"
+        >
+          <TabsList className="flex justify-start flex-nowrap overflow-x-auto no-scrollbar w-full h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
             <TabsTrigger value="analytics" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Analytics
             </TabsTrigger>
@@ -251,6 +272,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="projects" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Projects
+            </TabsTrigger>
+            <TabsTrigger value="applications" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Applications
             </TabsTrigger>
             <TabsTrigger value="feedback" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Feedback ({totalFeedbackCount})
@@ -285,6 +309,15 @@ export default function AdminDashboard() {
               deletingProjectId={deletingProjectId}
             />
           </TabsContent>
+
+          <TabsContent value="applications" className="space-y-6">
+            <AdminApplicationsTab 
+              applications={dashboardData?.allData?.applicationPageData || []}
+              pagination={dashboardData?.pagination?.applicationPagination}
+              onPageChange={(page) => setApplicationPage(page)}
+            />
+          </TabsContent>
+
 
           <TabsContent value="feedback" className="space-y-6">
             <AdminFeedbackTab
