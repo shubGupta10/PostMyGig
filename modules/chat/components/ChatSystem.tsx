@@ -488,38 +488,8 @@ export default function ChatSystem({
           </div>
         </div>
 
-        {/* --- MOVED INSIDE THE HEADER WITH CONFIRMATION DIALOG --- */}
+        {/* --- MOVED TO USERGIGCARD --- */}
         <div className="flex items-center gap-3">
-          {currentUserRole === "poster" && projectStatus !== "completed" && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  disabled={isCompleting}
-                  className="h-9 px-4 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer shadow-xs"
-                >
-                  <CheckCheck className="w-4 h-4 mr-1.5" />
-                  {isCompleting ? "Completing..." : "Complete Project"}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Mark Project as Completed?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to mark this project as completed? This signals that the freelancer has delivered the final work and you are satisfied.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="font-semibold">Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleCompleteGig}
-                    className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
-                  >
-                    Confirm Completion
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
 
           {projectStatus === "completed" && (
             <div className="flex items-center gap-1.5 text-emerald-600 font-semibold text-xs px-3 py-1.5 bg-emerald-600/10 rounded-lg border border-emerald-600/20">

@@ -19,16 +19,16 @@ export function ApplicationCard({
   onAccept,
 }: Props) {
   const match = applicant.matchDetails
-  const isAccepted = applicant.status === "accepted"
+  const isAccepted = ["accepted", "contract_offered", "in_progress"].includes(applicant.status.toLowerCase())
 
   return (
-    <div className={`p-5 sm:p-6 transition-colors ${isAccepted ? "bg-primary/5" : "bg-card"}`}>
+    <div className={`p-5 sm:p-6 transition-colors ${isAccepted ? "bg-primary" : "bg-card"}`}>
       {/* Main Row */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         {/* Left: Avatar & Identity & Skills */}
         <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
           <div className="relative shrink-0">
-            <div className="w-13 h-13 rounded-2xl bg-primary/10 border-2 border-primary/20 text-primary flex items-center justify-center overflow-hidden font-bold text-lg">
+            <div className="w-13 h-13 rounded-2xl bg-primary border-2 border-primary text-primary flex items-center justify-center overflow-hidden font-bold text-lg">
               {applicant.applicant?.profilePhoto ? (
                 <img
                   src={applicant.applicant.profilePhoto}
@@ -56,13 +56,12 @@ export function ApplicationCard({
                 </span>
               )}
               {match && match.score > 0 && (
-                <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                  match.score >= 70
-                    ? "bg-primary text-primary-foreground"
-                    : match.score >= 40
+                <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full ${match.score >= 70
+                  ? "bg-primary text-primary-foreground"
+                  : match.score >= 40
                     ? "bg-primary/15 text-primary border border-primary/30"
                     : "bg-muted text-muted-foreground border border-border"
-                }`}>
+                  }`}>
                   <Sparkles className="w-3 h-3" /> {match.score}% Match
                 </span>
               )}

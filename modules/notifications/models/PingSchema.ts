@@ -6,7 +6,7 @@ export interface Ping extends Document {
   posterEmail: string;
   message?: string;
   bestWorkLink?: string;
-  status: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'contract_offered' | 'in_progress';
   bestWorkDescription?: string;
   createdAt?: Date;
 }
@@ -31,7 +31,7 @@ const pingSchema = new Schema<Ping>(
     },
     status: {
       type: String,
-      enum: ['pending', 'accepted', 'rejected'],
+      enum: ['pending', 'accepted', 'rejected', 'contract_offered', 'in_progress'],
       default: 'pending',
     },
     bestWorkLink: {

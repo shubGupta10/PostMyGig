@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/options";
 import redis from "@/lib/redis";
 import PingModel from "@/modules/notifications/models/PingSchema";
 import ProjectModel from "@/modules/gigs/models/ProjectModel";
+import ContractModel from "@/modules/contracts/models/ContractModel";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
@@ -14,13 +15,26 @@ export async function POST(req: NextRequest) {
         const session = await getServerSession(authOptions);
         if (!session?.user.id) {
             return NextResponse.json({
-                message: "Unathorized"
-            }, { status: 404 })
+                message: "Unauthorized"
+            }, { status: 401 })
         }
         await ConnectoDatabase();
         const { gigId } = await req.json();
         if (!gigId) {
             return NextResponse.json({ error: "Gig ID is required" }, { status: 400 });
+        }
+
+        const project = await ProjectModel.findById(gigId);
+        if (!project) {
+            return NextResponse.json({ error: "Gig not found" }, { status: 404 });
+        }
+
+        if (project.createdBy !== session.user.email) {
+            return NextResponse.json({ error: "Forbidden. You do not own this gig." }, { status: 403 });
+        }
+
+        if (project.status !== 'accepted' && project.status !== 'contract_offered') {
+            return NextResponse.json({ error: "There is no accepted application to revoke. The gig is not in an accepted state." }, { status: 400 });
         }
 
         dbSession = await mongoose.startSession();
@@ -32,12 +46,18 @@ export async function POST(req: NextRequest) {
             { session: dbSession }
         );
 
+        await ContractModel.updateMany(
+            { projectId: gigId, status: { $ne: 'completed' } },
+            { $set: { status: 'cancelled' } },
+            { session: dbSession }
+        );
+
         await ProjectModel.findByIdAndUpdate(gigId, {
             $unset: { AcceptedFreelancerEmail: "" },
             $set: { status: "active" },
         }, { new: true }).session(dbSession);
 
-        const [project, allApplicationsForGig] = await Promise.all([
+        const [updatedProject, allApplicationsForGig] = await Promise.all([
             ProjectModel.findById(gigId).select("createdBy").lean(),
             PingModel.find({ projectId: gigId }).select("userEmail").lean().session(dbSession),
         ]);
@@ -51,9 +71,9 @@ export async function POST(req: NextRequest) {
                 `fetch-open-gig:${gigId}`,
             ];
 
-            if (project?.createdBy) {
-                const clientKeys = await redis.keys(`dashboard-data:client:${project.createdBy}*`);
-                const projectKeys = await redis.keys(`user-projects:${project.createdBy}*`);
+            if (updatedProject?.createdBy) {
+                const clientKeys = await redis.keys(`dashboard-data:client:${updatedProject.createdBy}*`);
+                const projectKeys = await redis.keys(`user-projects:${updatedProject.createdBy}*`);
                 keysToDelete.push(...clientKeys, ...projectKeys);
             }
 

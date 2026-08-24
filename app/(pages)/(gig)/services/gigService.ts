@@ -35,7 +35,7 @@ export async function getGigs(page = 1, limit = 9, search = "", skill = "", sort
         const currentDate = new Date();
         const query: Record<string, any> = {
             expiresAt: { $gt: currentDate },
-            status: { $nin: ["assigned", "completed", "expired"] }
+            status: { $nin: ["accepted", "completed", "expired", "contract_offered", "in_progress"] }
         };
 
         if (search) {
@@ -147,7 +147,7 @@ export async function getAllUniqueSkills(): Promise<string[]> {
 
         const rawSkills: string[] = await ProjectModel.distinct("skillsRequired", {
             expiresAt: { $gt: currentDate },
-            status: { $nin: ["assigned", "completed", "expired"] }
+            status: { $nin: ["accepted", "completed", "expired", "contract_offered", "in_progress"] }
         });
 
         const cleanedSkills = Array.from(

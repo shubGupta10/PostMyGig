@@ -2,12 +2,13 @@ import React from "react"
 import { getDashboardDetails } from "@/app/(pages)/dashboard/services/dashboardService"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Eye, Briefcase, Calendar, MessageCircle } from "lucide-react"
+import { Eye, Clock, Sparkles, MessageCircle, FileText, Calendar, Briefcase } from "lucide-react"
 import Link from "next/link"
 import type { FreelancerDashboardData } from "@/app/(pages)/dashboard/types"
 import { redirect } from "next/navigation"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { formatActivityDate, getDateSectionLabel, groupItemsByTimeline } from "@/lib/helpers"
+
 
 export const metadata = {
   title: "My Proposals | PostMyGig",
@@ -100,16 +101,27 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
                           </div>
                         </div>
 
-                        {item.status.toLowerCase() === "accepted" ? (
-                          <Button
-                            asChild
-                            className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs bg-primary text-primary-foreground cursor-pointer"
-                          >
-                            <Link href={`/projects/${item.projectId}/huddle`}>
-                              <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
-                              <span>Open Project Huddle</span>
-                            </Link>
-                          </Button>
+                        {["accepted", "contract_offered", "in_progress"].includes(item.status.toLowerCase()) ? (
+                          <div className="flex gap-2 shrink-0">
+                            <Button
+                              asChild
+                              className="h-10 text-xs font-semibold px-5 rounded-xl shadow-xs bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer"
+                            >
+                              <Link href={`/contracts/${item.projectId}?freelancerEmail=${item.userEmail}`}>
+                                <FileText className="h-4 w-4 mr-2 shrink-0" />
+                                <span>Review Contract</span>
+                              </Link>
+                            </Button>
+                            <Button
+                              asChild
+                              className="h-10 text-xs font-semibold px-5 rounded-xl shadow-xs bg-primary text-primary-foreground cursor-pointer"
+                            >
+                              <Link href={`/projects/${item.projectId}/huddle`}>
+                                <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
+                                <span>Project Huddle</span>
+                              </Link>
+                            </Button>
+                          </div>
                         ) : (
                           <Button
                             asChild

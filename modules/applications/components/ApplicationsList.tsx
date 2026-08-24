@@ -110,19 +110,7 @@ export function ApplicationsList() {
 
   return (
     <div className="w-full space-y-14 sm:space-y-16 pb-28">
-      {/* Clean Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
-          Application <span className="text-primary">Management</span>
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
-          {gigDetails?.title ? (
-            <span>Reviewing proposals for <strong className="text-foreground">{gigDetails.title}</strong></span>
-          ) : (
-            <span>Review proposals and discover top-matched talent for your gig</span>
-          )}
-        </p>
-      </div>
+
 
       {/* SECTION 1: Top Recommended Applications (from backend) */}
       {recommendedApplications.length > 0 && (
