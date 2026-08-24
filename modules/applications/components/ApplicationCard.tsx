@@ -28,7 +28,7 @@ export function ApplicationCard({
         {/* Left: Avatar & Identity & Skills */}
         <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
           <div className="relative shrink-0">
-            <div className="w-13 h-13 rounded-2xl bg-primary border-2 border-primary text-primary flex items-center justify-center overflow-hidden font-bold text-lg">
+            <div className={`w-13 h-13 rounded-2xl border-2 flex items-center justify-center overflow-hidden font-bold text-lg ${isAccepted ? 'bg-primary-foreground text-primary border-primary-foreground' : 'bg-primary text-primary-foreground border-primary'}`}>
               {applicant.applicant?.profilePhoto ? (
                 <img
                   src={applicant.applicant.profilePhoto}
@@ -47,32 +47,32 @@ export function ApplicationCard({
 
           <div className="min-w-0 space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <h3 className="font-bold text-foreground text-base sm:text-lg truncate">
+              <h3 className={`font-bold text-base sm:text-lg truncate ${isAccepted ? 'text-primary-foreground' : 'text-foreground'}`}>
                 {applicant.applicant?.name || applicant.userEmail}
               </h3>
               {isAccepted && (
-                <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/20">
+                <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-500 border border-green-500/20">
                   <CheckCircle2 className="w-3 h-3" /> Accepted
                 </span>
               )}
               {match && match.score > 0 && (
                 <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full ${match.score >= 70
-                  ? "bg-primary text-primary-foreground"
+                  ? (isAccepted ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground")
                   : match.score >= 40
-                    ? "bg-primary/15 text-primary border border-primary/30"
-                    : "bg-muted text-muted-foreground border border-border"
+                    ? (isAccepted ? "bg-primary-foreground/20 text-primary-foreground border border-primary-foreground/30" : "bg-primary/15 text-primary border border-primary/30")
+                    : (isAccepted ? "bg-primary-foreground/10 text-primary-foreground/80 border border-primary-foreground/20" : "bg-muted text-muted-foreground border border-border")
                   }`}>
                   <Sparkles className="w-3 h-3" /> {match.score}% Match
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-4 text-xs sm:text-sm text-muted-foreground flex-wrap">
+            <div className={`flex items-center gap-4 text-xs sm:text-sm flex-wrap ${isAccepted ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
               <span className="flex items-center gap-1.5 truncate">
-                <Mail className="w-3.5 h-3.5 shrink-0 text-muted-foreground" /> {applicant.applicant?.email || applicant.userEmail}
+                <Mail className="w-3.5 h-3.5 shrink-0 opacity-70" /> {applicant.applicant?.email || applicant.userEmail}
               </span>
               <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 shrink-0 text-muted-foreground" /> Applied {new Date(applicant.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                <Calendar className="w-3.5 h-3.5 shrink-0 opacity-70" /> Applied {new Date(applicant.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </span>
             </div>
 
@@ -80,7 +80,7 @@ export function ApplicationCard({
             {match?.matchingSkills && match.matchingSkills.length > 0 && (
               <div className="flex items-center gap-1.5 flex-wrap pt-1">
                 {match.matchingSkills.map((skill, sIdx) => (
-                  <span key={sIdx} className="text-xs font-medium px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground">
+                  <span key={sIdx} className={`text-xs font-medium px-2 py-0.5 rounded-md ${isAccepted ? 'bg-primary-foreground/15 text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
                     {skill}
                   </span>
                 ))}
@@ -93,9 +93,9 @@ export function ApplicationCard({
         <div className="flex items-center gap-2.5 self-end lg:self-center w-full lg:w-auto mt-2 lg:mt-0 shrink-0">
           <Button
             size="sm"
-            variant="outline"
+            variant={isAccepted ? "ghost" : "outline"}
             onClick={() => onView(applicant)}
-            className="flex-1 lg:flex-none h-10 px-4 rounded-xl border-2 border-border font-semibold text-sm hover:bg-muted cursor-pointer"
+            className={`flex-1 lg:flex-none h-10 px-4 rounded-xl font-semibold text-sm cursor-pointer ${isAccepted ? 'bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground border-transparent' : 'border-2 border-border hover:bg-muted'}`}
           >
             <Eye className="w-4 h-4 mr-1.5" /> View Details
           </Button>
