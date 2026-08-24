@@ -92,7 +92,7 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
                               {item.projectDetails?.title || "Gig Details"}
                             </h3>
                             <Badge className="bg-secondary text-secondary-foreground border-border border capitalize text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0">
-                              {item.status}
+                              {item.status.replace(/_/g, ' ')}
                             </Badge>
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">

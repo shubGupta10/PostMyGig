@@ -103,7 +103,7 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
                 {project.title}
               </h3>
               <Badge className="bg-secondary text-secondary-foreground border-border border font-medium px-2.5 py-1 capitalize text-xs">
-                {project.status}
+                {project.status.replace(/_/g, ' ')}
               </Badge>
             </div>
             <span className="text-xs text-muted-foreground font-normal">

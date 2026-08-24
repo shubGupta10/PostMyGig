@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import { ConnectoDatabase } from "@/lib/db";
+import redis from "@/lib/redis";
 import ContractModel from "@/modules/contracts/models/ContractModel";
 import PingModel from "@/modules/notifications/models/PingSchema";
 import ProjectModel from "@/modules/gigs/models/ProjectModel";
@@ -77,6 +79,22 @@ export async function POST(req: Request) {
       { projectId: contract.projectId, status: { $in: ['pending', 'accepted', 'contract_offered'] }, userEmail: { $ne: contract.freelancerId } },
       { status: 'rejected' }
     );
+
+    revalidatePath('/', 'layout');
+
+    try {
+      const clientKeys = await redis.keys(`dashboard-data:client:${contract.clientId}:*`);
+      for (const key of clientKeys) {
+        await redis.del(key);
+      }
+
+      const freelancerKeys = await redis.keys(`dashboard-data:freelancer:${contract.freelancerId}:*`);
+      for (const key of freelancerKeys) {
+        await redis.del(key);
+      }
+    } catch (cacheErr) {
+      console.warn("Failed to clear Redis cache:", cacheErr);
+    }
 
     return NextResponse.json(contract, { status: 200 });
   } catch (error) {

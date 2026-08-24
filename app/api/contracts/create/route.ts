@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
 import { ConnectoDatabase } from "@/lib/db";
+import redis from "@/lib/redis";
 import ContractModel from "@/modules/contracts/models/ContractModel";
 import PingModel from "@/modules/notifications/models/PingSchema";
 import ProjectModel from "@/modules/gigs/models/ProjectModel";
@@ -78,6 +79,20 @@ export async function POST(req: Request) {
     await ProjectModel.findByIdAndUpdate(projectId, {
       status: 'contract_offered'
     });
+
+    try {
+      const clientKeys = await redis.keys(`dashboard-data:client:${session.user.email}:*`);
+      for (const key of clientKeys) {
+        await redis.del(key);
+      }
+
+      const freelancerKeys = await redis.keys(`dashboard-data:freelancer:${freelancerEmail}:*`);
+      for (const key of freelancerKeys) {
+        await redis.del(key);
+      }
+    } catch (cacheErr) {
+      console.warn("Failed to clear Redis cache:", cacheErr);
+    }
 
     return NextResponse.json(newContract, { status: 201 });
   } catch (error) {
