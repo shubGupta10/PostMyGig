@@ -4,12 +4,12 @@ import { authOptions } from "@/lib/options";
 import ContractPageClient from "./ContractPageClient";
 
 interface ContractPageProps {
-  params: {
+  params: Promise<{
     projectId: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     freelancerEmail?: string;
-  };
+  }>;
 }
 
 export default async function ContractPage({ params, searchParams }: ContractPageProps) {
@@ -19,8 +19,8 @@ export default async function ContractPage({ params, searchParams }: ContractPag
     redirect("/auth/signin");
   }
 
-  const { projectId } = params;
-  const freelancerEmail = searchParams.freelancerEmail;
+  const { projectId } = await params;
+  const { freelancerEmail } = await searchParams;
 
   if (!freelancerEmail) {
     // If the freelancerEmail is not provided in search params,
