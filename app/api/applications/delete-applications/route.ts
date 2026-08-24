@@ -21,20 +21,28 @@ export async function DELETE(req: NextRequest) {
         const { applicationId } = await req.json();
         if (!applicationId) return NextResponse.json({ message: "Application ID is required" }, { status: 400 });
 
-        const ping = await PingModel.findByIdAndUpdate(
-            applicationId,
-            { status: "rejected" },
-            { new: true }
-        );
+        const ping = await PingModel.findById(applicationId);
         if (!ping) return NextResponse.json({ message: "Application not found" }, { status: 404 });
 
+        const gigData = await ProjectModel.findById(ping.projectId).lean();
+        if (!gigData) return NextResponse.json({ message: "Gig not found" }, { status: 404 });
+
+        if (gigData.createdBy !== session.user.email) {
+            return NextResponse.json({ message: "Forbidden. You do not own this gig." }, { status: 403 });
+        }
+
+        if (ping.status === 'accepted' || ping.status === 'contract_offered' || ping.status === 'in_progress') {
+            return NextResponse.json({ 
+                message: "This application is already accepted or in progress. Please use the Revoke Acceptance action instead." 
+            }, { status: 400 });
+        }
+
+        ping.status = "rejected";
+        await ping.save();
         const userEmail = ping.userEmail;
         const gigId = ping.projectId;
 
-        const [userData, gigData] = await Promise.all([
-            userModel.findOne({ email: userEmail }).lean(),
-            ProjectModel.findById(gigId).lean()
-        ]);
+        const userData = await userModel.findOne({ email: userEmail }).lean();
 
 
         after(async () => {

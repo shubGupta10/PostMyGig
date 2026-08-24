@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
     // Get paginated gigs
     const gigs = await ProjectModel.find({
       expiresAt: { $gt: currentDate },
-      status: { $nin: ["assigned", "completed", "expired"] }
+      status: { $nin: ["accepted", "completed", "expired", "contract_offered", "in_progress"] }
     })
       .select({
         title: 1,
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
     // Get total count
     const totalCount = await ProjectModel.countDocuments({
       expiresAt: { $gt: currentDate },
-      status: { $nin: ["assigned", "completed", "expired"] }
+      status: { $nin: ["accepted", "completed", "expired", "contract_offered", "in_progress"] }
     })
 
     const totalPages = Math.ceil(totalCount / limit)

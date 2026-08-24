@@ -1,3 +1,6 @@
+import { useState } from "react"
+import { useSession } from "next-auth/react"
+
 import type { Application } from "@/app/(pages)/applications/view-applications/types"
 import {
   X,
@@ -13,6 +16,7 @@ import {
   Github,
   Code2,
   User,
+  FileText,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -42,11 +46,14 @@ interface Props {
 export function ApplicationDetailModal({
   application,
   loading,
+
   onClose,
   onAccept,
   onDelete,
   onRevoke,
 }: Props) {
+  const { data: session } = useSession()
+  
   const match = application.matchDetails
   const portfolioProjects = application.applicant?.portfolioProjects || []
   const skills = application.applicant?.skills || []
@@ -295,7 +302,7 @@ export function ApplicationDetailModal({
             <XCircle className="w-4 h-4 mr-2" /> Reject Application
           </Button>
 
-          {application.status === "accepted" ? (
+          {["accepted", "contract_offered", "in_progress"].includes(application.status.toLowerCase()) ? (
             <>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -325,6 +332,12 @@ export function ApplicationDetailModal({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              <Button
+                onClick={() => (window.location.href = `/contracts/${application.projectId}?freelancerEmail=${application.applicant?.email || application.userEmail}`)}
+                className="bg-secondary text-secondary-foreground hover:bg-secondary/80 font-semibold h-12 px-6 rounded-2xl cursor-pointer shadow-xs text-sm"
+              >
+                <FileText className="w-4 h-4 mr-2" /> Send Contract
+              </Button>
               <Button
                 onClick={() => (window.location.href = `/projects/${application.projectId}/huddle`)}
                 className="bg-primary text-primary-foreground font-semibold h-12 px-6 rounded-2xl cursor-pointer shadow-xs text-sm"

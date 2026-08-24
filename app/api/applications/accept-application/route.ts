@@ -44,6 +44,14 @@ export async function POST(req: NextRequest) {
                 message: "Forbidden. You are not allowed to accept applications for someone else's gig."
             }, { status: 403 })
         }
+
+        if (project.status !== 'active') {
+            await dbSession.abortTransaction();
+            await dbSession.endSession();
+            return NextResponse.json({
+                error: "This gig is already assigned or no longer active. You must revoke the current acceptance first."
+            }, { status: 400 });
+        }
         if (!applicationId || !gigId || !applicantEmail) {
             await dbSession.abortTransaction();
             await dbSession.endSession();
@@ -80,7 +88,7 @@ export async function POST(req: NextRequest) {
 
         //change the status of project in project model
         await ProjectModel.findByIdAndUpdate(gigId, {
-            status: "assigned"
+            status: "accepted"
         }, { new: true, session: dbSession });
 
         await dbSession.commitTransaction();

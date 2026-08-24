@@ -1,8 +1,19 @@
 "use client"
 
-import { Eye, Trash2, RefreshCw, Calendar, Clock, DollarSign, Activity, MessageSquare } from "lucide-react"
+import { Eye, Trash2, RefreshCw, Calendar, Clock, DollarSign, Activity, MessageSquare, CheckCheck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
@@ -20,6 +31,26 @@ interface UserGigCardProps {
 export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps) {
   const router = useRouter();
   const [renewing, setRenewing] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+
+  const handleCompleteGig = async (e: MouseEvent) => {
+    e.stopPropagation();
+    setIsCompleting(true)
+    try {
+      const res = await fetch("/api/gigs/complete-gig", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gigId: project._id }),
+      })
+      if (!res.ok) throw new Error("Failed to complete gig")
+      toast.success("Project marked as completed!")
+      router.refresh()
+    } catch {
+      toast.error("Failed to mark as completed")
+    } finally {
+      setIsCompleting(false)
+    }
+  }
 
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -159,6 +190,38 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+            {project.status === "in_progress" && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    disabled={isCompleting}
+                    onClick={(e) => e.stopPropagation()}
+                    className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold flex items-center gap-2"
+                  >
+                    <CheckCheck className={`size-4 ${isCompleting ? "animate-spin" : ""}`} />
+                    <span>{isCompleting ? "Completing..." : "Complete Project"}</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Mark Project as Completed?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to mark this project as completed? This signals that the freelancer has delivered the final work and you are satisfied.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="font-semibold">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleCompleteGig}
+                      className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
+                    >
+                      Confirm Completion
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+            
             {project.status === "expired" && (
               <Button
                 onClick={handleRenew}

@@ -48,6 +48,36 @@ export const ourFileRouter = {
                 fileKey: file.key,
             };
         }),
+    contractAttachment: f({
+        pdf: {
+            maxFileSize: "8MB",
+            maxFileCount: 1
+        }
+    })
+        .middleware(async () => {
+            const session = await getServerSession(authOptions);
+            if (!session?.user?.id) {
+                throw new Error("Unauthorized");
+            }
+
+            const { success, reset } = await uploadRateLimiter.limit(session.user.id);
+            if (!success) {
+                const minLeft = Math.ceil((reset - Date.now()) / (1000 * 60));
+                throw new Error(`Upload limit reached (10 files/hour). Please try again in ${minLeft}m.`);
+            }
+            return {
+                userId: session.user.id
+            };
+        })
+        .onUploadComplete(async ({ metadata, file }) => {
+            return {
+                uploadedBy: metadata.userId,
+                url: file.ufsUrl || file.url,
+                fileName: file.name,
+                fileSize: file.size,
+                fileKey: file.key,
+            };
+        }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter
