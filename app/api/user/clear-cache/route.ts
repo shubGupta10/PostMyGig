@@ -7,8 +7,8 @@ export async function POST() {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user?.isAdmin) {
-      return NextResponse.json({ message: "Unauthorized: Admin access required" }, { status: 403 });
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     await redis.flushdb();

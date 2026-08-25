@@ -5,6 +5,9 @@ import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { RefreshCw, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { AdminOverviewCards } from "@/modules/admin/components/AdminOverviewCards"
@@ -47,6 +50,20 @@ function AdminDashboardContent() {
   const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null)
   const [verificationRequests, setVerificationRequests] = useState<VerificationRequest[]>([])
   const [applicationPage, setApplicationPage] = useState(1)
+  const [isClearingCache, setIsClearingCache] = useState(false)
+
+  const handleClearCache = async () => {
+    setIsClearingCache(true)
+    try {
+      const res = await fetch("/api/user/clear-cache", { method: "POST" })
+      if (!res.ok) throw new Error("Failed to clear system cache")
+      toast.success("System cache and rate limits cleared successfully!")
+    } catch (err: any) {
+      toast.error(err.message || "An error occurred")
+    } finally {
+      setIsClearingCache(false)
+    }
+  }
 
   const fetchVerificationReqs = async () => {
     try {
@@ -249,6 +266,34 @@ function AdminDashboardContent() {
   return (
     <div className="min-h-screen bg-background">
       <div className="px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" disabled={isClearingCache} className="border-border text-orange-500 hover:bg-orange-500 hover:text-white font-semibold h-10 rounded-xl">
+                {isClearingCache ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+                {isClearingCache ? "Clearing..." : "Clear Cache"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2">
+                  <RefreshCw className="size-5 text-orange-500" /> Clear System Cache?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will flush all cached data including active rate limits, dashboard caches, and public feed data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isClearingCache}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleClearCache} disabled={isClearingCache} className="bg-orange-500 text-white hover:bg-orange-600">
+                  {isClearingCache ? "Clearing..." : "Clear"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+
         {/* Metric Cards */}
         <AdminOverviewCards
           totalUsers={dashboardData?.counts?.totalUsers || 0}

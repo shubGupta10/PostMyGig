@@ -35,23 +35,6 @@ export default function SettingsPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const [requestingVerification, setRequestVerification] = useState(false);
-  const [isClearingCache, setIsClearingCache] = useState(false);
-
-  const handleClearCache = async () => {
-    setIsClearingCache(true)
-    setError(null)
-    setSuccessMessage(null)
-    try {
-      const res = await fetch("/api/user/clear-cache", { method: "POST" })
-      if (!res.ok) throw new Error("Failed to clear system cache")
-      setSuccessMessage("System cache and rate limits cleared successfully!")
-      setTimeout(() => setSuccessMessage(null), 3000)
-    } catch (err: any) {
-      setError(err.message || "An error occurred")
-    } finally {
-      setIsClearingCache(false)
-    }
-  }
 
   const handleRequestVerification = async () => {
     setRequestVerification(true);
@@ -360,45 +343,6 @@ export default function SettingsPage() {
           </p>
 
           <div className="space-y-3">
-            {/* Clear Cache */}
-            {user?.isAdmin && (
-              <div className="bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-border/80">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center shrink-0">
-                  <RefreshCw className="w-5 h-5 text-orange-500" />
-                </div>
-                <div>
-                  <h3 className="text-base font-semibold text-foreground">Clear System Cache</h3>
-                  <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">Clear all cached data including rate limits and dashboard data.</p>
-                </div>
-              </div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" disabled={isClearingCache} className="border-border text-orange-500 hover:bg-orange-500 hover:text-white font-semibold h-10 rounded-xl shrink-0">
-                    {isClearingCache ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
-                    {isClearingCache ? "Clearing..." : "Clear Cache"}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="flex items-center gap-2">
-                      <RefreshCw className="size-5 text-orange-500" /> Clear System Cache?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will flush all cached data including active rate limits, dashboard caches, and public feed data.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isClearingCache}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleClearCache} disabled={isClearingCache} className="bg-orange-500 text-white hover:bg-orange-600">
-                      {isClearingCache ? "Clearing..." : "Clear"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-            )}
-
             {/* Delete Account */}
             <div className="bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-border/80">
               <div className="flex items-center gap-4">
