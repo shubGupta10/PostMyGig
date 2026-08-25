@@ -240,10 +240,6 @@ function AdminDashboardContent() {
     }
   }, [user?.email])
 
-  if (status === "loading" || (loading && !dashboardData)) {
-    return <AdminDashboardLoading />
-  }
-
   if (status === "unauthenticated") {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background p-4">
@@ -294,97 +290,101 @@ function AdminDashboardContent() {
           </AlertDialog>
         </div>
 
-        {/* Metric Cards */}
-        <AdminOverviewCards
-          totalUsers={dashboardData?.counts?.totalUsers || 0}
-          totalProjects={dashboardData?.counts?.totalProjects || 0}
-          totalPingSends={dashboardData?.counts?.totalPingSends || 0}
-          totalFeedback={totalFeedbackCount}
-        />
-
-        {/* Tab Navigation & Subsections */}
-        <Tabs 
-          value={activeTab} 
-          onValueChange={(value) => router.replace(`${pathname}?tab=${value}`, { scroll: false })}
-          className="space-y-6"
-        >
-          <TabsList className="flex justify-start flex-nowrap overflow-x-auto no-scrollbar w-full h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
-            <TabsTrigger value="analytics" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger value="users" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Users
-            </TabsTrigger>
-            <TabsTrigger value="projects" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Projects
-            </TabsTrigger>
-            <TabsTrigger value="applications" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Applications
-            </TabsTrigger>
-            <TabsTrigger value="feedback" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Feedback ({totalFeedbackCount})
-            </TabsTrigger>
-            <TabsTrigger value="verification" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Verification
-            </TabsTrigger>
-            <TabsTrigger value="seeder" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              Platform Seeder
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="analytics" className="space-y-6">
-            <AdminAnalyticsTab chartData={analyticsData} />
-          </TabsContent>
-
-          <TabsContent value="users" className="space-y-6">
-            <AdminUsersTab
-              users={dashboardData?.allData?.totalUsersData || []}
-              pagination={dashboardData?.pagination?.userPagination}
-              onPageChange={(page) => setUserPage(page)}
-              onToggleVerify={handleToggleVerify}
+        {(status === "loading" || loading) && !dashboardData ? (
+          <AdminDashboardLoading />
+        ) : (
+          <>
+            <AdminOverviewCards
+              totalUsers={dashboardData?.counts?.totalUsers || 0}
+              totalProjects={dashboardData?.counts?.totalProjects || 0}
+              totalPingSends={dashboardData?.counts?.totalPingSends || 0}
+              totalFeedback={totalFeedbackCount}
             />
-          </TabsContent>
 
-          <TabsContent value="projects" className="space-y-6">
-            <AdminProjectsTab
-              projects={dashboardData?.allData?.totalProjectsData || []}
-              pagination={dashboardData?.pagination?.projectPagination}
-              onPageChange={(page) => setProjectPage(page)}
-              onDeleteProject={deleteGig}
-              deletingProjectId={deletingProjectId}
-            />
-          </TabsContent>
+            {/* Tab Navigation & Subsections */}
+            <Tabs 
+              value={activeTab} 
+              onValueChange={(value) => router.replace(`${pathname}?tab=${value}`, { scroll: false })}
+              className="space-y-6"
+            >
+              <TabsList className="flex justify-start flex-nowrap overflow-x-auto no-scrollbar w-full h-auto p-1.5 gap-1 bg-muted/80 rounded-xl">
+                <TabsTrigger value="analytics" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="users" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Users
+                </TabsTrigger>
+                <TabsTrigger value="projects" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Projects
+                </TabsTrigger>
+                <TabsTrigger value="applications" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Applications
+                </TabsTrigger>
+                <TabsTrigger value="feedback" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Feedback ({totalFeedbackCount})
+                </TabsTrigger>
+                <TabsTrigger value="verification" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Verification
+                </TabsTrigger>
+                <TabsTrigger value="seeder" className="shrink-0 whitespace-nowrap px-3 py-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Platform Seeder
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="applications" className="space-y-6">
-            <AdminApplicationsTab 
-              applications={dashboardData?.allData?.applicationPageData || []}
-              pagination={dashboardData?.pagination?.applicationPagination}
-              onPageChange={(page) => setApplicationPage(page)}
-            />
-          </TabsContent>
+              <TabsContent value="analytics" className="space-y-6">
+                <AdminAnalyticsTab chartData={analyticsData} />
+              </TabsContent>
 
+              <TabsContent value="users" className="space-y-6">
+                <AdminUsersTab
+                  users={dashboardData?.allData?.totalUsersData || []}
+                  pagination={dashboardData?.pagination?.userPagination}
+                  onPageChange={(page) => setUserPage(page)}
+                  onToggleVerify={handleToggleVerify}
+                />
+              </TabsContent>
 
-          <TabsContent value="feedback" className="space-y-6">
-            <AdminFeedbackTab
-              feedbacks={dashboardData?.allData?.fetchALLFeedbacks || []}
-              pagination={dashboardData?.pagination?.feedbackPagination}
-              onPageChange={(page) => setFeedbackPage(page)}
-              onDeleteFeedback={handleDeleteFeedback}
-              deletingFeedbackId={deletingFeedbackId}
-            />
-          </TabsContent>
+              <TabsContent value="projects" className="space-y-6">
+                <AdminProjectsTab
+                  projects={dashboardData?.allData?.totalProjectsData || []}
+                  pagination={dashboardData?.pagination?.projectPagination}
+                  onPageChange={(page) => setProjectPage(page)}
+                  onDeleteProject={deleteGig}
+                  deletingProjectId={deletingProjectId}
+                />
+              </TabsContent>
 
-          <TabsContent value="verification" className="space-y-6">
-            <AdminVerificationTab
-              requests={verificationRequests}
-              onResolve={handleResolveVerification}
-            />
-          </TabsContent>
+              <TabsContent value="applications" className="space-y-6">
+                <AdminApplicationsTab 
+                  applications={dashboardData?.allData?.applicationPageData || []}
+                  pagination={dashboardData?.pagination?.applicationPagination}
+                  onPageChange={(page) => setApplicationPage(page)}
+                />
+              </TabsContent>
 
-          <TabsContent value="seeder" className="space-y-6">
-            <PlatformSeeder />
-          </TabsContent>
-        </Tabs>
+              <TabsContent value="feedback" className="space-y-6">
+                <AdminFeedbackTab
+                  feedbacks={dashboardData?.allData?.fetchALLFeedbacks || []}
+                  pagination={dashboardData?.pagination?.feedbackPagination}
+                  onPageChange={(page) => setFeedbackPage(page)}
+                  onDeleteFeedback={handleDeleteFeedback}
+                  deletingFeedbackId={deletingFeedbackId}
+                />
+              </TabsContent>
+
+              <TabsContent value="verification" className="space-y-6">
+                <AdminVerificationTab
+                  requests={verificationRequests}
+                  onResolve={handleResolveVerification}
+                />
+              </TabsContent>
+
+              <TabsContent value="seeder" className="space-y-6">
+                <PlatformSeeder />
+              </TabsContent>
+            </Tabs>
+          </>
+        )}
       </div>
     </div>
   )
