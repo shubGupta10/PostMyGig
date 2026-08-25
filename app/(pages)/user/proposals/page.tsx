@@ -107,42 +107,44 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
                           </div>
                         </div>
 
-                        {["accepted", "contract_offered", "in_progress"].includes(item.status.toLowerCase()) ? (
-                          <div className="flex gap-2 shrink-0">
+                        <div className="flex flex-wrap gap-2 shrink-0">
+                          {["accepted", "contract_offered", "in_progress"].includes(item.status.toLowerCase()) ? (
+                            <>
+                              <Button
+                                asChild
+                                className="h-10 text-xs font-semibold px-5 rounded-xl shadow-xs bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer"
+                              >
+                                <Link href={`/contracts/${item.projectId}?freelancerEmail=${item.userEmail}`}>
+                                  <FileText className="h-4 w-4 mr-2 shrink-0" />
+                                  <span>Review Contract</span>
+                                </Link>
+                              </Button>
+                              <Button
+                                asChild
+                                className="h-10 text-xs font-semibold px-5 rounded-xl shadow-xs bg-primary text-primary-foreground cursor-pointer"
+                              >
+                                <Link href={`/projects/${item.projectId}/huddle`}>
+                                  <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
+                                  <span>Project Huddle</span>
+                                </Link>
+                              </Button>
+                            </>
+                          ) : (
                             <Button
                               asChild
-                              className="h-10 text-xs font-semibold px-5 rounded-xl shadow-xs bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer"
+                              variant="secondary"
+                              className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs"
                             >
-                              <Link href={`/contracts/${item.projectId}?freelancerEmail=${item.userEmail}`}>
-                                <FileText className="h-4 w-4 mr-2 shrink-0" />
-                                <span>Review Contract</span>
+                              <Link href={`/open-gig/${item.projectId}`}>
+                                <Eye className="h-4 w-4 mr-2 shrink-0" />
+                                <span>View Details</span>
                               </Link>
                             </Button>
-                            <Button
-                              asChild
-                              className="h-10 text-xs font-semibold px-5 rounded-xl shadow-xs bg-primary text-primary-foreground cursor-pointer"
-                            >
-                              <Link href={`/projects/${item.projectId}/huddle`}>
-                                <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
-                                <span>Project Huddle</span>
-                              </Link>
-                            </Button>
-                          </div>
-                        ) : (
-                          <Button
-                            asChild
-                            variant="secondary"
-                            className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 shadow-xs"
-                          >
-                            <Link href={`/open-gig/${item.projectId}`}>
-                              <Eye className="h-4 w-4 mr-2 shrink-0" />
-                              <span>View Details</span>
-                            </Link>
-                          </Button>
-                        )}
-                        {item.projectDetails?.status?.toLowerCase() === "completed" && (
-                          <RateClientDialog gigId={item.projectId} />
-                        )}
+                          )}
+                          {item.projectDetails?.status?.toLowerCase() === "completed" && (
+                            <RateClientDialog gigId={item.projectId} />
+                          )}
+                        </div>
                       </div>
                     )
                   })}

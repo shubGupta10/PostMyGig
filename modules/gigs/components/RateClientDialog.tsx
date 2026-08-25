@@ -61,7 +61,7 @@ export function RateClientDialog({ gigId }: RateClientDialogProps) {
                 <Button
                     variant="outline"
                     onClick={(e) => e.stopPropagation()}
-                    className="border-blue-500 text-blue-600 hover:bg-blue-50 w-full mt-2"
+                    className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 border-border text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                     <Star className="mr-2 h-4 w-4" /> Rate Client
                 </Button>
@@ -116,7 +116,7 @@ export function RateClientDialog({ gigId }: RateClientDialogProps) {
                     <AlertDialogAction
                         onClick={handleSubmit}
                         disabled={rating === 0 || comment.trim() === "" || isSubmitting}
-                        className="bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                        className="bg-primary text-primary-foreground hover:bg-primary disabled:opacity-50"
                     >
                         {isSubmitting ? "Submitting..." : "Publish Reviews"}
                     </AlertDialogAction>
