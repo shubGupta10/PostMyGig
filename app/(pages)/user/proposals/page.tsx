@@ -135,7 +135,7 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
                             </Link>
                           </Button>
                         )}
-                        {item.status.toLowerCase() === "completed" && (
+                        {item.projectDetails?.status?.toLowerCase() === "completed" && (
                           <RateClientDialog gigId={item.projectId} />
                         )}
                       </div>

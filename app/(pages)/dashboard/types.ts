@@ -39,6 +39,7 @@ export interface AppliedPingHistory {
     title?: string;
     category?: string;
     budget?: string;
+    status?: string;
   };
 }
 

@@ -162,6 +162,7 @@ export async function getDashboardDetails(page: number = 1, limit: number = 6): 
                             title: p.projectDetails.title,
                             category: p.projectDetails.category,
                             budget: p.projectDetails.budget,
+                            status: p.projectDetails.status,
                         }
                         : undefined,
                 })),
