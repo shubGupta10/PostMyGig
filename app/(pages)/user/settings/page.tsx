@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, Save, Activity, Mail, LinkIcon, LogOut, Trash2, AlertTriangle, Award, ShieldCheck } from "lucide-react"
+import { Loader2, Save, Activity, Mail, LinkIcon, LogOut, Trash2, AlertTriangle, Award, ShieldCheck, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import {
