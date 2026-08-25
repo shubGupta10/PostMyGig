@@ -82,6 +82,11 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
                       ? formatActivityDate((item as any).updatedAt, "Updated")
                       : formatActivityDate(item.createdAt, "Applied");
 
+                    const isProjectCompleted = item.projectDetails?.status?.toLowerCase() === "completed";
+                    const displayStatus = (isProjectCompleted && ["in_progress", "accepted"].includes(item.status.toLowerCase())) 
+                      ? "completed" 
+                      : item.status;
+
                     return (
                       <div
                         key={item._id}
@@ -93,7 +98,7 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
                               {item.projectDetails?.title || "Gig Details"}
                             </h3>
                             <Badge className="bg-secondary text-secondary-foreground border-border border capitalize text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0">
-                              {item.status.replace(/_/g, ' ')}
+                              {displayStatus.replace(/_/g, ' ')}
                             </Badge>
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
