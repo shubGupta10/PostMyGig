@@ -1,7 +1,6 @@
 import { ConnectoDatabase } from "@/lib/db"
 import redis from "@/lib/redis"
 import userModel from "@/modules/users/models/UserModel"
-import ProjectModel from "@/modules/gigs/models/ProjectModel"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/options"
 import type { UserData } from "../types"
@@ -124,6 +123,27 @@ export async function fetchPublicUserProfile(userId: string): Promise<UserData |
             { $sort: { createdAt: -1 } }
           ],
           as: "freelancerCompleted"
+        }
+      },
+      // Stage 5: Fetch Published Reviews
+      {
+        $lookup: {
+          from: "reviews",
+          let: { targetUserId: { $toString: "$_id" } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$targetId", "$$targetUserId"] },
+                    { $eq: ["$status", "published"] }
+                  ]
+                }
+              }
+            },
+            { $sort: { createdAt: -1 } }
+          ],
+          as: "reviews"
         }
       },
       // Stage 5: Merge arrays & Cleanup

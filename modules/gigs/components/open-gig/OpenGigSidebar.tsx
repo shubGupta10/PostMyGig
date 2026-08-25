@@ -234,13 +234,8 @@ export function OpenGigSidebar({ gig, owner, isPinged, canApply, disabledMessage
                       title={disabledMessage}
                     >
                       <CheckCircle className="w-5 h-5" />
-                      Apply for this Gig
+                      {disabledMessage || "Gig Closed"}
                     </button>
-                    {disabledMessage && (
-                      <p className="text-sm text-muted-foreground mt-3 text-center bg-muted rounded-lg px-3 py-2">
-                        {disabledMessage}
-                      </p>
-                    )}
                   </div>
                 )}
               </>

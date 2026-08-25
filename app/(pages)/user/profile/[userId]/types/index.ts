@@ -5,6 +5,20 @@ export interface ContactLinks {
   url: string
 }
 
+export interface ReviewData {
+  _id: string;
+  gigId: string;
+  authorId: string;
+  targetId: string;
+  role: "client" | "freelancer";
+  rating: number;
+  comment: string;
+  status: "hidden" | "published";
+  createdAt: string;
+  updatedAt: string;
+}
+
+
 export interface UserData {
   _id: string
   name: string
@@ -25,6 +39,9 @@ export interface UserData {
   showContactLinks?: boolean
   isVerified: boolean
   openGigs?: any[]
+  averageRating?: number;
+  totalReviews?: number;
+  reviews?: ReviewData[];
   completedGigs?: any[]
   portfolioProjects?: PortfolioProject[]
 }

@@ -26,7 +26,6 @@ export function OpenGigHeader({ gig, owner, isPinged, canApply, disabledMessage 
   const statusConfig = getStatusConfig(gig.status)
   const daysUntilExpiry = getDaysUntilExpiry(gig.expiresAt)
   const isExpiringSoon = daysUntilExpiry <= 3 && daysUntilExpiry > 0
-  const StatusIcon = statusConfig.icon
 
   return (
     <div className="bg-transparent mb-6 sm:mb-8">
@@ -164,13 +163,8 @@ export function OpenGigHeader({ gig, owner, isPinged, canApply, disabledMessage 
                       title={disabledMessage}
                     >
                       <CheckCircle className="w-5 h-5" />
-                      Apply Now
+                      {disabledMessage || "Gig Closed"}
                     </button>
-                    {disabledMessage && (
-                      <p className="text-sm text-muted-foreground mt-2 text-center bg-background/60 rounded-lg px-3 py-2">
-                        {disabledMessage}
-                      </p>
-                    )}
                   </div>
                 )}
               </>

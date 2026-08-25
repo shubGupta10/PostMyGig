@@ -1,6 +1,6 @@
 "use client"
 
-import { Eye, Trash2, RefreshCw, Calendar, Clock, DollarSign, Activity, MessageSquare, CheckCheck } from "lucide-react"
+import { Eye, Trash2, RefreshCw, Calendar, Clock, DollarSign, Activity, MessageSquare, CheckCheck, Star } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import {
@@ -32,6 +32,8 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
   const router = useRouter();
   const [renewing, setRenewing] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [rating, setRating] = useState<number>(0);
+  const [comment, setComment] = useState("");
 
   const handleCompleteGig = async (e: MouseEvent) => {
     e.stopPropagation();
@@ -40,7 +42,7 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
       const res = await fetch("/api/gigs/complete-gig", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gigId: project._id }),
+        body: JSON.stringify({ gigId: project._id, rating, comment }),
       })
       if (!res.ok) throw new Error("Failed to complete gig")
       toast.success("Project marked as completed!")
@@ -49,6 +51,8 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
       toast.error("Failed to mark as completed")
     } finally {
       setIsCompleting(false)
+      setRating(0)
+      setComment("")
     }
   }
 
@@ -202,26 +206,76 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
                     <span>{isCompleting ? "Completing..." : "Complete Project"}</span>
                   </Button>
                 </AlertDialogTrigger>
+
                 <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Mark Project as Completed?</AlertDialogTitle>
+                    <AlertDialogTitle>Complete Project & Review Freelancer</AlertDialogTitle>
+
                     <AlertDialogDescription>
-                      Are you sure you want to mark this project as completed? This signals that the freelancer has delivered the final work and you are satisfied.
+                      The project will be closed. Please rate the freelancer and leave a review about their work.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
+
+                  <div className="flex flex-col gap-4 py-4">
+                    <div>
+                      <p className="text-sm font-semibold mb-2">Rating</p>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRating(star);
+                            }}
+                            className="focus:outline-none"
+                          >
+                            <Star
+                              className={`size-6 ${star <= rating
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-muted-foreground hover:text-yellow-400"
+                                } transition-colors`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold mb-2">Written Review</p>
+                      <textarea
+                        onClick={(e) => e.stopPropagation()}
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        placeholder="Describe your experience working with this freelancer..."
+                        className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                  </div>
+
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="font-semibold">Cancel</AlertDialogCancel>
+                    <AlertDialogCancel
+                      onClick={() => {
+                        setRating(0);
+                        setComment("");
+                      }}
+                      className="font-semibold"
+                    >
+                      Cancel
+                    </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleCompleteGig}
-                      className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold"
+                      disabled={rating === 0 || comment.trim() === ""}
+                      className="bg-emerald-600 text-white hover:bg-emerald-700 font-semibold disabled:opacity-50"
                     >
-                      Confirm Completion
+                      Confirm & Submit Review
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
+
               </AlertDialog>
             )}
-            
+
             {project.status === "expired" && (
               <Button
                 onClick={handleRenew}

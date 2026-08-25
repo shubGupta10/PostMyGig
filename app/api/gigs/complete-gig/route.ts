@@ -7,6 +7,7 @@ import Activity from "@/modules/notifications/models/ActivityModel";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/options";
+import ReviewModel from "@/modules/reviews/model/ReviewModel";
 
 export async function POST(req: NextRequest) {
     let dbSession;
@@ -18,10 +19,10 @@ export async function POST(req: NextRequest) {
             }, { status: 403 })
         }
         await ConnectoDatabase();
-        const { gigId } = await req.json();
+        const { gigId, rating, comment } = await req.json();
 
-        if (!gigId) {
-            return NextResponse.json({ error: "Gig ID is required" }, { status: 400 });
+        if (!gigId || !rating || !comment) {
+            return NextResponse.json({ error: "Gig ID, rating and comments are required" }, { status: 400 });
         }
 
         dbSession = await mongoose.startSession();
@@ -44,9 +45,23 @@ export async function POST(req: NextRequest) {
         project.status = "completed";
         await project.save({ session: dbSession });
 
+        const clientUser = await userModel.findOne({ email: project.createdBy }).session(dbSession);
+        const freelancerUser = await userModel.findOne({ email: project.AcceptedFreelancerEmail }).session(dbSession);
+
+        if (clientUser && freelancerUser) {
+            await ReviewModel.create([{
+                gigId: String(project._id),
+                authorId: String(clientUser._id),
+                targetId: String(freelancerUser._id),
+                role: "client",
+                rating: Number(rating),
+                comment,
+                status: "hidden"
+            }], { session: dbSession });
+        }
+
         const THRESHOLD = 3;
 
-        // Check Client verification eligibility
         if (project.createdBy) {
             const clientGigCount = await ProjectModel.countDocuments({
                 createdBy: project.createdBy,

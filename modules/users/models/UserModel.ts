@@ -26,6 +26,8 @@ interface User extends Document {
   isVerified?: boolean;
   verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected';
   isAdmin?: boolean;
+  averageRating?: Number;
+  totalReviews?: Number;
   subscriptionSnapshot?: SubscriptionSnapshot;
   createdAt?: string;
   updatedAt?: string;
@@ -125,6 +127,14 @@ const userSchema = new Schema<User>({
   isAdmin: {
     type: Boolean,
     default: false
+  },
+  averageRating: {
+    type: Number,
+    default: 0
+  },
+  totalReviews: {
+    type: Number,
+    default: 0
   },
   subscriptionSnapshot: {
     plan: {

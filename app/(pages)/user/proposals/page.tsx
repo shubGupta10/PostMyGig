@@ -8,6 +8,7 @@ import type { FreelancerDashboardData } from "@/app/(pages)/dashboard/types"
 import { redirect } from "next/navigation"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { formatActivityDate, getDateSectionLabel, groupItemsByTimeline } from "@/lib/helpers"
+import { RateClientDialog } from "@/modules/gigs/components/RateClientDialog"
 
 
 export const metadata = {
@@ -133,6 +134,9 @@ export default async function ApplicationHistoryPage({ searchParams }: PageProps
                               <span>View Details</span>
                             </Link>
                           </Button>
+                        )}
+                        {item.status.toLowerCase() === "completed" && (
+                          <RateClientDialog gigId={item.projectId} />
                         )}
                       </div>
                     )
