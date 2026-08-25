@@ -106,6 +106,12 @@ export async function POST(req: NextRequest) {
             if (project.createdBy) {
                 const userKeys = await redis.keys(`user-projects:${project.createdBy}*`);
                 if (userKeys.length > 0) await redis.del(...userKeys);
+                const clientDashKeys = await redis.keys(`dashboard-data:client:${project.createdBy}*`);
+                if (clientDashKeys.length > 0) await redis.del(...clientDashKeys);
+            }
+            if (project.AcceptedFreelancerEmail) {
+                const freelancerDashKeys = await redis.keys(`dashboard-data:freelancer:${project.AcceptedFreelancerEmail}*`);
+                if (freelancerDashKeys.length > 0) await redis.del(...freelancerDashKeys);
             }
         } catch (e) {
             console.warn("Failed to invalidate cache", e);
