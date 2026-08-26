@@ -3,18 +3,18 @@ import Link from "next/link"
 
 export default function LandingPricing() {
   const freePoints = [
-    "15 Gig postings per month (Clients)",
-    "30 Pitch pings per month (Freelancers)",
+    "15 Gig postings per month",
+    "50 Pings (applications) per month",
     "Standard search placement",
     "In-app & Email notifications",
   ]
 
   const proPoints = [
     "Everything in Free plan",
-    "Up to 50 Gig postings per month (Clients)",
-    "Up to 100 Pitch pings per month (Freelancers)",
-    "Featured Gig Badge for higher responses",
-    "Priority Pitch placement on client dashboards",
+    "Up to 100 Gig postings per month",
+    "Up to 300 Pings (applications) per month",
+    "Featured Gig Badge for higher visibility",
+    "Priority Pitch placement on dashboards",
   ]
 
   return (

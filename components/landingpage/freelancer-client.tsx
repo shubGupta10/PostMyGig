@@ -76,11 +76,11 @@ function FreelancerClient() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-bold text-card-foreground">For Freelancers</h3>
+                  <h3 className="text-2xl font-bold text-card-foreground">Got Extra Work?</h3>
                 </div>
 
                 <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  List your skills, share extra projects, or find work. Connect safely, no hassle.
+                  Too busy? Share your extra gigs with other freelancers.
                 </p>
 
                 {/* Benefits */}
@@ -93,7 +93,7 @@ function FreelancerClient() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-muted-foreground">Share excess work easily</span>
+                    <span className="text-muted-foreground">Post your extra gigs</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
@@ -103,7 +103,7 @@ function FreelancerClient() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-muted-foreground">Connect via WhatsApp/Email</span>
+                    <span className="text-muted-foreground">Find help quickly</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
@@ -113,7 +113,7 @@ function FreelancerClient() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-muted-foreground">No platform fees</span>
+                    <span className="text-muted-foreground">Keep your clients happy</span>
                   </div>
                 </div>
 
@@ -121,9 +121,9 @@ function FreelancerClient() {
                 <Link
                   href={ session ? `/add-gigs` : '/auth/login'}
                   className="w-full inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl group-hover:scale-105 transform"
-                  aria-label="Post your skills and start sharing work"
+                  aria-label="Share your extra gigs"
                 >
-                  Post Your Skills
+                  Share Extra Gigs
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
@@ -196,11 +196,11 @@ function FreelancerClient() {
                   <div className="w-12 h-12 bg-accent-foreground rounded-full flex items-center justify-center">
                     <User2Icon className="text-accent font-bold"/>
                   </div>
-                  <h3 className="text-2xl font-bold text-card-foreground">For Clients</h3>
+                  <h3 className="text-2xl font-bold text-card-foreground">Looking for Gigs?</h3>
                 </div>
 
                 <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  Need talent? Post projects and connect with freelancers fast, securely.
+                  Looking for your next project? Get gigs directly from other freelancers.
                 </p>
 
                 {/* Benefits */}
@@ -213,7 +213,7 @@ function FreelancerClient() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-muted-foreground">Find talent quickly</span>
+                    <span className="text-muted-foreground">Skip the bidding wars</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <svg className="w-5 h-5 text-accent-foreground" fill="currentColor" viewBox="0 0 20 20">
@@ -223,7 +223,7 @@ function FreelancerClient() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-muted-foreground">Direct communication</span>
+                    <span className="text-muted-foreground">Work directly with freelancers</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <svg className="w-5 h-5 text-accent-foreground" fill="currentColor" viewBox="0 0 20 20">
@@ -233,7 +233,7 @@ function FreelancerClient() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className="text-muted-foreground">Secure connections</span>
+                    <span className="text-muted-foreground">No platform fees</span>
                   </div>
                 </div>
 
@@ -241,9 +241,9 @@ function FreelancerClient() {
                 <Link
                   href={ session ? `/view-gigs` : '/auth/login'}
                   className="w-full inline-flex items-center justify-center px-6 py-4 text-lg font-semibold text-accent bg-accent-foreground hover:bg-accent-foreground/90 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl group-hover:scale-105 transform"
-                  aria-label="Post a project and find freelancers"
+                  aria-label="Find extra gigs"
                 >
-                  Find Freelancers
+                  Find Gigs
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>

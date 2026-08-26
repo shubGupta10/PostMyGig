@@ -23,8 +23,8 @@ export default function ProblemSolving() {
 
             <ul className="space-y-4 sm:space-y-6 flex-1">
               {[
-                "Drowning in scattered DMs and emails to find reliable freelancers.",
-                "Turning down excess work and permanently losing good clients.",
+                "Turning away good clients because your schedule is completely full.",
+                "Posting extra work on chaotic Twitter (X) threads and getting spammed.",
                 "Paying 20% platform fees to middlemen for every single gig.",
               ].map((point, i) => (
                 <li key={i} className="flex items-start">
@@ -45,9 +45,9 @@ export default function ProblemSolving() {
 
             <ul className="space-y-4 sm:space-y-6 flex-1">
               {[
-                "Share excess gigs instantly with a trusted community in one place.",
-                "Keep your clients happy by ensuring their projects always get done.",
-                "0% platform fees. Direct connections. Absolute freedom.",
+                "Keep your clients happy by sharing extra work with other freelancers.",
+                "Share extra gigs instantly with a trusted community in one place.",
+                "0% platform fees. Just you and other freelancers.",
               ].map((point, i) => (
                 <li key={i} className="flex items-start">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary flex items-center justify-center mr-3 sm:mr-4 flex-shrink-0">

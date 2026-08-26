@@ -78,7 +78,7 @@ export default function Hero() {
             <span className="text-primary block sm:inline-block sm:mt-2">Find Work You Love</span>
           </h1>
           <p className="text-base sm:text-xl font-normal text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Too busy? Quickly post your extra gigs. Need work? Find one fast. Connect instantly via chat or email with zero platform fees.
+            Too busy? Share your extra gigs. Need work? Find gigs from other freelancers. Connect instantly via chat or WhatsApp with zero platform fees.
           </p>
 
           {/* CTAs */}

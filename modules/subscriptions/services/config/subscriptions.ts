@@ -17,17 +17,17 @@ export const PLANS: Record<SubscriptionPlan, PlanLimits> = {
             featuredGigs: false,
         },
         freelancer: {
-            maxPingsPerMonth: 30,
+            maxPingsPerMonth: 50,
             priorityPitch: false,
         },
     },
     pro: {
         client: {
-            maxGigsPerMonth: 50,
+            maxGigsPerMonth: 100,
             featuredGigs: true,
         },
         freelancer: {
-            maxPingsPerMonth: 100,
+            maxPingsPerMonth: 300,
             priorityPitch: true
         }
     }
