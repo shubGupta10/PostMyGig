@@ -10,7 +10,7 @@ export default async function UserGigsPage({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
   const currentPage = Math.max(1, parseInt(resolvedSearchParams.page || "1", 10));
 
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const cookieString = cookieStore.toString();
 
   const result = await fetchUserGigs(cookieString, currentPage, 6);

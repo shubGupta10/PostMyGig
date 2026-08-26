@@ -15,7 +15,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Accordion } from "@/components/ui/accordion"
 import type { PaginationInfo, UserGig } from "@/app/(pages)/(gig)/my-jobs/types"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { groupItemsByTimeline } from "@/lib/helpers"
@@ -106,7 +105,7 @@ export function UserGigsList({ initialProjects, pagination }: UserGigsListProps)
             <div className="h-px flex-1 bg-border/60" />
           </div>
 
-          <Accordion type="multiple" className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             {group.items.map((project) => (
               <UserGigCard
                 key={project._id}
@@ -115,7 +114,7 @@ export function UserGigsList({ initialProjects, pagination }: UserGigsListProps)
                 onDelete={openDeleteDialog}
               />
             ))}
-          </Accordion>
+          </div>
         </div>
       ))}
 

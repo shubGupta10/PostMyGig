@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import type { Application, ContactData, GigDetails } from "@/app/(pages)/applications/view-applications/types"
 import { ApplicationCard } from "@/modules/applications/components/ApplicationCard"
 import { TopRecommendedDeck } from "@/modules/applications/components/TopRecommendedDeck"
-import { ApplicationDetailModal } from "@/modules/applications/components/ApplicationDetailModal"
+import { ApplicationDrawer } from "@/modules/applications/components/ApplicationDrawer"
 import { ContactModal } from "@/modules/applications/components/ContactModal"
 import {
   fetchApplicationsService,
@@ -125,7 +125,7 @@ export function ApplicationsList() {
       )}
 
       {/* SECTION 2: Applications (Rest of the applications) */}
-      <section className="space-y-6 pt-12 sm:pt-16 border-t border-border">
+      <section className={`space-y-6 ${recommendedApplications.length > 0 ? "pt-12 sm:pt-16 border-t border-border" : ""}`}>
         <div className="flex items-center justify-between">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
             Applications ({restApplications.length})
@@ -153,7 +153,7 @@ export function ApplicationsList() {
             {restApplications.map((applicant, index) => (
               <div
                 key={applicant._id}
-                className="bg-card rounded-2xl border-2 border-border shadow-xs overflow-hidden hover:border-primary/40 transition-colors"
+                className="bg-card rounded-2xl border-2 border-border shadow-xs overflow-hidden transition-colors"
               >
                 <ApplicationCard
                   applicant={applicant}
@@ -169,9 +169,9 @@ export function ApplicationsList() {
         )}
       </section>
 
-      {/* Detail Modal */}
+      {/* Detail Drawer */}
       {selectedApplicant && (
-        <ApplicationDetailModal
+        <ApplicationDrawer
           application={selectedApplicant}
           loading={loading}
           onClose={() => setSelectedApplicant(null)}

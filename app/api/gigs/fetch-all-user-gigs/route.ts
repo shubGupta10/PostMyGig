@@ -36,11 +36,34 @@ export async function POST(req: NextRequest) {
     }
 
     const [projects, totalCount] = await Promise.all([
-      ProjectModel.find({ createdBy: userEmail })
-        .sort({ updatedAt: -1, createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      ProjectModel.aggregate([
+        { $match: { createdBy: userEmail } },
+        { $sort: { updatedAt: -1, createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit },
+        {
+          $lookup: {
+            from: "users",
+            localField: "AcceptedFreelancerEmail",
+            foreignField: "email",
+            as: "freelancerInfo"
+          }
+        },
+        {
+          $addFields: {
+            AcceptedFreelancerDetails: {
+              $arrayElemAt: ["$freelancerInfo", 0]
+            }
+          }
+        },
+        {
+          $project: {
+            freelanceInfo: 0,
+            "AcceptedFreelancerDetails.password": 0,
+            "AcceptedFreelancerDetails.__v": 0
+          }
+        }
+      ]),
       ProjectModel.countDocuments({ createdBy: userEmail })
     ])
 
