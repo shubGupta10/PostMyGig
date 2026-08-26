@@ -16,19 +16,19 @@ export default function ProposalsLoading() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row justify-between gap-4 sm:gap-6"
               >
-                <div className="space-y-2 flex-1">
-                  <div className="flex items-center gap-2.5">
-                    <Skeleton className="h-5 w-48 sm:w-64 rounded-md" />
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                  </div>
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col justify-center space-y-2 min-w-0 flex-1">
+                  <Skeleton className="h-5 sm:h-6 w-48 sm:w-64 rounded-md" />
+                  <div className="flex items-center gap-1.5">
                     <Skeleton className="h-3.5 w-3.5 rounded-full" />
                     <Skeleton className="h-3.5 w-28 rounded-md" />
                   </div>
                 </div>
-                <Skeleton className="h-10 w-36 sm:w-44 rounded-xl shrink-0" />
+                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-border">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-9 sm:h-10 w-32 sm:w-36 rounded-xl" />
+                </div>
               </div>
             ))}
           </div>
@@ -45,19 +45,19 @@ export default function ProposalsLoading() {
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row justify-between gap-4 sm:gap-6"
               >
-                <div className="space-y-2 flex-1">
-                  <div className="flex items-center gap-2.5">
-                    <Skeleton className="h-5 w-40 sm:w-56 rounded-md" />
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                  </div>
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col justify-center space-y-2 min-w-0 flex-1">
+                  <Skeleton className="h-5 sm:h-6 w-40 sm:w-56 rounded-md" />
+                  <div className="flex items-center gap-1.5">
                     <Skeleton className="h-3.5 w-3.5 rounded-full" />
-                    <Skeleton className="h-3.5 w-28 rounded-md" />
+                    <Skeleton className="h-3.5 w-24 rounded-md" />
                   </div>
                 </div>
-                <Skeleton className="h-10 w-32 sm:w-36 rounded-xl shrink-0" />
+                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-border">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-9 sm:h-10 w-32 sm:w-36 rounded-xl" />
+                </div>
               </div>
             ))}
           </div>

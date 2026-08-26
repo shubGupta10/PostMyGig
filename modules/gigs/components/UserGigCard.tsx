@@ -45,31 +45,29 @@ export function UserGigCard({ project, deletingId, onDelete }: UserGigCardProps)
     <>
       <div
         onClick={() => setOpen(true)}
-        className="w-full text-left bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-xs hover:border-border/80 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group cursor-pointer"
+        className="w-full text-left bg-card rounded-2xl border-2 border-border p-4 sm:p-5 shadow-sm transition-all flex flex-col sm:flex-row justify-between gap-4 sm:gap-6 group cursor-pointer"
       >
-        {/* Left: title + badge + activity */}
-        <div className="space-y-1.5 min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h3 className="text-base font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-              {project.title}
-            </h3>
-            <Badge className={`capitalize text-xs font-semibold px-2.5 py-0.5 rounded-full shrink-0 ${getStatusColor(project.status)}`}>
-              {project.status.replace(/_/g, " ")}
-            </Badge>
-          </div>
+        {/* Left: title + activity */}
+        <div className="flex flex-col justify-center space-y-2 min-w-0 flex-1">
+          <h3 className="text-base sm:text-lg font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+            {project.title}
+          </h3>
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
             <Calendar className="w-3.5 h-3.5 shrink-0" />
             <span>{activityText}</span>
           </div>
         </div>
 
-        {/* Right: view details button */}
-        <div className="shrink-0">
+        {/* Right: status + view details button */}
+        <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-border">
+          <Badge className={`w-fit capitalize text-xs font-semibold px-3 py-0.5 rounded-full ${getStatusColor(project.status)}`}>
+            {project.status.replace(/_/g, " ")}
+          </Badge>
           <Button
-            className="h-10 px-5 rounded-xl font-semibold text-sm bg-primary text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer shadow-none"
+            className="h-9 sm:h-10 px-4 sm:px-5 rounded-xl font-semibold text-xs sm:text-sm bg-primary text-primary-foreground hover:opacity-90 transition-opacity cursor-pointer shadow-none"
           >
-            <Eye className="w-4 h-4 mr-1.5" />
-            View Details
+            <Eye className="w-4 h-4 mr-1.5 shrink-0" />
+            <span>View Details</span>
           </Button>
         </div>
       </div>
