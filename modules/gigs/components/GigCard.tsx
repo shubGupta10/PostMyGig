@@ -87,7 +87,7 @@ export function GigCard({ gig, showSkills = true }: GigCardProps) {
 
 
   return (
-    <div className="group bg-card rounded-2xl border-2 border-border shadow-sm hover:border-primary transition-colors flex flex-col h-full overflow-hidden">
+    <div className="group bg-card rounded-2xl border-2 border-border shadow-sm transition-colors flex flex-col h-full overflow-hidden">
       <div className="p-6 flex flex-col h-full">
 
         <div className="flex items-start justify-between gap-2 mb-4">
