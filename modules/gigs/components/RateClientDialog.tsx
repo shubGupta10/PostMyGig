@@ -61,7 +61,7 @@ export function RateClientDialog({ gigId }: RateClientDialogProps) {
                 <Button
                     variant="outline"
                     onClick={(e) => e.stopPropagation()}
-                    className="h-10 text-xs font-semibold px-5 rounded-xl shrink-0 border-border text-primary hover:bg-primary hover:text-primary-foreground"
+                    className="w-full h-10 text-sm font-semibold px-5 rounded-xl border-border text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                     <Star className="mr-2 h-4 w-4" /> Rate Client
                 </Button>

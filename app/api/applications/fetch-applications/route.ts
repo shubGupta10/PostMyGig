@@ -22,7 +22,51 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Gig ID is required" }, { status: 400 });
     }
 
-    const gig = await ProjectModel.findById(gigId).select("title skillsRequired createdBy").lean();
+    const [gig, rawApplications] = await Promise.all([
+      ProjectModel.findById(gigId).select("title skillsRequired createdBy").lean(),
+      PingModel.aggregate([
+        {
+          $match: {
+            projectId: gigId,
+            status: { $ne: "rejected" }
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userEmail",
+            foreignField: "email",
+            as: "applicantArray"
+          }
+        },
+        {
+          $unwind: {
+            path: "$applicantArray",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $addFields: {
+            applicant: {
+              _id: "$applicantArray._id",
+              name: "$applicantArray.name",
+              email: "$applicantArray.email",
+              profilePhoto: "$applicantArray.profilePhoto",
+              bio: "$applicantArray.bio",
+              skills: "$applicantArray.skills",
+              portfolioProjects: "$applicantArray.portfolioProjects",
+              isVerified: "$applicantArray.isVerified",
+            }
+          }
+        },
+        {
+          $project: {
+            applicantArray: 0
+          }
+        }
+      ])
+    ]);
+
 
     if (!gig) {
       return NextResponse.json({ error: "Gig not found" }, { status: 404 });
@@ -33,48 +77,6 @@ export async function GET(req: NextRequest) {
         message: "Forbidden. You are not allowed to view applicants for this gig."
       }, { status: 404 })
     }
-
-    const rawApplications = await PingModel.aggregate([
-      {
-        $match: {
-          projectId: gigId,
-          status: { $ne: "rejected" }
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userEmail",
-          foreignField: "email",
-          as: "applicantArray"
-        }
-      },
-      {
-        $unwind: {
-          path: "$applicantArray",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $addFields: {
-          applicant: {
-            _id: "$applicantArray._id",
-            name: "$applicantArray.name",
-            email: "$applicantArray.email",
-            profilePhoto: "$applicantArray.profilePhoto",
-            bio: "$applicantArray.bio",
-            skills: "$applicantArray.skills",
-            portfolioProjects: "$applicantArray.portfolioProjects",
-            isVerified: "$applicantArray.isVerified",
-          }
-        }
-      },
-      {
-        $project: {
-          applicantArray: 0
-        }
-      }
-    ]);
 
     if (!rawApplications || rawApplications.length === 0) {
       return NextResponse.json({

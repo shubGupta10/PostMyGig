@@ -8,6 +8,11 @@ export interface UserGig {
   createdAt: string
   expiresAt: string
   AcceptedFreelancerEmail?: string
+  AcceptedFreelancerDetails?: {
+    _id: string;
+    name: string;
+    email: string;
+  }
   isCurated?: boolean
 }
 
