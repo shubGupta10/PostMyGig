@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from '@/components/ui/button';
 import { useUploadThing } from "@/lib/uploadthing";
-import { FileText, Upload, CheckCircle, Clock, ExternalLink } from "lucide-react";
+import { FileText, Upload, CheckCircle, Clock, ExternalLink, Loader2, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Contract } from "@/modules/contracts/models/ContractModel";
 import { useRouter } from "next/navigation";
@@ -170,17 +170,28 @@ export default function ContractPageClient({ projectId, freelancerEmail }: Contr
                     : "Waiting for the client to upload the initial contract document."}
                 </p>
                 {isClient && (
-                  <div className="relative w-full max-w-xs h-11 rounded-xl border-2 border-dashed border-primary bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-center cursor-pointer shadow-xs">
-                    <input
-                      type="file"
-                      accept="application/pdf"
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      onChange={handleFileUpload}
-                      disabled={isUploading}
-                    />
-                    <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                      <Upload className="w-4 h-4" />
-                      {isUploading ? "Uploading PDF..." : "Upload Initial Contract"}
+                  <div className="relative w-full max-w-xs h-11 rounded-xl border-2 border-dashed border-border hover:border-primary bg-muted transition-colors flex items-center justify-center shadow-xs overflow-hidden">
+                    {!isUploading && (
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        onChange={handleFileUpload}
+                        disabled={isUploading}
+                      />
+                    )}
+                    <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                          <span>Uploading PDF...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4" />
+                          <span>Upload Initial Contract</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 )}
@@ -201,10 +212,10 @@ export default function ContractPageClient({ projectId, freelancerEmail }: Contr
                     {revisions.map((rev, index) => {
                       const isMine = rev.uploadedBy === currentUserEmail;
                       return (
-                        <div key={index} className={`bg-card rounded-2xl border-2 p-4 sm:p-5 shadow-xs transition-all flex flex-col gap-4 ${isMine ? 'border-primary/30' : 'border-border'}`}>
+                        <div key={index} className="bg-card rounded-2xl border-2 p-4 sm:p-5 shadow-xs transition-all flex flex-col gap-4 border-border">
                           <div className="flex items-center justify-between gap-4">
                             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                              <span className="w-2 h-2 rounded-full bg-primary" />
+                              <span className={`w-2 h-2 rounded-full ${isMine ? 'bg-primary' : 'bg-muted-foreground'}`} />
                               {isMine ? 'You uploaded a contract' : (isClient ? 'Freelancer uploaded a contract' : 'Client uploaded a contract')}
                             </div>
                             <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
@@ -217,17 +228,17 @@ export default function ContractPageClient({ projectId, freelancerEmail }: Contr
                             href={rev.fileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 p-3 sm:p-4 bg-background border-2 border-border rounded-xl hover:border-primary/50 transition-colors group"
+                            className="flex items-center gap-3 p-3 sm:p-4 bg-muted border border-border rounded-xl hover:border-primary transition-colors group"
                           >
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                              <FileText className="w-5 h-5 text-primary" />
+                            <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center shrink-0 border border-border group-hover:border-primary transition-colors">
+                              <FileText className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
                             </div>
-                            <span className="text-sm font-medium truncate flex-1 text-foreground group-hover:text-primary transition-colors">{rev.fileName}</span>
+                            <span className="text-sm font-medium truncate flex-1 text-foreground">{rev.fileName}</span>
                             <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
                           </a>
 
                           {rev.comment && (
-                            <div className="p-3.5 bg-muted/50 rounded-xl border border-border/50">
+                            <div className="p-3.5 bg-background rounded-xl border border-border">
                               <p className="text-sm text-muted-foreground italic">
                                 "{rev.comment}"
                               </p>
@@ -250,19 +261,35 @@ export default function ContractPageClient({ projectId, freelancerEmail }: Contr
 
                   <div className="bg-card rounded-2xl border-2 border-border p-5 shadow-xs space-y-5">
                     {status === 'active' ? (
-                      <div className="flex flex-col items-center justify-center gap-2 text-emerald-700 bg-emerald-50 dark:bg-emerald-950/20 py-6 rounded-xl border-2 border-emerald-200 dark:border-emerald-900 shadow-xs text-center px-4">
-                        <CheckCircle className="w-8 h-8 mb-1" />
-                        <span className="font-bold">Contract Officially Accepted</span>
-                        <p className="text-xs text-emerald-600/80 dark:text-emerald-400/80 font-medium">The project is now in progress.</p>
+                      <div className="flex flex-col items-center justify-center gap-4 text-foreground bg-muted py-6 rounded-xl border border-border shadow-xs text-center px-4">
+                        <div className="flex flex-col items-center gap-1.5">
+                          <CheckCircle className="w-8 h-8 text-primary mb-1" />
+                          <span className="font-bold">Contract Officially Accepted</span>
+                          <p className="text-xs text-muted-foreground font-medium">The project is now in progress.</p>
+                        </div>
+                        <Button
+                          onClick={() => router.push(`/projects/${projectId}/huddle`)}
+                          className="w-full h-11 bg-primary text-primary-foreground font-bold text-sm rounded-xl shadow-xs cursor-pointer"
+                        >
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Open Project Huddle
+                        </Button>
                       </div>
                     ) : isMyTurn ? (
                       <>
                         <Button
                           onClick={handleAccept}
                           disabled={isAccepting || isUploading}
-                          className="w-full h-11 bg-primary text-primary-foreground font-bold text-sm rounded-xl shadow-xs transition-opacity cursor-pointer"
+                          className="w-full h-11 bg-primary text-primary-foreground font-bold text-sm rounded-xl shadow-xs cursor-pointer"
                         >
-                          {isAccepting ? "Accepting..." : "Accept Latest Contract"}
+                          {isAccepting ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Accepting...
+                            </>
+                          ) : (
+                            "Accept Latest Contract"
+                          )}
                         </Button>
 
                         <div className="relative py-2">
@@ -279,24 +306,35 @@ export default function ContractPageClient({ projectId, freelancerEmail }: Contr
                             onChange={(e) => setComment(e.target.value)}
                             disabled={isUploading}
                           />
-                          <div className="relative w-full h-11 rounded-xl border-2 border-dashed border-primary bg-primary/5 hover:bg-primary/10 transition-colors flex items-center justify-center cursor-pointer">
-                            <input
-                              type="file"
-                              accept="application/pdf"
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                              onChange={handleFileUpload}
-                              disabled={isUploading}
-                            />
-                            <div className="flex items-center gap-2 text-primary font-bold text-sm">
-                              <Upload className="w-4 h-4" />
-                              {isUploading ? "Uploading..." : "Upload Revised PDF"}
+                          <div className="relative w-full h-11 rounded-xl border-2 border-dashed border-border hover:border-primary bg-muted transition-colors flex items-center justify-center shadow-xs overflow-hidden">
+                            {!isUploading && (
+                              <input
+                                type="file"
+                                accept="application/pdf"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                onChange={handleFileUpload}
+                                disabled={isUploading}
+                              />
+                            )}
+                            <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
+                              {isUploading ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                                  <span>Uploading PDF...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="w-4 h-4" />
+                                  <span>Upload Revised PDF</span>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
                       </>
                     ) : (
-                      <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground bg-muted/30 py-6 px-4 text-center rounded-xl border-2 border-border shadow-xs">
-                        <Clock className="w-8 h-8 opacity-50" />
+                      <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground bg-muted py-6 px-4 text-center rounded-xl border border-border shadow-xs">
+                        <Clock className="w-8 h-8 text-muted-foreground" />
                         <div>
                           <span className="font-bold text-sm text-foreground block">Pending Review</span>
                           <span className="text-xs mt-1 block">Waiting for the other party to respond.</span>
