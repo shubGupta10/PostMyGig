@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, useRef, type JSX } from "react"
-import { Send, MessageCircle, Loader, AlertCircle, ChevronDown, ArrowLeft, CheckCheck, Paperclip, FileText, ExternalLink, PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { Send, MessageCircle, Loader, AlertCircle, ChevronDown, ArrowLeft, CheckCheck, Paperclip, FileText, ExternalLink, PanelLeftClose, PanelLeftOpen, DollarSign } from "lucide-react"
 import { toast } from "sonner"
 import {
   connectSocket,
@@ -491,47 +491,72 @@ export default function ChatSystem({
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="right" className="w-full sm:max-w-md p-6 overflow-y-auto">
-                <SheetHeader className="mb-6 space-y-6 mt-4 text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-primary text-primary text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider">
-                      {projectData.status.replace(/_/g, " ")}
-                    </span>
-                  </div>
-                  <SheetTitle className="text-xl font-bold leading-tight">
+              <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
+                <SheetHeader className="flex-none border-b border-border px-6 py-5 text-left">
+                  <SheetTitle className="text-lg font-semibold text-foreground leading-snug">
                     {projectData.title}
                   </SheetTitle>
-                  <p className="text-sm font-semibold text-foreground/80 flex items-center gap-1.5">
-                    Budget: <span className="text-primary">{projectData.budget}</span>
-                  </p>
                 </SheetHeader>
 
-                <div className="space-y-6">
-                  {projectData.skillsRequired.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
+                  {/* Project Meta */}
+                  <section className="space-y-3">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                      Project Info
+                    </p>
+                    <div className="bg-muted rounded-xl p-4 border border-border flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <DollarSign className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Budget</p>
+                          <p className="text-sm font-medium text-foreground">
+                            {projectData.budget}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        <AlertCircle className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Status</p>
+                          <span className="inline-flex items-center justify-center rounded-full bg-secondary text-secondary-foreground px-2.5 py-0.5 text-xs font-medium capitalize mt-0.5">
+                            {projectData.status.replace(/_/g, " ")}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Skills Required */}
+                  {projectData.skillsRequired?.length > 0 && (
+                    <section className="space-y-3">
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                         Skills Required
-                      </h4>
-                      <div className="flex flex-wrap gap-1.5">
+                      </p>
+                      <div className="flex flex-wrap gap-2">
                         {projectData.skillsRequired.map((skill) => (
-                          <span key={skill} className="bg-secondary text-secondary-foreground text-xs font-medium px-2.5 py-1 rounded-lg">
+                          <span
+                            key={skill}
+                            className="bg-secondary text-secondary-foreground rounded-xl px-4 py-2 font-semibold text-sm"
+                          >
                             {skill}
                           </span>
                         ))}
                       </div>
-                    </div>
+                    </section>
                   )}
 
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                      Gig Description
-                    </h4>
-                    <div className="bg-muted rounded-xl p-4 border border-border">
-                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                  {/* Description */}
+                  <section className="space-y-3 pb-6">
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-primary" /> Gig Description
+                    </p>
+                    <div className="bg-muted rounded-xl p-5 border border-border">
+                      <p className="text-sm text-foreground whitespace-pre-wrap min-w-0 break-words">
                         {projectData.description}
                       </p>
                     </div>
-                  </div>
+                  </section>
                 </div>
               </SheetContent>
             </Sheet>
