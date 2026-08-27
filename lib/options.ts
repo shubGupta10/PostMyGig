@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
                     await ConnectoDatabase();
                     const user = await userModel.findOne({ email: credentials.email })
                     if (!user) {
-                        throw new Error("No user found")
+                        throw new Error("Invalid email or password")
                     }
 
                     // Check if this is a social login user trying to use credentials
@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
 
                     const isPasswordValid = await bcrypt.compare(credentials.password, user.password as string);
                     if (!isPasswordValid) {
-                        throw new Error("Invalid password")
+                        throw new Error("Invalid email or password")
                     }
 
                     return {
