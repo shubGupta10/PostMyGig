@@ -124,6 +124,11 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
+          {chat.gigTitle && (
+            <p className="text-xs font-medium text-muted-foreground line-clamp-1">
+              📁 {chat.gigTitle}
+            </p>
+          )}
 
           <p className="text-xs text-muted-foreground line-clamp-1 font-normal">
             {chat.message}
@@ -139,9 +144,8 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
 
       {/* Left Column: Messages & Huddles Thread List */}
       <div
-        className={`w-full md:w-80 lg:w-96 border-r border-border bg-card flex flex-col shrink-0 transition-all duration-200 ${
-          showMobileChat ? "hidden md:flex" : "flex"
-        } ${isSidebarCollapsed ? "md:!hidden" : "md:flex"}`}
+        className={`w-full md:w-80 lg:w-96 border-r border-border bg-card flex flex-col shrink-0 transition-all duration-200 ${showMobileChat ? "hidden md:flex" : "flex"
+          } ${isSidebarCollapsed ? "md:!hidden" : "md:flex"}`}
       >
         {/* Sidebar Top Bar */}
         <div className="h-16 px-4 border-b border-border flex items-center justify-between bg-card shrink-0">
@@ -215,9 +219,8 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
 
       {/* Right Column: Active Chat Feed Workspace */}
       <div
-        className={`flex-1 flex flex-col bg-background ${
-          showMobileChat ? "flex" : "hidden md:flex"
-        }`}
+        className={`flex-1 flex flex-col bg-background ${showMobileChat ? "flex" : "hidden md:flex"
+          }`}
       >
         {selectedProjectId ? (
           <ChatSystem

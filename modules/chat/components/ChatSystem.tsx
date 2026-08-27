@@ -75,6 +75,7 @@ interface UserData {
     location: string,
   }
   projectStatus: string;
+  projectTitle: string;
 }
 
 interface ChatSystemProps {
@@ -106,6 +107,7 @@ export default function ChatSystem({
   const [projectStatus, setProjectStatus] = useState<string>("");
   const [isCompleting, setIsCompleting] = useState<boolean>(false);
   const [isPartnerOnline, setIsPartnerOnline] = useState<boolean>(false);
+  const [projectTitle, setProjectTitle] = useState<string>("")
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -232,6 +234,7 @@ export default function ChatSystem({
         const data: UserData = await response.json()
         setUserData(data)
         setProjectStatus(data.projectStatus);
+        setProjectTitle(data.projectTitle);
 
         const posterId = data.posterData._id
         const applyerId = data.applyerData._id
@@ -417,23 +420,6 @@ export default function ChatSystem({
     }
   }
 
-  const handleCompleteGig = async () => {
-    setIsCompleting(true)
-    try {
-      const res = await fetch("/api/gigs/complete-gig", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gigId: projectId }),
-      })
-      if (!res.ok) throw new Error("Failed to complete gig")
-      setProjectStatus("completed")
-      toast.success("Project marked as completed!")
-    } catch {
-      toast.error("Failed to mark as completed")
-    } finally {
-      setIsCompleting(false)
-    }
-  }
 
   if (status === "loading" || isLoading) {
     return (
@@ -478,7 +464,14 @@ export default function ChatSystem({
             {getInitials(chatPartnerName || "User")}
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-foreground">{chatPartnerName}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-foreground">{chatPartnerName}</h2>
+              {projectTitle && (
+                <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-md hidden sm:inline-block border border-border/50">
+                  💬 {projectTitle}
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-normal">
               <span className={`w-2 h-2 rounded-full ${isPartnerOnline ? "bg-emerald-500 shadow-xs shadow-emerald-500/50" : isConnecting ? "bg-amber-500 animate-pulse" : "bg-muted-foreground/30"}`} />
               <span className={isPartnerOnline ? "text-emerald-500 font-medium" : "text-muted-foreground"}>

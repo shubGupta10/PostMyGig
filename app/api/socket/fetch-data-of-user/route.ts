@@ -101,6 +101,7 @@ export async function POST(req: NextRequest) {
       posterData,
       applyerData,
       projectStatus: projectData.status,
+      projectTitle: projectData.title,
     }, { status: 200 });
 
   } catch (error) {
