@@ -62,12 +62,11 @@ export async function POST(req: NextRequest) {
         message: "Invitation already sent recently",
         posterData,
         applyerData,
-        projectStatus: projectData.status,
+        projectData,
       }, { status: 200 });
     }
 
     after(async () => {
-      // Send email notification to the accepted freelancer
       const { error } = await resend.emails.send({
         from: 'PostMyGig <hello@postmygig.vercel.app>',
         to: applyerData.email,
