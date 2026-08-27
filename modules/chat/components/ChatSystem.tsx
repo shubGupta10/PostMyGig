@@ -31,16 +31,12 @@ import { getInitials } from "@/lib/helpers"
 import { SidebarAutoCollapser } from "./SidebarAutoCollapser"
 import { Button } from "@/components/ui/button"
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { useUploadThing } from "@/lib/uploadthing"
 import { ChatAttachmentPreview } from "./ChatAttachmentPreview"
 import { ChatImageModal } from "./ChatImageModal"
@@ -74,8 +70,14 @@ interface UserData {
     skills: string[]
     location: string,
   }
-  projectStatus: string;
-  projectTitle: string;
+  projectData: {
+    title: string;
+    status: string;
+    budget: string;
+    description: string;
+    skillsRequired: string[];
+    createdAt: string;
+  };
 }
 
 interface ChatSystemProps {
@@ -104,10 +106,8 @@ export default function ChatSystem({
   const [chatPartnerName, setChatPartnerName] = useState<string>("")
   const [showScrollButton, setShowScrollButton] = useState<boolean>(false)
   const [historyLoaded, setHistoryLoaded] = useState<boolean>(false)
-  const [projectStatus, setProjectStatus] = useState<string>("");
-  const [isCompleting, setIsCompleting] = useState<boolean>(false);
   const [isPartnerOnline, setIsPartnerOnline] = useState<boolean>(false);
-  const [projectTitle, setProjectTitle] = useState<string>("")
+  const [projectData, setProjectData] = useState<UserData["projectData"] | null>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -233,8 +233,7 @@ export default function ChatSystem({
 
         const data: UserData = await response.json()
         setUserData(data)
-        setProjectStatus(data.projectStatus);
-        setProjectTitle(data.projectTitle);
+        setProjectData(data.projectData);
 
         const posterId = data.posterData._id
         const applyerId = data.applyerData._id
@@ -466,9 +465,9 @@ export default function ChatSystem({
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-semibold text-foreground">{chatPartnerName}</h2>
-              {projectTitle && (
+              {projectData?.title && (
                 <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-md hidden sm:inline-block border border-border/50">
-                  💬 {projectTitle}
+                  💬 {projectData.title}
                 </span>
               )}
             </div>
@@ -483,12 +482,59 @@ export default function ChatSystem({
 
         {/* --- MOVED TO USERGIGCARD --- */}
         <div className="flex items-center gap-3">
+          {projectData && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-secondary hover:bg-secondary text-muted-foreground hover:text-foreground cursor-pointer transition-colors" title="Project Info">
+                  <AlertCircle className="w-5 h-5" />
+                  <span className="sr-only">Project Info</span>
+                </Button>
+              </SheetTrigger>
 
-          {projectStatus === "completed" && (
-            <div className="flex items-center gap-1.5 text-emerald-600 font-semibold text-xs px-3 py-1.5 bg-emerald-600/10 rounded-lg border border-emerald-600/20">
-              <CheckCheck className="w-4 h-4" />
-              Project Completed
-            </div>
+              <SheetContent side="right" className="w-full sm:max-w-md p-6 overflow-y-auto">
+                <SheetHeader className="mb-6 space-y-6 mt-4 text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-primary text-primary text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wider">
+                      {projectData.status.replace(/_/g, " ")}
+                    </span>
+                  </div>
+                  <SheetTitle className="text-xl font-bold leading-tight">
+                    {projectData.title}
+                  </SheetTitle>
+                  <p className="text-sm font-semibold text-foreground/80 flex items-center gap-1.5">
+                    Budget: <span className="text-primary">{projectData.budget}</span>
+                  </p>
+                </SheetHeader>
+
+                <div className="space-y-6">
+                  {projectData.skillsRequired.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        Skills Required
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {projectData.skillsRequired.map((skill) => (
+                          <span key={skill} className="bg-secondary text-secondary-foreground text-xs font-medium px-2.5 py-1 rounded-lg">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                      Gig Description
+                    </h4>
+                    <div className="bg-muted rounded-xl p-4 border border-border">
+                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                        {projectData.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           )}
         </div>
       </div>

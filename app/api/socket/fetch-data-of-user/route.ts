@@ -100,8 +100,7 @@ export async function POST(req: NextRequest) {
       message: "Invitation sent successfully",
       posterData,
       applyerData,
-      projectStatus: projectData.status,
-      projectTitle: projectData.title,
+      projectData,
     }, { status: 200 });
 
   } catch (error) {
