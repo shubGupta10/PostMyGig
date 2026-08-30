@@ -103,7 +103,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
                   <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">{userData.name}</h1>
                   {userData.isVerified && (
                     <span title="Verified by PostMyGig" className="flex items-center mt-1 sm:mt-1.5">
-                      <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-primary drop-shadow-sm" fill="currentColor" stroke="white" />
+                      <ShieldCheck className="w-6 h-6 sm:w-7 sm:h-7 text-background fill-primary drop-shadow-sm" />
                     </span>
                   )}
                 </div>
@@ -151,9 +151,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
             <TabsTrigger value="portfolio" className="cursor-pointer hover:bg-background hover:text-foreground px-6 py-2.5 rounded-lg font-semibold text-sm data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground data-[state=active]:shadow-md transition-all whitespace-nowrap">
               {userData.role === "client" ? "Posted Gigs" : "Portfolio Projects"}
             </TabsTrigger>
-            <TabsTrigger value="reviews" className="cursor-pointer hover:bg-background hover:text-foreground px-6 py-2.5 rounded-lg font-semibold text-sm data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground data-[state=active]:shadow-md transition-all whitespace-nowrap flex items-center gap-2">
+            <TabsTrigger value="reviews" className="group cursor-pointer hover:bg-background hover:text-foreground px-6 py-2.5 rounded-lg font-semibold text-sm data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground data-[state=active]:shadow-md transition-all whitespace-nowrap flex items-center gap-2">
               Reviews
-              {userData.totalReviews ? <Badge variant="secondary" className="px-1.5 py-0 text-[10px] rounded-full bg-background text-current border-transparent">{userData.totalReviews}</Badge> : null}
+              {userData.totalReviews ? <Badge variant="secondary" className="px-1.5 py-0 text-[10px] rounded-full bg-secondary text-secondary-foreground group-data-[state=active]:bg-background group-data-[state=active]:text-foreground border-transparent transition-colors">{userData.totalReviews}</Badge> : null}
             </TabsTrigger>
           </TabsList>
 
