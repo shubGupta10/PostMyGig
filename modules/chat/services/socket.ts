@@ -6,6 +6,7 @@ interface InitUserData {
 
 interface JoinRoomData {
   targetUserId: string
+  gigId: string
 }
 
 export interface ChatAttachmentData {
@@ -137,7 +138,7 @@ export const initUser = (userId: string): void => {
   socketState.socket.emit("init_user", userId)
 }
 
-export const joinPrivateRoom = (targetUserId: string): void => {
+export const joinPrivateRoom = (targetUserId: string, gigId: string): void => {
   if (!socketState.socket?.connected) {
     throw new Error("Socket not connected. Call connectSocket() first.")
   }
@@ -146,7 +147,7 @@ export const joinPrivateRoom = (targetUserId: string): void => {
     throw new Error("User not initialized. Call initUser() first.")
   }
 
-  socketState.socket.emit("join_room", { targetUserId })
+  socketState.socket.emit("join_room", { targetUserId, gigId })
 }
 
 export const sendPrivateMessage = (targetUserId: string, message: string, gigId: string, senderName: string, senderEmail: string, receiverName: string, receiverEmail: string, attachment?: ChatAttachmentData | null): void => {
@@ -175,6 +176,7 @@ export const onReceiveMessage = (callback: (data: ReceiveMessageData) => void): 
     throw new Error("Socket not connected. Call connectSocket() first.")
   }
 
+  socketState.socket.off("receive_message")
   socketState.socket.on("receive_message", (data: ReceiveMessageData) => {
     callback(data)
   })
@@ -185,6 +187,7 @@ export const onChatHistory = (callback: (data: ChatHistoryData[]) => void): void
     throw new Error("Socket not connected. Call connectSocket() first.")
   }
 
+  socketState.socket.off("chat_history")
   socketState.socket.on("chat_history", (data: ChatHistoryData[]) => {
     callback(data)
   })
@@ -195,6 +198,7 @@ export const onConnect = (callback: () => void): void => {
     throw new Error("Socket not connected. Call connectSocket() first.")
   }
 
+  socketState.socket.off("connect")
   socketState.socket.on("connect", callback)
 }
 
@@ -203,6 +207,7 @@ export const onDisconnect = (callback: () => void): void => {
     throw new Error("Socket not connected. Call connectSocket() first.")
   }
 
+  socketState.socket.off("disconnect")
   socketState.socket.on("disconnect", callback)
 }
 
@@ -258,6 +263,8 @@ export interface UserPresenceData {
 
 export const onUserPresence = (callback: (data: UserPresenceData) => void): void => {
   if (!socketState.socket) return
+  
+  socketState.socket.off("user_presence")
   socketState.socket.on("user_presence", callback)
 }
 

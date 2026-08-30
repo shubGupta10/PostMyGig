@@ -460,7 +460,7 @@ function AddGigs() {
                   placeholder={currency === "USD" ? "500" : "40000"}
                   value={budgetAmount}
                   onChange={handleBudgetChange}
-                  className={`h-14 pl-10 bg-background border-2 border-border text-base placeholder:text-muted-foreground rounded-2xl px-5 ${errors.budget ? "border-destructive focus:border-destructive" : "focus:border-primary"
+                  className={`h-14 pl-11 pr-5 bg-background border-2 border-border text-base placeholder:text-muted-foreground rounded-2xl ${errors.budget ? "border-destructive focus:border-destructive" : "focus:border-primary"
                     }`}
                 />
               </div>

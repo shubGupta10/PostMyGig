@@ -282,7 +282,7 @@ export default function ChatSystem({
 
       await connectSocket()
       initUser(userId)
-      joinPrivateRoom(targetId)
+      joinPrivateRoom(targetId, projectId)
       setIsConnected(true)
 
       onChatHistory((historyData: ChatHistoryData[]) => {
@@ -514,7 +514,7 @@ export default function ChatSystem({
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-3">
                         <AlertCircle className="w-4 h-4 text-muted-foreground shrink-0" />
                         <div>
