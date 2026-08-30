@@ -23,6 +23,7 @@ import {
   Star,
   LinkIcon,
   FolderGit2,
+  Lock,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -288,8 +289,8 @@ function EditPage() {
           {/* Basic Information */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Full Name */}
-            <div className="space-y-2.5">
-              <label htmlFor="name" className="text-base font-semibold text-foreground">
+            <div className="space-y-3.5">
+              <label htmlFor="name" className="block text-base font-semibold text-foreground">
                 Full Name <span className="text-destructive">*</span>
               </label>
               <Input
@@ -305,25 +306,25 @@ function EditPage() {
             </div>
 
             {/* Email Address */}
-            <div className="space-y-2.5">
-              <label htmlFor="email" className="text-base font-semibold text-foreground">
-                Email Address <span className="text-destructive">*</span>
+            <div className="space-y-3.5">
+              <label htmlFor="email" className="block text-base font-semibold text-foreground">
+                Email Address <Lock className="w-3.5 h-3.5 inline-block ml-1 text-muted-foreground -mt-0.5" />
               </label>
               <Input
                 type="email"
                 id="email"
                 name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                className="h-14 bg-background border-2 border-border text-base placeholder:text-muted-foreground focus:border-primary rounded-2xl px-5"
-                placeholder="Enter your email address"
+                value={user?.email || formData.email || ""}
+                disabled
+                className="h-14 bg-background border-2 border-border text-base text-muted-foreground cursor-not-allowed rounded-2xl px-5 disabled:opacity-60"
+                placeholder="Your email address"
               />
+              <p className="text-xs text-muted-foreground">Email addresses cannot be changed.</p>
             </div>
 
             {/* Location */}
             <div className="sm:col-span-2 space-y-2.5">
-              <label htmlFor="location" className="text-base font-semibold text-foreground">
+              <label htmlFor="location" className="block text-base font-semibold text-foreground">
                 Location
               </label>
               <Input
@@ -339,8 +340,8 @@ function EditPage() {
           </div>
 
           {/* Bio Section */}
-          <div className="space-y-2.5">
-            <label htmlFor="bio" className="text-base font-semibold text-foreground">
+          <div className="space-y-3.5">
+            <label htmlFor="bio" className="block text-base font-semibold text-foreground">
               Professional Bio
             </label>
             <Textarea
@@ -359,7 +360,7 @@ function EditPage() {
 
           {/* Skills Section */}
           <div className="space-y-3">
-            <label className="text-base font-semibold text-foreground">
+            <label className="block text-base font-semibold text-foreground">
               Skills & Expertise
             </label>
 
@@ -448,8 +449,8 @@ function EditPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground">Project Title *</label>
+                    <div className="space-y-2.5">
+                      <label className="block text-xs font-semibold text-foreground">Project Title *</label>
                       <Input
                         type="text"
                         placeholder="e.g., SaaSify Billing Engine"
@@ -460,8 +461,8 @@ function EditPage() {
                       />
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground">
+                    <div className="space-y-2.5">
+                      <label className="block text-xs font-semibold text-foreground">
                         Tech Stack (comma separated) *
                       </label>
                       <Input
@@ -475,8 +476,8 @@ function EditPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-foreground">Short Description *</label>
+                  <div className="space-y-2.5">
+                    <label className="block text-xs font-semibold text-foreground">Short Description *</label>
                     <Textarea
                       placeholder="Briefly describe what you built, key features, and your role..."
                       value={project.description}
@@ -488,8 +489,8 @@ function EditPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground">Live Demo URL</label>
+                    <div className="space-y-2.5">
+                      <label className="block text-xs font-semibold text-foreground">Live Demo URL</label>
                       <Input
                         type="url"
                         placeholder="https://my-app.app"
@@ -499,8 +500,8 @@ function EditPage() {
                       />
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground">GitHub Repo URL</label>
+                    <div className="space-y-2.5">
+                      <label className="block text-xs font-semibold text-foreground">GitHub Repo URL</label>
                       <Input
                         type="url"
                         placeholder="https://github.com/username/project"
