@@ -62,7 +62,7 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
         if (!isMounted) return;
 
         const fetchResults = async () => {
-            if (!debouncedTerm.trim()) {
+            if (!debouncedTerm.trim() && page === 1) {
                 setResults(initialResults);
                 setTotalPages(initialPagination?.totalPages || 1);
                 sessionStorage.removeItem("savedSearchResults");
@@ -94,10 +94,6 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
     }
 
     const isSearching = searchTerms.trim().length > 0;
-    const heading = userRole === "client" ? "Find Freelancers" : "Find Clients";
-    const subtext = userRole === "client"
-        ? "Discover and connect with top freelancers for your next project."
-        : "Discover and connect with clients looking for your skills.";
     const placeholder = userRole === "client"
         ? "Search by name, skill, or role..."
         : "Search by name, company, or industry...";
@@ -107,27 +103,15 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
             {/* Sticky Container for Header & Search */}
             <div className="sticky top-0 z-10 bg-background pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6">
 
-
-
-                {/* Animated Description */}
-                <div
-                    className={`text-center transition-all duration-500 ease-in-out overflow-hidden ${isSearching ? "max-h-0 opacity-0 mb-0" : "max-h-20 opacity-100 mb-6"
-                        }`}
-                >
-                    <p className="text-sm sm:text-base text-muted-foreground mt-2">
-                        {subtext}
-                    </p>
-                </div>
-
                 {/* The Search Bar */}
-                <div className="relative max-w-4xl mx-auto">
+                <div className="relative w-full">
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground" />
                     <Input
                         placeholder={placeholder}
                         value={searchTerms}
                         onChange={(e) => setSearchTerms(e.target.value)}
                         autoFocus
-                        className="h-16 pl-16 pr-14 text-base sm:text-lg bg-background border-2 border-border/50 hover:border-border focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none placeholder:text-muted-foreground rounded-2xl shadow-md transition-all"
+                        className="h-16 pl-16 pr-14 text-base sm:text-lg bg-card border-2 border-border hover:border-border/80 focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none placeholder:text-muted-foreground rounded-2xl shadow-sm transition-all w-full"
                     />
                     {searchTerms && (
                         <button
@@ -144,13 +128,17 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
 
             {/* Scrollable Results */}
             <div className="flex-1 overflow-y-auto pt-6 pb-24">
-                <div className="space-y-4 max-w-4xl mx-auto">
+                <div className="w-full mx-auto">
                     {isLoading && <Loading />}
 
                     {/* Actual Results */}
-                    {!isLoading && results.map((user) => (
-                        <UserResultCard key={user._id} user={user} onMessageClick={handleMessageClick} />
-                    ))}
+                    {!isLoading && results.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                            {results.map((user) => (
+                                <UserResultCard key={user._id} user={user} onMessageClick={handleMessageClick} />
+                            ))}
+                        </div>
+                    )}
 
                     {/* Numbered Pagination */}
                     {!isLoading && totalPages > 1 && (

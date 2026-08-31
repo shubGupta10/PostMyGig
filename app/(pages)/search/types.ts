@@ -5,6 +5,8 @@ export interface SearchUserResult {
     profilePhoto?: {
         url?: string;
     };
+    isVerified?: boolean;
+    skills?: string[];
 }
 
 export interface SearchPagination {

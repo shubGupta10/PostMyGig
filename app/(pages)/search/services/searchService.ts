@@ -1,8 +1,6 @@
 import type { SearchResponse } from "../types";
 
 export async function fetchSearchResults(query: string, page: number = 1): Promise<SearchResponse | null> {
-    if (!query.trim()) return null;
-
     const res = await fetch(`/api/user/search?q=${encodeURIComponent(query)}&page=${page}`);
 
     if (!res.ok) {
