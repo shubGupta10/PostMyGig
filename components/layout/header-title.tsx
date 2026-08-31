@@ -1,9 +1,12 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 export function HeaderTitle() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const userRole = (session?.user as any)?.role || "freelancer"
 
   let title = "Home"
 
@@ -33,6 +36,8 @@ export function HeaderTitle() {
     title = "Create Account"
   } else if (pathname.startsWith("/user/settings")) {
     title = "Settings"
+  } else if (pathname.startsWith("/search")) {
+    title = userRole === "client" ? "Find Freelancers" : "Find Clients"
   }
 
   return (

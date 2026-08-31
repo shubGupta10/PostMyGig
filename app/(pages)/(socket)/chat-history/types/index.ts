@@ -8,6 +8,7 @@ export interface ChatData {
   receiverEmail: string
   gigId: string
   gigTitle?: string
+  chatType?: "GIG" | "DM"
   message: string
   timeStamp: string
   __v: number

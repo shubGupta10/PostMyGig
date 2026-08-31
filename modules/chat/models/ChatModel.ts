@@ -16,6 +16,7 @@ export interface IChat extends Document {
   receiverName: string;
   receiverEmail: string;
   gigId: string;
+  chatType: string;
   message: string;
   attachment?: IChatAttachment;
   timeStamp: Date;
@@ -48,7 +49,12 @@ const chatSchema: Schema<IChat> = new mongoose.Schema({
   },
   gigId: {
     type: String,
-    required: true,
+    required: false,
+  },
+  chatType: {
+    type: String,
+    enum: ["GIG", "DM"],
+    default: "GIG"
   },
   message: {
     type: String,

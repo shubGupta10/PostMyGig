@@ -29,13 +29,18 @@ import { Input } from "@/components/ui/input"
 interface MessageWorkspaceProps {
   initialChats: ChatData[]
   activeProjectId?: string
+  activeDMUserId?: string
+  activeChatType?: "GIG" | "DM"
 }
 
-export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorkspaceProps) {
+export function MessageWorkspace({ initialChats, activeProjectId, activeDMUserId, activeChatType }: MessageWorkspaceProps) {
   const { data: session } = useSession()
   const [chats, setChats] = useState<ChatData[]>(initialChats)
-  const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>(
-    activeProjectId || (initialChats.length > 0 ? initialChats[0].gigId : undefined)
+  const [selectedChatId, setSelectedChatId] = useState<string | undefined>(
+    activeDMUserId || activeProjectId || (initialChats.length > 0 ? initialChats[0].gigId : undefined)
+  )
+  const [selectedChatType, setSelectedChatType] = useState<"GIG" | "DM">(
+    activeDMUserId ? "DM" : activeChatType || "GIG"
   )
   const [searchTerm, setSearchTerm] = useState("")
   const [showMobileChat, setShowMobileChat] = useState<boolean>(!!activeProjectId)
@@ -63,8 +68,16 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
   const huddleChats = filteredChats.filter((c) => !!c.gigId)
   const recentChats = filteredChats.filter((c) => !c.gigId)
 
-  const handleSelectChat = (gigId: string) => {
-    setSelectedProjectId(gigId)
+  const getPartnerId = (chat: ChatData) => {
+    const isMe = chat.senderId === session?.user?.id || chat.senderEmail === session?.user?.email;
+    return isMe ? chat.receiverId : chat.senderId;
+  };
+
+  const handleSelectChat = (chat: ChatData) => {
+    const isDM = !chat.gigId;
+    const id = isDM ? getPartnerId(chat) : chat.gigId;
+    setSelectedChatId(id)
+    setSelectedChatType(isDM ? "DM" : "GIG")
     setShowMobileChat(true)
   }
 
@@ -80,21 +93,23 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
 
     if (success) {
       setChats((prev) => prev.filter((c) => c._id !== id))
-      if (selectedProjectId === gigId) {
-        setSelectedProjectId(undefined)
+      if (selectedChatId === gigId) {
+        setSelectedChatId(undefined)
       }
     }
   }
 
   const renderChatItem = (chat: ChatData) => {
-    const isSelected = selectedProjectId === chat.gigId
+    const isDM = !chat.gigId;
+    const chatId = isDM ? getPartnerId(chat) : chat.gigId;
+    const isSelected = selectedChatId === chatId
     const isDeleting = deletingId === chat._id
     const { partnerName } = getChatPartner(chat)
 
     return (
       <div
         key={chat._id}
-        onClick={() => handleSelectChat(chat.gigId)}
+        onClick={() => handleSelectChat(chat)}
         className={`group w-full px-4 py-3 text-left flex items-center gap-3 transition-colors cursor-pointer relative ${isSelected
           ? "bg-secondary text-foreground font-semibold"
           : "hover:bg-muted text-card-foreground font-normal"
@@ -184,7 +199,7 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
               <p className="text-muted-foreground text-sm mt-1">Your active conversations will appear here.</p>
             </div>
           ) : (
-            <Accordion type="multiple" defaultValue={["huddles", "recent"]} className="w-full">
+            <Accordion type="multiple" defaultValue={["huddles", "dms"]} className="w-full">
               {/* Section 1: PROJECT HUDDLES */}
               <AccordionItem value="huddles" className="border-b border-border">
                 <AccordionTrigger className="px-4 py-3 hover:no-underline text-xs font-bold text-muted-foreground uppercase tracking-widest bg-muted/40">
@@ -199,14 +214,14 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Section 2: RECENT CHATS */}
-              <AccordionItem value="recent" className="border-b border-border">
+              {/* Section 2: DIRECT MESSAGES */}
+              <AccordionItem value="dms" className="border-b border-border">
                 <AccordionTrigger className="px-4 py-3 hover:no-underline text-xs font-bold text-muted-foreground uppercase tracking-widest bg-muted/40">
-                  Recent Chats ({recentChats.length})
+                  Direct Messages ({recentChats.length})
                 </AccordionTrigger>
                 <AccordionContent className="pb-0 divide-y divide-border">
                   {recentChats.length === 0 ? (
-                    <p className="px-4 py-3 text-xs text-muted-foreground font-normal">No recent direct chats</p>
+                    <p className="px-4 py-3 text-xs text-muted-foreground font-normal">No direct messages yet</p>
                   ) : (
                     recentChats.map(renderChatItem)
                   )}
@@ -222,9 +237,10 @@ export function MessageWorkspace({ initialChats, activeProjectId }: MessageWorks
         className={`flex-1 flex flex-col bg-background ${showMobileChat ? "flex" : "hidden md:flex"
           }`}
       >
-        {selectedProjectId ? (
+        {selectedChatId ? (
           <ChatSystem
-            projectId={selectedProjectId}
+            projectId={selectedChatId}
+            chatType={selectedChatType}
             onBackToThreads={() => setShowMobileChat(false)}
             onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
             isSidebarCollapsed={isSidebarCollapsed}

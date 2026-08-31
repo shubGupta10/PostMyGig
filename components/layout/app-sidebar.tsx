@@ -15,6 +15,7 @@ import {
   Activity,
   Shield,
   Settings,
+  Search,
 } from "lucide-react"
 
 import {
@@ -102,6 +103,12 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 </SidebarNavLink>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarNavLink href="/search">
+                  <Search className="size-4" />
+                  <span>{userRole === "client" ? "Find Freelancers" : "Find Clients"}</span>
+                </SidebarNavLink>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarNavLink href="/activity">
                   <Activity className="size-4" />
                   <span>Activity</span>
@@ -150,7 +157,7 @@ export async function AppSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 )}
 
                 <SidebarMenuItem>
-                  <SidebarNavLink href="/chat-history">
+                  <SidebarNavLink href="/chat-history" activePatterns={["/message"]}>
                     <MessageCircleCodeIcon className="size-4" />
                     <span>Messages</span>
                   </SidebarNavLink>

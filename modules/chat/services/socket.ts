@@ -138,7 +138,7 @@ export const initUser = (userId: string): void => {
   socketState.socket.emit("init_user", userId)
 }
 
-export const joinPrivateRoom = (targetUserId: string, gigId: string): void => {
+export const joinPrivateRoom = (targetUserId: string, gigId: string, chatType: string): void => {
   if (!socketState.socket?.connected) {
     throw new Error("Socket not connected. Call connectSocket() first.")
   }
@@ -147,10 +147,10 @@ export const joinPrivateRoom = (targetUserId: string, gigId: string): void => {
     throw new Error("User not initialized. Call initUser() first.")
   }
 
-  socketState.socket.emit("join_room", { targetUserId, gigId })
+  socketState.socket.emit("join_room", { targetUserId, gigId, chatType })
 }
 
-export const sendPrivateMessage = (targetUserId: string, message: string, gigId: string, senderName: string, senderEmail: string, receiverName: string, receiverEmail: string, attachment?: ChatAttachmentData | null): void => {
+export const sendPrivateMessage = (targetUserId: string, message: string, gigId: string, chatType: string = "GIG", senderName: string, senderEmail: string, receiverName: string, receiverEmail: string, attachment?: ChatAttachmentData | null): void => {
   if (!socketState.socket?.connected) {
     throw new Error("Socket not connected. Call connectSocket() first.")
   }
@@ -163,6 +163,7 @@ export const sendPrivateMessage = (targetUserId: string, message: string, gigId:
     targetUserId,
     message,
     gigId,
+    chatType,
     senderName,
     senderEmail,
     receiverName,
@@ -263,7 +264,7 @@ export interface UserPresenceData {
 
 export const onUserPresence = (callback: (data: UserPresenceData) => void): void => {
   if (!socketState.socket) return
-  
+
   socketState.socket.off("user_presence")
   socketState.socket.on("user_presence", callback)
 }

@@ -70,14 +70,14 @@ interface UserData {
     skills: string[]
     location: string,
   }
-  projectData: {
+  projectData?: {
     title: string;
     status: string;
     budget: string;
     description: string;
     skillsRequired: string[];
     createdAt: string;
-  };
+  } | null;
 }
 
 interface ChatSystemProps {
@@ -85,6 +85,7 @@ interface ChatSystemProps {
   onBackToThreads?: () => void
   onToggleSidebar?: () => void
   isSidebarCollapsed?: boolean
+  chatType?: "GIG" | "DM"
 }
 
 export default function ChatSystem({
@@ -92,6 +93,7 @@ export default function ChatSystem({
   onBackToThreads,
   onToggleSidebar,
   isSidebarCollapsed = false,
+  chatType = "GIG",
 }: ChatSystemProps): JSX.Element {
   const [messages, setMessages] = useState<Message[]>([])
   const [message, setMessage] = useState<string>("")
@@ -219,19 +221,39 @@ export default function ChatSystem({
         setIsLoading(true)
         setError("")
 
-        const response = await fetch("/api/socket/fetch-data-of-user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ projectId }),
-        })
+        let data: UserData;
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data")
+        if (chatType === "DM") {
+
+          const [currentRes, targetRes] = await Promise.all([
+            fetch("/api/user/profile", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId: session.user.id }),
+            }),
+            fetch("/api/user/profile", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId: projectId }),
+            }),
+          ])
+          if (!currentRes.ok || !targetRes.ok) throw new Error("Failed to fetch DM user data")
+          const [currentData, targetData] = await Promise.all([currentRes.json(), targetRes.json()])
+          data = {
+            posterData: currentData.user,
+            applyerData: targetData.user,
+            projectData: null,
+          }
+        } else {
+          const response = await fetch("/api/socket/fetch-data-of-user", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ projectId }),
+          })
+          if (!response.ok) throw new Error("Failed to fetch user data")
+          data = await response.json()
         }
 
-        const data: UserData = await response.json()
         setUserData(data)
         setProjectData(data.projectData);
 
@@ -282,7 +304,7 @@ export default function ChatSystem({
 
       await connectSocket()
       initUser(userId)
-      joinPrivateRoom(targetId, projectId)
+      joinPrivateRoom(targetId, chatType === "DM" ? "" : projectId, chatType);
       setIsConnected(true)
 
       onChatHistory((historyData: ChatHistoryData[]) => {
@@ -404,7 +426,8 @@ export default function ChatSystem({
       sendPrivateMessage(
         targetUserId,
         message.trim(),
-        projectId,
+        chatType === "DM" ? "" : projectId,
+        chatType,
         senderName,
         senderEmail,
         receiverName,
