@@ -95,8 +95,8 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
 
     const isSearching = searchTerms.trim().length > 0;
     const placeholder = userRole === "client"
-        ? "Search by name, skill, or role..."
-        : "Search by name, company, or industry...";
+        ? "Search freelancers by name, skills, or keywords..."
+        : "Search by name, skills, or keywords...";
 
     return (
         <div className="flex flex-col h-full bg-background">
