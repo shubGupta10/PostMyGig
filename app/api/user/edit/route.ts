@@ -25,6 +25,8 @@ export async function PATCH(req: NextRequest) {
       role,
       skills,
       portfolioProjects,
+      yearsOfExperience,
+      hourlyRate,
     } = body;
 
     if (!userId) {
@@ -87,6 +89,8 @@ export async function PATCH(req: NextRequest) {
         role,
         skills,
         portfolioProjects: portfolioProjects || [],
+        yearsOfExperience: yearsOfExperience === "" ? null : (yearsOfExperience !== undefined && yearsOfExperience !== null ? Number(yearsOfExperience) : undefined),
+        hourlyRate: hourlyRate === "" ? null : (hourlyRate !== undefined && hourlyRate !== null ? Number(hourlyRate) : undefined),
         updatedAt: new Date().toISOString(),
       },
       { new: true }

@@ -24,6 +24,8 @@ interface User extends Document {
   showContactLinks?: boolean;
   isBanned?: boolean;
   isVerified?: boolean;
+  yearsOfExperience?: number;
+  hourlyRate?: number;
   verificationStatus?: 'none' | 'pending' | 'approved' | 'rejected';
   isAdmin?: boolean;
   averageRating?: Number;
@@ -118,6 +120,14 @@ const userSchema = new Schema<User>({
   isVerified: {
     type: Boolean,
     default: false
+  },
+  yearsOfExperience: {
+    type: Number,
+    required: false,
+  },
+  hourlyRate: {
+    type: Number,
+    required: false,
   },
   verificationStatus: {
     type: String,

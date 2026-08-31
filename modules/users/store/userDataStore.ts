@@ -28,6 +28,8 @@ interface UserData {
   verificationStatus?: "none" | "pending" | "approved" | "rejected";
   completedGigCount?: number;
   portfolioProjects?: PortfolioProject[];
+  yearsOfExperience?: number;
+  hourlyRate?: number;
 }
 
 interface UserState {

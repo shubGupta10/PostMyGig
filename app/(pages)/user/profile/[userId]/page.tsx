@@ -162,7 +162,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
               {/* Main Info */}
               <div className="lg:col-span-2 space-y-12">
-                
+
                 {/* Bio */}
                 <section>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">About Me</p>
@@ -216,8 +216,31 @@ export default async function ProfilePage({ params }: { params: Promise<{ userId
               </div>
 
               {/* Sidebar Info */}
-              <div className="space-y-6">
-                <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden sticky top-6">
+              <div className="space-y-6 sticky top-6">
+                
+                {/* Professional Details */}
+                <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
+                  <div className="p-6">
+                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">Professional Details</p>
+                    <div className="space-y-0 divide-y divide-border">
+                      <div className="py-3">
+                        <p className="text-xs text-muted-foreground mb-1">Experience</p>
+                        <p className="text-foreground font-semibold text-sm">
+                          {(userData as any).yearsOfExperience !== undefined && (userData as any).yearsOfExperience !== null ? `${(userData as any).yearsOfExperience} Years` : <span className="text-muted-foreground italic font-normal">Not Specified</span>}
+                        </p>
+                      </div>
+                      <div className="py-3">
+                        <p className="text-xs text-muted-foreground mb-1">Hourly Rate</p>
+                        <p className="text-foreground font-semibold text-sm">
+                          {(userData as any).hourlyRate !== undefined && (userData as any).hourlyRate !== null ? `$${(userData as any).hourlyRate}/hr` : <span className="text-muted-foreground italic font-normal">Not Specified</span>}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Account Details */}
+                <div className="bg-card rounded-2xl border-2 border-border shadow-sm overflow-hidden">
                   <div className="p-6">
                     <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">Account Details</p>
                     <div className="space-y-0 divide-y divide-border">

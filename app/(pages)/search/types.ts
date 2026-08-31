@@ -7,6 +7,8 @@ export interface SearchUserResult {
     };
     isVerified?: boolean;
     skills?: string[];
+    yearsOfExperience?: number;
+    hourlyRate?: number;
 }
 
 export interface SearchPagination {

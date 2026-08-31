@@ -41,28 +41,37 @@ export default function UserResultCard({ user, onMessageClick }: UserResultCardP
                 </div>
 
                 <div className="flex-1 w-full">
-                    <h3 className="font-bold text-foreground text-xl tracking-tight line-clamp-1">{user.name}</h3>
-                    
+                    <h3 className="font-bold text-foreground text-lg sm:text-xl tracking-tight line-clamp-1">{user.name}</h3>
+
+                    {/* Experience Stat */}
+                    {user.yearsOfExperience !== undefined && user.yearsOfExperience !== null && (
+                        <div className="flex items-center mt-1.5 text-sm">
+                            <span className="text-foreground font-semibold">
+                                {user.yearsOfExperience} {user.yearsOfExperience === 1 ? 'Year' : 'Years'} Experience
+                            </span>
+                        </div>
+                    )}
+
                     {user.bio ? (
-                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mt-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mt-2.5">
                             {user.bio}
                         </p>
                     ) : (
-                        <p className="text-sm text-muted-foreground italic mt-2">
+                        <p className="text-sm text-muted-foreground italic mt-2.5">
                             No bio available
                         </p>
                     )}
 
                     {/* Real Skills Badges */}
                     {user.skills && user.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-5">
+                        <div className="flex flex-nowrap gap-2 mt-5 overflow-hidden">
                             {user.skills.slice(0, 3).map((skill, idx) => (
-                                <span key={idx} className="bg-secondary text-secondary-foreground rounded-lg px-3 py-1.5 text-xs font-semibold shadow-xs">
+                                <span key={idx} className="shrink-0 bg-secondary text-secondary-foreground rounded-lg px-3 py-1.5 text-xs font-semibold shadow-xs whitespace-nowrap">
                                     {skill}
                                 </span>
                             ))}
                             {user.skills.length > 3 && (
-                                <span className="bg-muted text-muted-foreground rounded-lg px-3 py-1.5 text-xs font-semibold border-2 border-border">
+                                <span className="shrink-0 bg-muted text-muted-foreground rounded-lg px-3 py-1.5 text-xs font-semibold border-2 border-border whitespace-nowrap">
                                     +{user.skills.length - 3}
                                 </span>
                             )}

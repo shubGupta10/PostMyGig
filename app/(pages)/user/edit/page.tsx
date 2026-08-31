@@ -64,6 +64,8 @@ function EditPage() {
     contactLinks: [] as ContactLinks[],
     skills: [] as string[],
     portfolioProjects: [] as PortfolioProject[],
+    yearsOfExperience: "" as number | "",
+    hourlyRate: "" as number | "",
   })
 
   const [newSkill, setNewSkill] = useState("")
@@ -94,6 +96,8 @@ function EditPage() {
         contactLinks: userData.contactLinks || [],
         skills: userData.skills || [],
         portfolioProjects: userData.portfolioProjects || [],
+        yearsOfExperience: userData.yearsOfExperience ?? "",
+        hourlyRate: userData.hourlyRate ?? "",
       })
       setDataLoaded(true)
     }
@@ -223,10 +227,13 @@ function EditPage() {
 
       if (res.status === 200) {
         if (userData) {
-          updateUserData({
+          const payload = {
             ...formData,
+            yearsOfExperience: formData.yearsOfExperience === "" ? undefined : Number(formData.yearsOfExperience),
+            hourlyRate: formData.hourlyRate === "" ? undefined : Number(formData.hourlyRate),
             updatedAt: new Date().toISOString(),
-          })
+          }
+          updateUserData(payload)
         }
 
         setSuccessMessage("Profile updated successfully!")
@@ -335,6 +342,40 @@ function EditPage() {
                 onChange={handleInputChange}
                 placeholder="City, Country (e.g., Mumbai, India)"
                 className="h-14 bg-background border-2 border-border text-base placeholder:text-muted-foreground focus:border-primary rounded-2xl px-5"
+              />
+            </div>
+            
+            {/* Experience & Rate */}
+            <div className="space-y-2.5">
+              <label htmlFor="yearsOfExperience" className="block text-base font-semibold text-foreground">
+                Years of Experience
+              </label>
+              <Input
+                type="number"
+                id="yearsOfExperience"
+                name="yearsOfExperience"
+                min="0"
+                max="60"
+                value={formData.yearsOfExperience}
+                onChange={handleInputChange}
+                className="h-14 bg-background border-2 border-border text-base placeholder:text-muted-foreground focus:border-primary rounded-2xl px-5"
+                placeholder="e.g., 5"
+              />
+            </div>
+
+            <div className="space-y-2.5">
+              <label htmlFor="hourlyRate" className="block text-base font-semibold text-foreground">
+                Hourly Rate ($/hr)
+              </label>
+              <Input
+                type="number"
+                id="hourlyRate"
+                name="hourlyRate"
+                min="0"
+                value={formData.hourlyRate}
+                onChange={handleInputChange}
+                className="h-14 bg-background border-2 border-border text-base placeholder:text-muted-foreground focus:border-primary rounded-2xl px-5"
+                placeholder="e.g., 45"
               />
             </div>
           </div>
