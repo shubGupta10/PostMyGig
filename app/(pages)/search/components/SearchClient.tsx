@@ -1,31 +1,32 @@
 "use client"
 
 import { Input } from "@/components/ui/input";
-import { Search, Users } from "lucide-react";
+import { Search, Users, X } from "lucide-react";
 import { useRouter } from "next/navigation"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { useEffect, useState } from "react";
 import Loading from "../loading";
 import UserResultCard from "./UserResultCard";
 import { fetchSearchResults } from "../services/searchService";
-import type { SearchUserResult } from "../types";
+import type { SearchPagination, SearchUserResult } from "../types";
 
 interface SearchClientProps {
     userRole: string;
+    initialResults: SearchUserResult[],
+    initialPagination?: SearchPagination
 }
 
-export function SearchClient({ userRole }: SearchClientProps) {
+export function SearchClient({ userRole, initialResults, initialPagination }: SearchClientProps) {
     const router = useRouter();
 
     const [searchTerms, setSearchTerms] = useState("");
     const [debouncedTerm, setDebounceTerms] = useState("");
-    const [results, setResults] = useState<SearchUserResult[]>([]);
+    const [results, setResults] = useState<SearchUserResult[]>(initialResults);
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [totalPages, setTotalPages] = useState(initialPagination?.totalPages || 1);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
-    // Load saved search state on mount
     useEffect(() => {
         setIsMounted(true);
         const savedTerm = sessionStorage.getItem("savedSearchTerm");
@@ -44,7 +45,6 @@ export function SearchClient({ userRole }: SearchClientProps) {
         }
     }, []);
 
-    // Save term and debounce
     useEffect(() => {
         if (!isMounted) return;
 
@@ -54,19 +54,17 @@ export function SearchClient({ userRole }: SearchClientProps) {
         return () => clearTimeout(timer);
     }, [searchTerms, isMounted]);
 
-    // Reset page to 1 when search term changes
     useEffect(() => {
         setPage(1);
     }, [debouncedTerm]);
 
-    // Fetch and save results using the service layer
     useEffect(() => {
         if (!isMounted) return;
 
         const fetchResults = async () => {
             if (!debouncedTerm.trim()) {
-                setResults([]);
-                setTotalPages(1);
+                setResults(initialResults);
+                setTotalPages(initialPagination?.totalPages || 1);
                 sessionStorage.removeItem("savedSearchResults");
                 return;
             }
@@ -89,7 +87,7 @@ export function SearchClient({ userRole }: SearchClientProps) {
             }
         };
         fetchResults();
-    }, [debouncedTerm, page, isMounted]);
+    }, [debouncedTerm, page, isMounted, initialResults, initialPagination]);
 
     const handleMessageClick = (userId: string) => {
         router.push(`/chat-history?userId=${userId}&chatType=DM`);
@@ -123,14 +121,24 @@ export function SearchClient({ userRole }: SearchClientProps) {
 
                 {/* The Search Bar */}
                 <div className="relative max-w-4xl mx-auto">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground" />
                     <Input
                         placeholder={placeholder}
                         value={searchTerms}
                         onChange={(e) => setSearchTerms(e.target.value)}
                         autoFocus
-                        className="h-16 pl-12 pr-6 text-base sm:text-lg bg-card border-none focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-foreground rounded-2xl shadow-sm transition-all"
+                        className="h-16 pl-16 pr-14 text-base sm:text-lg bg-background border-2 border-border/50 hover:border-border focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none placeholder:text-muted-foreground rounded-2xl shadow-md transition-all"
                     />
+                    {searchTerms && (
+                        <button
+                            type="button"
+                            onClick={() => setSearchTerms("")}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                            title="Clear search"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -150,7 +158,7 @@ export function SearchClient({ userRole }: SearchClientProps) {
                             <Pagination>
                                 <PaginationContent>
                                     <PaginationItem>
-                                        <PaginationPrevious 
+                                        <PaginationPrevious
                                             href="#"
                                             onClick={(e) => {
                                                 e.preventDefault();
@@ -161,7 +169,7 @@ export function SearchClient({ userRole }: SearchClientProps) {
                                     </PaginationItem>
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
                                         <PaginationItem key={pageNum}>
-                                            <PaginationLink 
+                                            <PaginationLink
                                                 href="#"
                                                 onClick={(e) => {
                                                     e.preventDefault();
@@ -175,7 +183,7 @@ export function SearchClient({ userRole }: SearchClientProps) {
                                         </PaginationItem>
                                     ))}
                                     <PaginationItem>
-                                        <PaginationNext 
+                                        <PaginationNext
                                             href="#"
                                             onClick={(e) => {
                                                 e.preventDefault();

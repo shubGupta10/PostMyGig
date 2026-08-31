@@ -24,21 +24,21 @@ export default function UserResultCard({ user, onMessageClick }: UserResultCardP
     return (
         <div
             onClick={() => router.push(`/user/profile/${user._id}`)}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-card rounded-2xl shadow-xs hover:bg-muted/50 active:scale-[0.99] select-none cursor-pointer transition-all"
+            className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 bg-card rounded-2xl border-2 border-transparent hover:border-primary/20 shadow-xs hover:shadow-md active:scale-[0.99] select-none cursor-pointer transition-all"
         >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
                 {/* Avatar */}
-                <Avatar className="w-12 h-12 border-2 border-muted">
+                <Avatar className="w-14 h-14 border border-muted shadow-sm group-hover:scale-105 transition-transform">
                     <AvatarImage src={user.profilePhoto?.url} alt={user.name} className="object-cover" />
-                    <AvatarFallback className="bg-muted text-foreground font-semibold">{initials}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">{initials}</AvatarFallback>
                 </Avatar>
 
                 {/* Info */}
                 <div>
                     <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-foreground text-base sm:text-lg">{user.name}</h3>
+                        <h3 className="font-bold text-foreground text-lg sm:text-xl group-hover:text-primary transition-colors">{user.name}</h3>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">{user.bio || "No bio available"}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-2 sm:line-clamp-1 mt-1 leading-relaxed">{user.bio || "No bio available"}</p>
                 </div>
             </div>
 
@@ -48,7 +48,7 @@ export default function UserResultCard({ user, onMessageClick }: UserResultCardP
                     e.stopPropagation();
                     onMessageClick(user._id);
                 }}
-                className="bg-primary text-primary-foreground font-semibold h-10 px-6 rounded-xl w-full sm:w-auto flex items-center gap-2 cursor-pointer hover:opacity-90 active:scale-[0.98]"
+                className="bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground font-semibold h-11 px-6 rounded-xl w-full sm:w-auto flex items-center gap-2 cursor-pointer active:scale-[0.98] transition-all"
             >
                 <MessageSquare className="w-4 h-4" />
                 Message
