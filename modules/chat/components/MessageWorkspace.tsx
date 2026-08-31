@@ -43,7 +43,7 @@ export function MessageWorkspace({ initialChats, activeProjectId, activeDMUserId
     activeDMUserId ? "DM" : activeChatType || "GIG"
   )
   const [searchTerm, setSearchTerm] = useState("")
-  const [showMobileChat, setShowMobileChat] = useState<boolean>(!!activeProjectId)
+  const [showMobileChat, setShowMobileChat] = useState<boolean>(!!activeProjectId || !!activeDMUserId)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [chatToDelete, setChatToDelete] = useState<{ id: string; gigId: string; name: string } | null>(null)

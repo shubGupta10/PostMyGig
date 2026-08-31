@@ -24,7 +24,7 @@ export default function UserResultCard({ user, onMessageClick }: UserResultCardP
     return (
         <div
             onClick={() => router.push(`/user/profile/${user._id}`)}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-card rounded-2xl shadow-xs hover:bg-muted/50 cursor-pointer transition-all"
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-card rounded-2xl shadow-xs hover:bg-muted/50 active:scale-[0.99] select-none cursor-pointer transition-all"
         >
             <div className="flex items-center gap-4">
                 {/* Avatar */}
@@ -48,7 +48,7 @@ export default function UserResultCard({ user, onMessageClick }: UserResultCardP
                     e.stopPropagation();
                     onMessageClick(user._id);
                 }}
-                className="bg-primary text-primary-foreground font-semibold h-10 px-6 rounded-xl w-full sm:w-auto flex items-center gap-2 cursor-pointer hover:opacity-90"
+                className="bg-primary text-primary-foreground font-semibold h-10 px-6 rounded-xl w-full sm:w-auto flex items-center gap-2 cursor-pointer hover:opacity-90 active:scale-[0.98]"
             >
                 <MessageSquare className="w-4 h-4" />
                 Message

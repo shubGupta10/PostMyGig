@@ -6,3 +6,15 @@ export interface SearchUserResult {
         url?: string;
     };
 }
+
+export interface SearchPagination {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
+export interface SearchResponse {
+    userPipeline: SearchUserResult[];
+    pagination: SearchPagination;
+}
