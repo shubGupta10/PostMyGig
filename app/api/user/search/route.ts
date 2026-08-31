@@ -19,24 +19,43 @@ export async function GET(req: NextRequest) {
         const targetRole = session.user.role === "freelancer" ? "client" : "freelancer"
 
         const q = req.nextUrl.searchParams.get("q");
+        const minExpierence = req.nextUrl.searchParams.get("minExperience");
+        const minRate = req.nextUrl.searchParams.get("minRate");
+        const maxRate = req.nextUrl.searchParams.get("maxRate");
+        const minRating = req.nextUrl.searchParams.get("minRating");
 
         const page = parseInt(req.nextUrl.searchParams.get("page") || "1");
         const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10");
         const skip = (page - 1) * limit;
 
+        const matchQuery: any = { role: targetRole };
+
+        if (q) {
+            matchQuery.$or = [
+                { name: { $regex: q, $options: "i" } },
+                { skills: { $regex: q, $options: "i" } },
+                { bio: { $regex: q, $options: "i" } }
+            ]
+        }
+
+        if (minExpierence) {
+            matchQuery.yearsOfExperience = { $gte: parseInt(minExpierence) };
+        }
+
+        if (minRate || maxRate) {
+            matchQuery.hourlyRate = {};
+            if (minRate) matchQuery.hourlyRate.$gte = parseInt(minRate);
+            if (maxRate) matchQuery.hourlyRate.$lte = parseInt(maxRate);
+        };
+
+        if (minRating) {
+            matchQuery.averageRating = { $gte: parseFloat(minRating) };
+        }
+
         const [userPipeline, totalCount] = await Promise.all([
             userModel.aggregate([
                 {
-                    $match: {
-                        role: targetRole,
-                        ...(q && {
-                            $or: [
-                                { name: { $regex: q, $options: "i" } },
-                                { skills: { $regex: q, $options: "i" } },
-                                { bio: { $regex: q, $options: "i" } }
-                            ]
-                        })
-                    }
+                    $match: matchQuery
                 },
                 {
                     $sort: {
@@ -55,16 +74,7 @@ export async function GET(req: NextRequest) {
                     }
                 }
             ]),
-            userModel.countDocuments({
-                role: targetRole,
-                ...(q && {
-                    $or: [
-                        { name: { $regex: q, $options: "i" } },
-                        { skills: { $regex: q, $options: "i" } },
-                        { bio: { $regex: q, $options: "i" } }
-                    ]
-                })
-            }),
+            userModel.countDocuments(matchQuery),
         ])
 
         return NextResponse.json({

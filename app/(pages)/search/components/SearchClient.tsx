@@ -7,8 +7,10 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { useEffect, useState } from "react";
 import Loading from "../loading";
 import UserResultCard from "./UserResultCard";
-import { fetchSearchResults } from "../services/searchService";
+import { fetchSearchResults, SearchFilters } from "../services/searchService";
 import type { SearchPagination, SearchUserResult } from "../types";
+import { SlidersHorizontal } from "lucide-react";
+import { FilterDrawer } from "./FilterDrawer";
 
 interface SearchClientProps {
     userRole: string;
@@ -26,6 +28,9 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
     const [totalPages, setTotalPages] = useState(initialPagination?.totalPages || 1);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [isFilteredDrawerOpen, setIsFilteredDrawerOpen] = useState(false);
+    const [filters, setFilters] = useState<SearchFilters>({});
+
 
     useEffect(() => {
         setIsMounted(true);
@@ -62,7 +67,7 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
         if (!isMounted) return;
 
         const fetchResults = async () => {
-            if (!debouncedTerm.trim() && page === 1) {
+            if (!debouncedTerm.trim() && page === 1 && Object.keys(filters).length === 0) {
                 setResults(initialResults);
                 setTotalPages(initialPagination?.totalPages || 1);
                 sessionStorage.removeItem("savedSearchResults");
@@ -72,7 +77,7 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
             setIsLoading(true);
 
             try {
-                const response = await fetchSearchResults(debouncedTerm, page);
+                const response = await fetchSearchResults(debouncedTerm, page, filters);
                 if (response) {
                     setResults(response.userPipeline);
                     setTotalPages(response.pagination.totalPages || 1);
@@ -87,7 +92,7 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
             }
         };
         fetchResults();
-    }, [debouncedTerm, page, isMounted, initialResults, initialPagination]);
+    }, [debouncedTerm, page, filters, isMounted, initialResults, initialPagination]);
 
     const handleMessageClick = (userId: string) => {
         router.push(`/chat-history?userId=${userId}&chatType=DM`);
@@ -103,26 +108,35 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
             {/* Sticky Container for Header & Search */}
             <div className="sticky top-0 z-10 bg-background pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6">
 
-                {/* The Search Bar */}
-                <div className="relative w-full">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground" />
-                    <Input
-                        placeholder={placeholder}
-                        value={searchTerms}
-                        onChange={(e) => setSearchTerms(e.target.value)}
-                        autoFocus
-                        className="h-16 pl-16 pr-14 text-base sm:text-lg bg-card border-2 border-border hover:border-border/80 focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none placeholder:text-muted-foreground rounded-2xl shadow-sm transition-all w-full"
-                    />
-                    {searchTerms && (
-                        <button
-                            type="button"
-                            onClick={() => setSearchTerms("")}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-                            title="Clear search"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                    )}
+                {/* The Search Bar & Filter Button */}
+                <div className="flex items-center gap-3 w-full">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-muted-foreground" />
+                        <Input
+                            placeholder={placeholder}
+                            value={searchTerms}
+                            onChange={(e) => setSearchTerms(e.target.value)}
+                            autoFocus
+                            className="h-16 pl-16 pr-14 text-base sm:text-lg bg-card border-2 border-border hover:border-border/80 focus:ring-4 focus:ring-primary/20 focus:border-primary focus:outline-none placeholder:text-muted-foreground rounded-2xl shadow-sm transition-all w-full"
+                        />
+                        {searchTerms && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchTerms("")}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                                title="Clear search"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        )}
+                    </div>
+                    
+                    <button 
+                        onClick={() => setIsFilteredDrawerOpen(true)}
+                        className="flex items-center justify-center h-16 w-16 bg-card border-2 border-border hover:border-border/80 rounded-2xl shadow-sm transition-all text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
+                    >
+                        <SlidersHorizontal className="w-6 h-6" />
+                    </button>
                 </div>
             </div>
 
@@ -197,6 +211,12 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
 
                 </div>
             </div>
+            <FilterDrawer
+                open={isFilteredDrawerOpen}
+                onOpenChange={setIsFilteredDrawerOpen}
+                currentFilters={filters}
+                onApply={setFilters}
+            />
         </div>
     );
 }
