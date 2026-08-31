@@ -94,12 +94,11 @@ export function SearchClient({ userRole }: SearchClientProps) {
         <div className="flex flex-col h-full bg-background">
             {/* Sticky Container for Header & Search */}
             <div className="sticky top-0 z-10 bg-background pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6">
-                
+
                 {/* Animated Heading & Description */}
-                <div 
-                    className={`text-center transition-all duration-500 ease-in-out overflow-hidden ${
-                        isSearching ? "max-h-0 opacity-0 mb-0" : "max-h-40 opacity-100 mb-8"
-                    }`}
+                <div
+                    className={`text-center transition-all duration-500 ease-in-out overflow-hidden ${isSearching ? "max-h-0 opacity-0 mb-0" : "max-h-40 opacity-100 mb-8"
+                        }`}
                 >
                     <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
                         {heading}
@@ -110,21 +109,21 @@ export function SearchClient({ userRole }: SearchClientProps) {
                 </div>
 
                 {/* The Search Bar */}
-                <div className="relative max-w-2xl mx-auto">
+                <div className="relative max-w-4xl mx-auto">
                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <Input
                         placeholder={placeholder}
                         value={searchTerms}
                         onChange={(e) => setSearchTerms(e.target.value)}
                         autoFocus
-                        className="h-16 pl-12 pr-6 text-base sm:text-lg bg-card border-2 border-border focus:border-primary placeholder:text-muted-foreground rounded-2xl shadow-sm transition-all"
+                        className="h-16 pl-12 pr-6 text-base sm:text-lg bg-card border-none focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-foreground rounded-2xl shadow-sm transition-all"
                     />
                 </div>
             </div>
 
             {/* Scrollable Results */}
             <div className="flex-1 overflow-y-auto pt-6 pb-24">
-                <div className="space-y-4 max-w-2xl mx-auto">
+                <div className="space-y-4 max-w-4xl mx-auto">
                     {isLoading && <Loading />}
 
                     {/* Actual Results */}
@@ -134,7 +133,7 @@ export function SearchClient({ userRole }: SearchClientProps) {
 
                     {/* Empty search state */}
                     {!isLoading && results.length === 0 && debouncedTerm && (
-                        <div className="text-center py-20 bg-muted border-2 border-dashed border-border rounded-2xl">
+                        <div className="text-center py-20 bg-muted rounded-2xl">
                             <Search className="w-10 h-10 text-muted-foreground mx-auto mb-4" />
                             <h3 className="font-semibold text-foreground text-base">No results for "{debouncedTerm}"</h3>
                             <p className="text-sm text-muted-foreground mt-1">Try searching with a different name or skill.</p>
