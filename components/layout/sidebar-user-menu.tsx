@@ -73,7 +73,7 @@ export function SidebarUserMenu({ session }: { session: Session | null }) {
                     <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
                   </div>
                   
-                  <span className="truncate text-xs text-muted-foreground">
+                  <span className="truncate text-xs text-muted-foreground blur-2xl">
                     {user?.email}
                   </span>
                 </div>

@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
         const minRating = req.nextUrl.searchParams.get("minRating");
 
         const page = parseInt(req.nextUrl.searchParams.get("page") || "1");
-        const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10");
+        const limit = parseInt(req.nextUrl.searchParams.get("limit") || "8");
         const skip = (page - 1) * limit;
 
         const matchQuery: any = { role: targetRole };

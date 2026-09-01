@@ -64,15 +64,18 @@ export default function UserResultCard({ user, onMessageClick }: UserResultCardP
 
                     {/* Real Skills Badges */}
                     {user.skills && user.skills.length > 0 && (
-                        <div className="flex flex-nowrap gap-2 mt-5 overflow-hidden">
-                            {user.skills.slice(0, 3).map((skill, idx) => (
-                                <span key={idx} className="shrink-0 bg-secondary text-secondary-foreground rounded-lg px-3 py-1.5 text-xs font-semibold shadow-xs whitespace-nowrap">
+                        <div className="mt-5 flex min-w-0 flex-nowrap items-center gap-2 overflow-hidden">
+                            {user.skills.slice(0, Math.min(user.skills.length, 2)).map((skill, idx) => (
+                                <span
+                                    key={idx}
+                                    className="max-w-[120px] truncate rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground shadow-xs whitespace-nowrap"
+                                >
                                     {skill}
                                 </span>
                             ))}
-                            {user.skills.length > 3 && (
-                                <span className="shrink-0 bg-muted text-muted-foreground rounded-lg px-3 py-1.5 text-xs font-semibold border-2 border-border whitespace-nowrap">
-                                    +{user.skills.length - 3}
+                            {user.skills.length > 2 && (
+                                <span className="shrink-0 rounded-lg border-2 border-border bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground whitespace-nowrap">
+                                    +{user.skills.length - 2}
                                 </span>
                             )}
                         </div>
