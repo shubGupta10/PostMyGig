@@ -111,6 +111,68 @@ export function JobDrawer({
     }
   }
 
+  const renderCompleteProjectAction = (className: string) => (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button disabled={isCompleting} className={className}>
+          <CheckCheck className={`w-4 h-4 mr-1.5 shrink-0 ${isCompleting ? "animate-spin" : ""}`} />
+          {isCompleting ? "Completing..." : "Complete Project"}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Complete Project & Review Freelancer</AlertDialogTitle>
+          <AlertDialogDescription>
+            The project will be closed. Please rate the freelancer and leave a review about their work.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="flex flex-col gap-4 py-4">
+          <div>
+            <p className="text-sm font-semibold mb-2">Rating</p>
+            <div className="flex items-center gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  className="focus:outline-none"
+                >
+                  <Star
+                    className={`w-6 h-6 ${star <= rating
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-muted-foreground hover:text-yellow-400"
+                      } transition-colors`}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-semibold mb-2">Written Review</p>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Describe your experience working with this freelancer..."
+              className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => { setRating(0); setComment(""); }}>
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleCompleteGig}
+            disabled={rating === 0 || comment.trim() === ""}
+            className="bg-emerald-600 text-white hover:bg-emerald-700"
+          >
+            Confirm & Submit Review
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
       <DrawerContent className="flex flex-col h-full max-w-xl w-full ml-auto">
@@ -121,15 +183,20 @@ export function JobDrawer({
               <DrawerTitle className="text-lg font-semibold text-foreground leading-snug">
                 {project.title}
               </DrawerTitle>
-              <div className="flex items-center gap-3 flex-wrap mt-1">
+              <div className="flex items-center gap-3 mt-1">
                 <Badge className="bg-primary text-primary-foreground capitalize text-xs font-medium px-2.5 py-0.5 rounded-full shadow-xs">
                   {project.status.replace(/_/g, " ")}
                 </Badge>
-                <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5" />
-                  Posted: {formatDate(project.createdAt)}
-                </span>
+                {project.status === "in_progress" && (
+                  <div className="ml-auto shrink-0 sm:hidden">
+                    {renderCompleteProjectAction("h-8 px-2.5 text-xs bg-emerald-600 text-white hover:bg-emerald-700 font-semibold rounded-lg whitespace-nowrap")}
+                  </div>
+                )}
               </div>
+              <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mt-2">
+                <Calendar className="w-3.5 h-3.5" />
+                Posted: {formatDate(project.createdAt)}
+              </span>
             </div>
             <DrawerClose asChild>
               <Button
@@ -238,7 +305,7 @@ export function JobDrawer({
         </div>
 
         {/* Footer Actions */}
-        <div className="flex-none border-t border-border px-4 sm:px-6 py-4 flex flex-row flex-nowrap sm:justify-end gap-2.5 bg-card w-full overflow-x-auto no-scrollbar">
+        <div className="flex-none border-t border-border px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:flex-nowrap sm:justify-end gap-2.5 bg-card w-full">
           <Button
             variant="destructive"
             onClick={(e) => {
@@ -247,7 +314,7 @@ export function JobDrawer({
               onOpenChange(false)
             }}
             disabled={deletingId === project._id}
-            className="flex-none w-auto h-10 px-4 text-xs sm:text-sm font-semibold rounded-xl bg-destructive text-destructive-foreground hover:opacity-90 whitespace-nowrap"
+            className="flex-none w-full sm:w-auto h-10 px-4 text-xs sm:text-sm font-semibold rounded-xl bg-destructive text-destructive-foreground hover:opacity-90 whitespace-nowrap"
           >
             {deletingId === project._id ? (
               <RefreshCw className="w-4 h-4 mr-1.5 shrink-0 animate-spin" />
@@ -263,82 +330,23 @@ export function JobDrawer({
               e.stopPropagation()
               router.push(`/applications/view-applications?gigId=${project._id}`)
             }}
-            className="flex-none w-auto h-10 px-4 text-xs sm:text-sm border-border font-semibold rounded-xl whitespace-nowrap"
+            className="flex-none w-full sm:w-auto h-10 px-4 text-xs sm:text-sm border-border font-semibold rounded-xl whitespace-nowrap"
           >
             <Eye className="w-4 h-4 mr-1.5 shrink-0" />
             View Applications
           </Button>
 
           {project.status === "in_progress" && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  disabled={isCompleting}
-                  className="flex-none w-auto h-10 px-4 text-xs sm:text-sm bg-emerald-600 text-white hover:bg-emerald-700 font-semibold rounded-xl whitespace-nowrap"
-                >
-                  <CheckCheck className={`w-4 h-4 mr-1.5 shrink-0 ${isCompleting ? "animate-spin" : ""}`} />
-                  {isCompleting ? "Completing..." : "Complete Project & Review"}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Complete Project & Review Freelancer</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    The project will be closed. Please rate the freelancer and leave a review about their work.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <div className="flex flex-col gap-4 py-4">
-                  <div>
-                    <p className="text-sm font-semibold mb-2">Rating</p>
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => setRating(star)}
-                          className="focus:outline-none"
-                        >
-                          <Star
-                            className={`w-6 h-6 ${star <= rating
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-muted-foreground hover:text-yellow-400"
-                              } transition-colors`}
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold mb-2">Written Review</p>
-                    <textarea
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      placeholder="Describe your experience working with this freelancer..."
-                      className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                </div>
-                <AlertDialogFooter>
-                  <AlertDialogCancel onClick={() => { setRating(0); setComment(""); }}>
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleCompleteGig}
-                    disabled={rating === 0 || comment.trim() === ""}
-                    className="bg-emerald-600 text-white hover:bg-emerald-700"
-                  >
-                    Confirm & Submit Review
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <div className="hidden sm:block">
+              {renderCompleteProjectAction("flex-none w-auto h-10 px-4 text-xs sm:text-sm bg-emerald-600 text-white hover:bg-emerald-700 font-semibold rounded-xl whitespace-nowrap")}
+            </div>
           )}
 
           {project.status === "expired" && (
             <Button
               onClick={handleRenew}
               disabled={renewing}
-              className="flex-none w-auto h-10 px-4 text-xs sm:text-sm bg-primary text-primary-foreground font-semibold rounded-xl whitespace-nowrap"
+              className="flex-none w-full sm:w-auto h-10 px-4 text-xs sm:text-sm bg-primary text-primary-foreground font-semibold rounded-xl whitespace-nowrap"
             >
               <RefreshCw className={`w-4 h-4 mr-1.5 shrink-0 ${renewing ? "animate-spin" : ""}`} />
               {renewing ? "Renewing..." : "Renew"}
