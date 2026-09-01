@@ -38,67 +38,103 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "No projects need reminding today" }, { status: 200 });
         }
 
-        let emailsSent = 0;
-
+        // 1. Filter projects that actually have 3+ pending applications
+        const projectsNeedingAttention = [];
         for (const project of eligibleProjects) {
-            // Count how many pending pings this project has
             const pendingPingCount = await PingModel.countDocuments({
                 projectId: project._id.toString(),
                 status: "pending"
             });
-
-            // Threshold: If they have 3 or more pending applications
+            
             if (pendingPingCount >= 3) {
-                const client = await userModel.findOne({ email: project.createdBy }).lean();
-                if (!client) continue;
+                projectsNeedingAttention.push({
+                    id: project._id,
+                    title: project.title,
+                    createdBy: project.createdBy,
+                    pendingPingCount
+                });
+            }
+        }
 
-                const emailHtml = postMyGigUnresponsiveClientTemplate(
-                    client.name,
-                    project.title,
-                    pendingPingCount,
-                    project._id.toString()
-                );
+        if (projectsNeedingAttention.length === 0) {
+            return NextResponse.json({ message: "No projects met the ping threshold" }, { status: 200 });
+        }
 
-                try {
-                    if (process.env.NODE_ENV === "production") {
-                        const { error } = await resend.emails.send({
-                            from: "PostMyGig <hello@postmygig.vercel.app>",
-                            to: project.createdBy,
-                            subject: `You have ${pendingPingCount} freelancers waiting for your response!`,
-                            html: emailHtml,
-                        });
-                        if (error) {
-                            await EmailSender({
-                                to: project.createdBy,
-                                subject: `You have ${pendingPingCount} freelancers waiting for your response!`,
-                                html: emailHtml,
-                            });
-                        }
-                    } else {
+        // 2. Group by Client Email
+        const clientMap = new Map();
+        for (const project of projectsNeedingAttention) {
+            if (!clientMap.has(project.createdBy)) {
+                clientMap.set(project.createdBy, []);
+            }
+            clientMap.get(project.createdBy).push(project);
+        }
+
+        let emailsSent = 0;
+
+        // 3. Process each Client (Send exactly 1 email/notification per client)
+        for (const [clientEmail, clientProjects] of clientMap.entries()) {
+            const client = await userModel.findOne({ email: clientEmail }).lean();
+            if (!client) continue;
+
+            const totalPings = clientProjects.reduce((sum: number, p: any) => sum + p.pendingPingCount, 0);
+            const gigCount = clientProjects.length;
+            const singleGigId = gigCount === 1 ? clientProjects[0].id.toString() : null;
+
+            const emailHtml = postMyGigUnresponsiveClientTemplate(
+                client.name,
+                gigCount,
+                totalPings,
+                singleGigId
+            );
+
+            try {
+                // Send Email
+                if (process.env.NODE_ENV === "production") {
+                    const { error } = await resend.emails.send({
+                        from: "PostMyGig <hello@postmygig.vercel.app>",
+                        to: clientEmail,
+                        subject: `You have ${totalPings} freelancers waiting for your response!`,
+                        html: emailHtml,
+                    });
+                    if (error) {
                         await EmailSender({
-                            to: project.createdBy,
-                            subject: `You have ${pendingPingCount} freelancers waiting for your response!`,
+                            to: clientEmail,
+                            subject: `You have ${totalPings} freelancers waiting for your response!`,
                             html: emailHtml,
                         });
                     }
-
-                    await dispatchNotification({
-                        recipientEmail: project.createdBy,
-                        type: "system_alert",
-                        title: "Unreviewed Applications",
-                        message: `Your gig "${project.title}" has ${pendingPingCount} pending applications waiting for your response.`,
-                        link: `/applications/view-applications?gigId=${project._id}`
+                } else {
+                    await EmailSender({
+                        to: clientEmail,
+                        subject: `You have ${totalPings} freelancers waiting for your response!`,
+                        html: emailHtml,
                     });
-
-                    // Update the project so we don't spam them tomorrow
-                    await ProjectModel.findByIdAndUpdate(project._id, {
-                        $set: { lastRemindedAt: new Date() }
-                    });
-
-                    emailsSent++;
-                } catch (emailError) {
-                    console.error(`Failed to send reminder for project ${project._id}:`, emailError);
                 }
+
+                // Send ONE combined In-App Notification
+                const notifMessage = gigCount > 1 
+                    ? `You have ${totalPings} pending applications waiting across ${gigCount} of your gigs.`
+                    : `You have ${totalPings} pending applications waiting for your response.`;
+                const notifLink = gigCount > 1 ? `/my-jobs` : `/applications/view-applications?gigId=${singleGigId}`;
+
+                await dispatchNotification({
+                    recipientEmail: clientEmail,
+                    type: "system_alert",
+                    title: "Unreviewed Applications",
+                    message: notifMessage,
+                    link: notifLink
+                });
+
+                // 4. Update lastRemindedAt for ALL of this client's processed gigs at once
+                const projectIdsToUpdate = clientProjects.map((p: any) => p.id);
+                await ProjectModel.updateMany(
+                    { _id: { $in: projectIdsToUpdate } },
+                    { $set: { lastRemindedAt: new Date() } }
+                );
+
+                emailsSent++;
+            } catch (emailError) {
+                console.error(`Failed to send reminder to ${clientEmail}:`, emailError);
             }
         }
 

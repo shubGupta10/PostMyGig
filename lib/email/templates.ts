@@ -450,31 +450,35 @@ export const postMyGigWelcomeBackTemplate = (userName: string) => {
   `;
 };
 
-export const postMyGigUnresponsiveClientTemplate = (name: string, gigTitle: string, pingCount: number, gigId: string) => {
+export const postMyGigUnresponsiveClientTemplate = (name: string, gigCount: number, pingCount: number, singleGigId: string | null) => {
+  const isMultiple = gigCount > 1;
+  const linkUrl = isMultiple ? `${LIVE_URL}/my-jobs` : `${LIVE_URL}/applications/view-applications?gigId=${singleGigId}`;
+  const messageText = isMultiple
+    ? `Great news! You currently have <strong>${pingCount} freelancers</strong> waiting for your response across <strong>${gigCount} of your active gigs</strong>.`
+    : `Great news! Your gig currently has <strong>${pingCount} freelancers</strong> waiting for your response.`;
+
   return `
     <div style="font-family: Inter, sans-serif; background-color: #f8fafc; padding: 32px;">
       <div style="max-width: 600px; margin: auto; background-color: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <h1 style="font-size: 24px; font-weight: 600; color: #0f172a;">
-          Your gig is getting attention! 👀
+          Your ${isMultiple ? 'gigs are' : 'gig is'} getting attention! 👀
         </h1>
         <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
           Hi ${name},
         </p>
         <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
-          Great news! Your gig <strong>"${gigTitle}"</strong> currently has <strong>${pingCount} freelancers</strong> waiting for your response.
+          ${messageText}
         </p>
         <p style="margin-top: 16px; font-size: 16px; color: #334155; line-height: 1.6;">
           Don't leave them hanging! Head over to your dashboard to review their applications and find your perfect match.
         </p>
         <div style="margin-top: 32px; text-align: center;">
-          <a href="${LIVE_URL}/applications/view-applications?gigId=${gigId}" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+          <a href="${linkUrl}" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
             Review Applications
           </a>
         </div>
-        <p style="margin-top: 32px; font-size: 14px; color: #94a3b8;">
-          If you've already found someone elsewhere, please remember to mark your gig as closed in your dashboard!
-        </p>
       </div>
     </div>
   `;
 };
+
