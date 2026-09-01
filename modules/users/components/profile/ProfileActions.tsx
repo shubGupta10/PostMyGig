@@ -28,12 +28,12 @@ export function ProfileActions({ userData }: { userData: UserData }) {
         <div className="p-6 space-y-3">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">Actions</p>
 
-          <Button onClick={() => router.push(`/user/edit/?userId=${userData._id}`)} className="w-full bg-primary text-primary-foreground font-semibold h-11">
+          <Button onClick={() => router.push(`/user/edit/?userId=${userData._id}`)} className="w-full bg-primary text-primary-foreground font-semibold h-11 cursor-pointer">
             <Edit className="w-4 h-4 mr-2" />
             Edit Profile
           </Button>
 
-          <Button onClick={() => router.push(`/user/settings`)} variant="outline" className="w-full border-border text-foreground hover:bg-muted font-semibold h-11">
+          <Button onClick={() => router.push(`/user/settings`)} variant="outline" className="w-full border-border text-foreground hover:bg-muted font-semibold h-11 cursor-pointer">
             <Settings className="w-4 h-4 mr-2" />
             Settings
           </Button>

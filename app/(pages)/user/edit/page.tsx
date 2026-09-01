@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useSearchParams, useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
-import { useEffect, useState } from "react"
+import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import {
   User,
   Mail,
@@ -24,36 +24,50 @@ import {
   LinkIcon,
   FolderGit2,
   Lock,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useUserStore, useUserData, useUserLoading, useUserError } from "@/modules/users/store/userDataStore"
-import { PortfolioProject } from "@/modules/users/models/UserModel"
-import EditProfileLoading from "./loading"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  useUserStore,
+  useUserData,
+  useUserLoading,
+  useUserError,
+} from "@/modules/users/store/userDataStore";
+import { PortfolioProject } from "@/modules/users/models/UserModel";
+import EditProfileLoading from "./loading";
 
 interface ContactLinks {
-  label: string
-  url: string
+  label: string;
+  url: string;
+}
+
+interface LocationSuggestion {
+  id: string;
+  label: string;
 }
 
 function EditPage() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const { data } = useSession()
-  const user = data?.user
-  const userId = searchParams.get("userId")
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { data } = useSession();
+  const user = data?.user;
+  const userId = searchParams.get("userId");
 
   // Zustand store hooks
-  const userData = useUserData()
-  const userLoading = useUserLoading()
-  const userError = useUserError()
-  const { fetchUserData, updateUserData } = useUserStore()
+  const userData = useUserData();
+  const userLoading = useUserLoading();
+  const userError = useUserError();
+  const { fetchUserData, updateUserData } = useUserStore();
 
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const [dataLoaded, setDataLoaded] = useState(false)
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [locationQuery, setLocationQuery] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [isSearchingLocation, setIsSearchingLocation] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -65,24 +79,46 @@ function EditPage() {
     portfolioProjects: [] as PortfolioProject[],
     yearsOfExperience: "" as number | "",
     hourlyRate: "" as number | "",
-  })
+  });
 
-  const [newSkill, setNewSkill] = useState("")
+  useEffect(() => {
+    if (locationQuery.trim().length < 2) {
+      setLocationSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearchingLocation(true);
+
+      try {
+        const response = await fetch(
+          `/api/gigs/edit-gig/location?q=${encodeURIComponent(locationQuery)}`,
+        );
+        const data = await response.json();
+        setLocationSuggestions(data.suggestions || []);
+      } finally {
+        setIsSearchingLocation(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [locationQuery]);
+
+  const [newSkill, setNewSkill] = useState("");
 
   useEffect(() => {
     const loadUserData = async () => {
       if (userId && !userData && !userLoading) {
         try {
-          await fetchUserData(userId)
+          await fetchUserData(userId);
         } catch (error) {
-          console.error("Error fetching user data:", error)
-          setError("Failed to load user data")
+          console.error("Error fetching user data:", error);
+          setError("Failed to load user data");
         }
       }
-    }
+    };
 
-    loadUserData()
-  }, [userId, userData, userLoading, fetchUserData])
+    loadUserData();
+  }, [userId, userData, userLoading, fetchUserData]);
 
   useEffect(() => {
     if (userData && !dataLoaded) {
@@ -95,28 +131,31 @@ function EditPage() {
         portfolioProjects: userData.portfolioProjects || [],
         yearsOfExperience: userData.yearsOfExperience ?? "",
         hourlyRate: userData.hourlyRate ?? "",
-      })
-      setDataLoaded(true)
+      });
+      setLocationQuery(userData.location || "");
+      setDataLoaded(true);
     }
-  }, [userData, dataLoaded])
+  }, [userData, dataLoaded]);
 
   useEffect(() => {
     if (user && !userData && !dataLoaded) {
       setFormData((prev) => ({
         ...prev,
         name: user.name || "",
-      }))
+      }));
     }
-  }, [user, userData, dataLoaded])
+  }, [user, userData, dataLoaded]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-    if (error) setError(null)
-  }
+    }));
+    if (error) setError(null);
+  };
 
   // Handle Portfolio Projects
   const addProject = () => {
@@ -127,54 +166,63 @@ function EditPage() {
         ...prev.portfolioProjects,
         { title: "", description: "", tags: [], liveUrl: "", githubUrl: "" },
       ],
-    }))
-  }
+    }));
+  };
 
-  const updateProject = (index: number, field: keyof PortfolioProject, value: any) => {
+  const updateProject = (
+    index: number,
+    field: keyof PortfolioProject,
+    value: any,
+  ) => {
     setFormData((prev) => ({
       ...prev,
       portfolioProjects: prev.portfolioProjects.map((proj, i) =>
-        i === index ? { ...proj, [field]: value } : proj
+        i === index ? { ...proj, [field]: value } : proj,
       ),
-    }))
-  }
+    }));
+  };
 
   const removeProject = (index: number) => {
     setFormData((prev) => ({
       ...prev,
       portfolioProjects: prev.portfolioProjects.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   const handleProjectTagsChange = (index: number, tagsString: string) => {
     const tags = tagsString
       .split(",")
       .map((t) => t.trim())
-      .filter((t) => t.length > 0)
-    updateProject(index, "tags", tags)
-  }
-
+      .filter((t) => t.length > 0);
+    updateProject(index, "tags", tags);
+  };
 
   const addContactLink = () => {
     setFormData((prev) => ({
       ...prev,
       contactLinks: [...prev.contactLinks, { label: "", url: "" }],
-    }))
-  }
+    }));
+  };
 
-  const updateContactLink = (index: number, field: "label" | "url", value: string) => {
+  const updateContactLink = (
+    index: number,
+    field: "label" | "url",
+    value: string,
+  ) => {
     setFormData((prev) => ({
       ...prev,
-      contactLinks: prev.contactLinks.map((link, i) => (i === index ? { ...link, [field]: value } : link)),
-    }))
-  }
+      contactLinks: prev.contactLinks.map((link, i) =>
+        i === index ? { ...link, [field]: value } : link,
+      ),
+    }));
+  };
 
   const removeContactLink = (index: number) => {
     setFormData((prev) => ({
       ...prev,
       contactLinks: prev.contactLinks.filter((_, i) => i !== index),
-    }))
-  }
+    }));
+  };
 
   // Handle skills
   const addSkill = () => {
@@ -182,30 +230,30 @@ function EditPage() {
       setFormData((prev) => ({
         ...prev,
         skills: [...prev.skills, newSkill.trim()],
-      }))
-      setNewSkill("")
+      }));
+      setNewSkill("");
     }
-  }
+  };
 
   const removeSkill = (skillToRemove: string) => {
     setFormData((prev) => ({
       ...prev,
       skills: prev.skills.filter((skill) => skill !== skillToRemove),
-    }))
-  }
+    }));
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      e.preventDefault()
-      addSkill()
+      e.preventDefault();
+      addSkill();
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
-    setError(null)
-    setSuccessMessage(null)
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    setSuccessMessage(null);
 
     try {
       const res = await fetch("/api/user/edit", {
@@ -217,39 +265,45 @@ function EditPage() {
           userId,
           ...formData,
         }),
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       if (res.status === 200) {
         if (userData) {
           const payload = {
             ...formData,
-            yearsOfExperience: formData.yearsOfExperience === "" ? undefined : Number(formData.yearsOfExperience),
-            hourlyRate: formData.hourlyRate === "" ? undefined : Number(formData.hourlyRate),
+            yearsOfExperience:
+              formData.yearsOfExperience === ""
+                ? undefined
+                : Number(formData.yearsOfExperience),
+            hourlyRate:
+              formData.hourlyRate === ""
+                ? undefined
+                : Number(formData.hourlyRate),
             updatedAt: new Date().toISOString(),
-          }
-          updateUserData(payload)
+          };
+          updateUserData(payload);
         }
 
-        setSuccessMessage("Profile updated successfully!")
+        setSuccessMessage("Profile updated successfully!");
         setTimeout(() => {
-          router.push(`/user/profile/${user?.id}`)
-        }, 1500)
+          router.push(`/user/profile/${user?.id}`);
+        }, 1500);
       } else {
-        setError(data.error || "Failed to update profile")
+        setError(data.error || "Failed to update profile");
       }
     } catch (error) {
-      console.error("Error updating profile:", error)
-      setError("Network error occurred")
+      console.error("Error updating profile:", error);
+      setError("Network error occurred");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   // Show loading state while fetching user data
   if (userLoading || (!userData && !user)) {
-    return <EditProfileLoading />
+    return <EditProfileLoading />;
   }
 
   // Show error state if user data failed to load
@@ -259,7 +313,9 @@ function EditPage() {
         <div className="flex items-center justify-center min-h-screen">
           <div className="max-w-md mx-auto text-center p-6">
             <AlertCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-foreground mb-3">Failed to Load Profile</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-3">
+              Failed to Load Profile
+            </h3>
             <p className="text-muted-foreground text-lg mb-6">{userError}</p>
             <Button onClick={() => router.back()} className="mr-4">
               Go Back
@@ -273,7 +329,7 @@ function EditPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -284,7 +340,8 @@ function EditPage() {
             Edit Your <span className="text-primary">Profile</span>
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Keep your skills, bio, and featured projects updated to maximize your recommendation ranking.
+            Keep your skills, bio, and featured projects updated to maximize
+            your recommendation ranking.
           </p>
         </div>
 
@@ -293,7 +350,10 @@ function EditPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Full Name */}
             <div className="space-y-3.5">
-              <label htmlFor="name" className="block text-base font-semibold text-foreground">
+              <label
+                htmlFor="name"
+                className="block text-base font-semibold text-foreground"
+              >
                 Full Name <span className="text-destructive">*</span>
               </label>
               <Input
@@ -310,8 +370,12 @@ function EditPage() {
 
             {/* Email Address */}
             <div className="space-y-3.5">
-              <label htmlFor="email" className="block text-base font-semibold text-foreground">
-                Email Address <Lock className="w-3.5 h-3.5 inline-block ml-1 text-muted-foreground -mt-0.5" />
+              <label
+                htmlFor="email"
+                className="block text-base font-semibold text-foreground"
+              >
+                Email Address{" "}
+                <Lock className="w-3.5 h-3.5 inline-block ml-1 text-muted-foreground -mt-0.5" />
               </label>
               <Input
                 type="email"
@@ -322,28 +386,67 @@ function EditPage() {
                 className="h-14 bg-background border-2 border-border text-base text-muted-foreground cursor-not-allowed rounded-2xl px-5 disabled:opacity-60"
                 placeholder="Your email address"
               />
-              <p className="text-xs text-muted-foreground">Email addresses cannot be changed.</p>
+              <p className="text-xs text-muted-foreground">
+                Email addresses cannot be changed.
+              </p>
             </div>
 
             {/* Location */}
             <div className="sm:col-span-2 space-y-2.5">
-              <label htmlFor="location" className="block text-base font-semibold text-foreground">
+              <label
+                htmlFor="location"
+                className="block text-base font-semibold text-foreground"
+              >
                 Location
               </label>
-              <Input
-                type="text"
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="City, Country (e.g., Mumbai, India)"
-                className="h-14 bg-background border-2 border-border text-base placeholder:text-muted-foreground focus:border-primary rounded-2xl px-5"
-              />
+
+              <div className="relative">
+                <Input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value={locationQuery}
+                  autoComplete="off"
+                  onChange={(event) => {
+                    setLocationQuery(event.target.value);
+                    setShowLocationSuggestions(true);
+                  }}
+                  placeholder="Select your city or country"
+                  className="h-14 bg-background border-2 border-border text-base placeholder:text-muted-foreground focus:border-primary rounded-2xl px-5"
+                />
+
+                {showLocationSuggestions && locationSuggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border-2 border-border bg-popover p-1.5 shadow-xl">
+                    {locationSuggestions.map((suggestion: LocationSuggestion) => (
+                      <button
+                        key={suggestion.id}
+                        type="button"
+                        onClick={() => {
+                          setFormData((previous) => ({
+                            ...previous,
+                            location: suggestion.label,
+                          }));
+                          setLocationQuery(suggestion.label);
+                          setLocationSuggestions([]);
+                          setShowLocationSuggestions(false);
+                        }}
+                        className="flex w-full items-start gap-3 rounded-xl px-3.5 py-3 text-left text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none"
+                      >
+                        <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <span className="min-w-0 truncate font-medium">{suggestion.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Experience & Rate */}
             <div className="space-y-2.5">
-              <label htmlFor="yearsOfExperience" className="block text-base font-semibold text-foreground">
+              <label
+                htmlFor="yearsOfExperience"
+                className="block text-base font-semibold text-foreground"
+              >
                 Years of Experience
               </label>
               <Input
@@ -360,7 +463,10 @@ function EditPage() {
             </div>
 
             <div className="space-y-2.5">
-              <label htmlFor="hourlyRate" className="block text-base font-semibold text-foreground">
+              <label
+                htmlFor="hourlyRate"
+                className="block text-base font-semibold text-foreground"
+              >
                 Hourly Rate ($/hr)
               </label>
               <Input
@@ -378,7 +484,10 @@ function EditPage() {
 
           {/* Bio Section */}
           <div className="space-y-3.5">
-            <label htmlFor="bio" className="block text-base font-semibold text-foreground">
+            <label
+              htmlFor="bio"
+              className="block text-base font-semibold text-foreground"
+            >
               Professional Bio
             </label>
             <Textarea
@@ -391,7 +500,8 @@ function EditPage() {
               className="w-full text-base bg-background border-2 border-border focus:border-primary resize-y placeholder:text-muted-foreground rounded-2xl p-5 leading-relaxed min-h-[160px]"
             />
             <p className="text-xs text-muted-foreground">
-              {formData.bio.length}/500 characters • A detailed bio helps clients understand your expertise.
+              {formData.bio.length}/500 characters • A detailed bio helps
+              clients understand your expertise.
             </p>
           </div>
 
@@ -426,7 +536,10 @@ function EditPage() {
             {formData.skills.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-2">
                 {formData.skills.map((skill, index) => (
-                  <span key={index} className="bg-secondary text-secondary-foreground rounded-xl px-4 py-2 font-semibold text-sm flex items-center gap-2">
+                  <span
+                    key={index}
+                    className="bg-secondary text-secondary-foreground rounded-xl px-4 py-2 font-semibold text-sm flex items-center gap-2"
+                  >
                     {skill}
                     <button
                       type="button"
@@ -446,10 +559,13 @@ function EditPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-base font-semibold text-foreground">
-                  Featured Portfolio Projects ({formData.portfolioProjects.length}/4)
+                  Featured Portfolio Projects (
+                  {formData.portfolioProjects.length}/4)
                 </p>
                 <p className="text-xs sm:text-sm text-muted-foreground">
-                  Highlight your real-world proof of work. Our recommendation engine uses your project tech stacks to match you with top gigs!
+                  Highlight your real-world proof of work. Our recommendation
+                  engine uses your project tech stacks to match you with top
+                  gigs!
                 </p>
               </div>
               {formData.portfolioProjects.length < 4 && (
@@ -487,12 +603,16 @@ function EditPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2.5">
-                      <label className="block text-xs font-semibold text-foreground">Project Title *</label>
+                      <label className="block text-xs font-semibold text-foreground">
+                        Project Title *
+                      </label>
                       <Input
                         type="text"
                         placeholder="e.g., SaaSify Billing Engine"
                         value={project.title}
-                        onChange={(e) => updateProject(index, "title", e.target.value)}
+                        onChange={(e) =>
+                          updateProject(index, "title", e.target.value)
+                        }
                         className="h-12 bg-background border-2 border-border text-sm rounded-xl px-4"
                         required
                       />
@@ -506,7 +626,9 @@ function EditPage() {
                         type="text"
                         placeholder="e.g., Next.js, Stripe, TailwindCSS, TypeScript"
                         value={project.tags.join(", ")}
-                        onChange={(e) => handleProjectTagsChange(index, e.target.value)}
+                        onChange={(e) =>
+                          handleProjectTagsChange(index, e.target.value)
+                        }
                         className="h-12 bg-background border-2 border-border text-sm rounded-xl px-4"
                         required
                       />
@@ -514,11 +636,15 @@ function EditPage() {
                   </div>
 
                   <div className="space-y-2.5">
-                    <label className="block text-xs font-semibold text-foreground">Short Description *</label>
+                    <label className="block text-xs font-semibold text-foreground">
+                      Short Description *
+                    </label>
                     <Textarea
                       placeholder="Briefly describe what you built, key features, and your role..."
                       value={project.description}
-                      onChange={(e) => updateProject(index, "description", e.target.value)}
+                      onChange={(e) =>
+                        updateProject(index, "description", e.target.value)
+                      }
                       rows={3}
                       className="w-full text-sm bg-background border-2 border-border focus:border-primary resize-y placeholder:text-muted-foreground rounded-xl p-4 leading-relaxed"
                       required
@@ -527,23 +653,31 @@ function EditPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2.5">
-                      <label className="block text-xs font-semibold text-foreground">Live Demo URL</label>
+                      <label className="block text-xs font-semibold text-foreground">
+                        Live Demo URL
+                      </label>
                       <Input
                         type="url"
                         placeholder="https://my-app.app"
                         value={project.liveUrl || ""}
-                        onChange={(e) => updateProject(index, "liveUrl", e.target.value)}
+                        onChange={(e) =>
+                          updateProject(index, "liveUrl", e.target.value)
+                        }
                         className="h-12 bg-background border-2 border-border text-sm rounded-xl px-4"
                       />
                     </div>
 
                     <div className="space-y-2.5">
-                      <label className="block text-xs font-semibold text-foreground">GitHub Repo URL</label>
+                      <label className="block text-xs font-semibold text-foreground">
+                        GitHub Repo URL
+                      </label>
                       <Input
                         type="url"
                         placeholder="https://github.com/username/project"
                         value={project.githubUrl || ""}
-                        onChange={(e) => updateProject(index, "githubUrl", e.target.value)}
+                        onChange={(e) =>
+                          updateProject(index, "githubUrl", e.target.value)
+                        }
                         className="h-12 bg-background border-2 border-border text-sm rounded-xl px-4"
                       />
                     </div>
@@ -572,20 +706,27 @@ function EditPage() {
 
             <div className="space-y-3">
               {formData.contactLinks.map((link, index) => (
-                <div key={index} className="flex flex-col sm:flex-row gap-3 items-center">
+                <div
+                  key={index}
+                  className="flex flex-col sm:flex-row gap-3 items-center"
+                >
                   <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                     <Input
                       type="text"
                       placeholder="e.g., LinkedIn or Website"
                       value={link.label}
-                      onChange={(e) => updateContactLink(index, "label", e.target.value)}
+                      onChange={(e) =>
+                        updateContactLink(index, "label", e.target.value)
+                      }
                       className="h-12 bg-background border-2 border-border text-sm placeholder:text-muted-foreground focus:border-primary rounded-xl px-4"
                     />
                     <Input
                       type="url"
                       placeholder="https://..."
                       value={link.url}
-                      onChange={(e) => updateContactLink(index, "url", e.target.value)}
+                      onChange={(e) =>
+                        updateContactLink(index, "url", e.target.value)
+                      }
                       className="h-12 bg-background border-2 border-border text-sm placeholder:text-muted-foreground focus:border-primary rounded-xl px-4"
                     />
                   </div>
@@ -613,7 +754,9 @@ function EditPage() {
           {successMessage && (
             <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex items-center gap-3">
               <CheckCircle className="w-5 h-5 text-primary flex-shrink-0" />
-              <p className="text-primary font-medium text-sm">{successMessage}</p>
+              <p className="text-primary font-medium text-sm">
+                {successMessage}
+              </p>
             </div>
           )}
 
@@ -648,7 +791,7 @@ function EditPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default EditPage
+export default EditPage;
