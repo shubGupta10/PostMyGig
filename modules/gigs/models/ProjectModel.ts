@@ -20,6 +20,7 @@ export interface Project extends Document {
   reportCount: number;
   isFlagged: boolean;
   isCurated?: boolean;
+  lastRemindedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -81,6 +82,9 @@ const projectSchema = new Schema<Project>(
     isCurated: {
       type: Boolean,
       default: false,
+    },
+    lastRemindedAt: {
+      type: Date,
     },
   },
   {
