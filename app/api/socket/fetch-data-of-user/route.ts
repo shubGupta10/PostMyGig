@@ -1,12 +1,8 @@
-import { NextResponse, NextRequest, after } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import userModel from "@/modules/users/models/UserModel";
 import { ConnectoDatabase } from "@/lib/db";
 import PingModel from "@/modules/notifications/models/PingSchema";
 import ProjectModel from "@/modules/gigs/models/ProjectModel";
-import { EmailSender } from "@/lib/email/send";
-import { postMyGigChatInvitationTemplate } from "@/lib/email/templates";
-import redis from "@/lib/redis";
-import resend from "@/lib/resend";
 
 export async function POST(req: NextRequest) {
   try {
@@ -54,49 +50,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Applicant not found" }, { status: 404 });
     }
 
-    const redisKey = `invite_sent:${projectId}:${applyerEmail}`;
-    const alreadySent = await redis.get(redisKey);
-
-    if (alreadySent) {
-      return NextResponse.json({
-        message: "Invitation already sent recently",
-        posterData,
-        applyerData,
-        projectData,
-      }, { status: 200 });
-    }
-
-    after(async () => {
-      const { error } = await resend.emails.send({
-        from: 'PostMyGig <hello@postmygig.vercel.app>',
-        to: applyerData.email,
-        subject: "You've been invited to chat about a project",
-        html: postMyGigChatInvitationTemplate({
-          applyerName: applyerData.name,
-          posterName: posterData.name,
-          projectId,
-          projectName: projectData.title,
-        }),
-      });
-
-      if (error) {
-        await EmailSender({
-          to: applyerData.email,
-          subject: "You've been invited to chat about a project",
-          html: postMyGigChatInvitationTemplate({
-            applyerName: applyerData.name,
-            posterName: posterData.name,
-            projectId,
-            projectName: projectData.title,
-          }),
-        });
-      }
-    });
-
-    await redis.set(redisKey, "true", { ex: 172800 }); // 48 hours
-
     return NextResponse.json({
-      message: "Invitation sent successfully",
+      message: "Chat participants loaded successfully",
       posterData,
       applyerData,
       projectData,
