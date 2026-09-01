@@ -131,12 +131,14 @@ export function SearchClient({ userRole, initialResults, initialPagination }: Se
                         )}
                     </div>
                     
-                    <button 
-                        onClick={() => setIsFilteredDrawerOpen(true)}
-                        className="flex items-center justify-center h-16 w-16 bg-card border-2 border-border hover:border-border/80 rounded-2xl shadow-sm transition-all text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
-                    >
-                        <SlidersHorizontal className="w-6 h-6" />
-                    </button>
+                    {userRole === "client" && (
+                        <button 
+                            onClick={() => setIsFilteredDrawerOpen(true)}
+                            className="flex items-center justify-center h-16 w-16 bg-card border-2 border-border hover:border-border/80 rounded-2xl shadow-sm transition-all text-muted-foreground hover:text-foreground shrink-0 cursor-pointer"
+                        >
+                            <SlidersHorizontal className="w-6 h-6" />
+                        </button>
+                    )}
                 </div>
             </div>
 
