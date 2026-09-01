@@ -58,7 +58,6 @@ function EditPage() {
   // Form state
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
     bio: "",
     location: "",
     contactLinks: [] as ContactLinks[],
@@ -85,12 +84,10 @@ function EditPage() {
     loadUserData()
   }, [userId, userData, userLoading, fetchUserData])
 
-  // Populate form with userData when available
   useEffect(() => {
     if (userData && !dataLoaded) {
       setFormData({
         name: userData.name || "",
-        email: userData.email || "",
         bio: userData.bio || "",
         location: userData.location || "",
         contactLinks: userData.contactLinks || [],
@@ -108,7 +105,6 @@ function EditPage() {
       setFormData((prev) => ({
         ...prev,
         name: user.name || "",
-        email: user.email || "",
       }))
     }
   }, [user, userData, dataLoaded])
@@ -321,7 +317,7 @@ function EditPage() {
                 type="email"
                 id="email"
                 name="email"
-                value={user?.email || formData.email || ""}
+                value={user?.email || ""}
                 disabled
                 className="h-14 bg-background border-2 border-border text-base text-muted-foreground cursor-not-allowed rounded-2xl px-5 disabled:opacity-60"
                 placeholder="Your email address"
@@ -344,7 +340,7 @@ function EditPage() {
                 className="h-14 bg-background border-2 border-border text-base placeholder:text-muted-foreground focus:border-primary rounded-2xl px-5"
               />
             </div>
-            
+
             {/* Experience & Rate */}
             <div className="space-y-2.5">
               <label htmlFor="yearsOfExperience" className="block text-base font-semibold text-foreground">

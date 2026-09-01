@@ -18,7 +18,6 @@ export async function PATCH(req: NextRequest) {
     const {
       userId,
       name,
-      email,
       bio,
       contactLinks,
       location,
@@ -82,7 +81,6 @@ export async function PATCH(req: NextRequest) {
       userId,
       {
         name,
-        email,
         bio,
         contactLinks,
         location,
